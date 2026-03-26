@@ -1,13 +1,13 @@
 """
 PNWER State-to-Control-Countries Data Collector v9
-采集25个州对非USMCA对照国的出口数据
+Collects export data from 25 states to non-USMCA control countries.
 
-用于州内DDD分析：
-- 州对CA/MX出口 (treatment) vs 州对JP/KR/UK/DE出口 (control)
+Used for within-state DDD analysis:
+- State exports to CA/MX (treatment) vs state exports to JP/KR/UK/DE (control)
 
-对照国选择标准：
-- 稳定可比的大经济体
-- 避免同期被贸易战/制裁强冲击的国家（排除CN）
+Control country selection criteria:
+- Stable comparable large economies
+- Excludes countries hit by concurrent trade shocks (CN excluded)
 """
 
 import requests
@@ -17,18 +17,18 @@ from pathlib import Path
 import datetime
 
 # ============================================================================
-# 配置
+# Configuration
 # ============================================================================
 
 API_KEY = "f51f8af17882fc49a8c6a2eec80c9b9d522562fd"
 
-# 25个州（与v8一致）
+# 25 states (same as v8)
 PNWER_STATES = ["WA", "OR", "ID", "MT", "AK"]
 CONTROL_STATES = [
-    "MI", "MN", "ND", "WI", "NY",  # 北部边境
-    "CA", "NV", "UT", "CO", "WY",  # 西部
-    "TX", "LA", "OK", "NE", "KS",  # 能源/农业
-    "FL", "GA", "NC", "SC", "VA"   # 东南部
+    "MI", "MN", "ND", "WI", "NY",  # Northern border
+    "CA", "NV", "UT", "CO", "WY",  # Western
+    "TX", "LA", "OK", "NE", "KS",  # Energy/agriculture
+    "FL", "GA", "NC", "SC", "VA"   # Southeast
 ]
 ALL_STATES = PNWER_STATES + CONTROL_STATES
 
@@ -45,7 +45,7 @@ STATE_NAMES = {
     "SC": "South Carolina", "VA": "Virginia"
 }
 
-# 对照国（排除CN，避免贸易战干扰）
+# Control countries (CN excluded to avoid trade war confounding)
 CONTROL_COUNTRIES = {
     "5880": {"code": "JP", "name": "Japan"},
     "5800": {"code": "KR", "name": "South Korea"},
@@ -60,7 +60,7 @@ STATE_EXPORT_API = "https://api.census.gov/data/timeseries/intltrade/exports/sta
 
 
 # ============================================================================
-# HS2 → 产业映射
+# HS2 → Industry Mapping
 # ============================================================================
 
 def get_industry_from_hs2(hs2_code: str) -> str:
@@ -84,11 +84,11 @@ def get_industry_from_hs2(hs2_code: str) -> str:
 
 
 # ============================================================================
-# 数据采集
+# Data Collection
 # ============================================================================
 
 def fetch_state_exports(state: str, country_code: str, year: int, month: str) -> dict:
-    """获取州对某国的出口数据"""
+    """Fetch state exports to a given country."""
     
     params = {
         "get": f"STATE,CTY_CODE,E_COMMODITY,ALL_VAL_YR",
@@ -115,7 +115,7 @@ def fetch_state_exports(state: str, country_code: str, year: int, month: str) ->
                         hs_code = row[hs_idx]
                         val_str = row[val_idx]
                         
-                        # 只取HS2级别
+                        # HS2-level only
                         if not hs_code or len(hs_code) != 2:
                             continue
                         if not val_str or val_str == '-':
@@ -137,16 +137,16 @@ def fetch_state_exports(state: str, country_code: str, year: int, month: str) ->
 
 
 def collect_all_data() -> dict:
-    """采集所有州对对照国的出口数据"""
+    """Collect all state-to-control-country export data."""
     
     print("\n" + "=" * 60)
-    print(f"📊 州→对照国 出口数据采集")
-    print(f"   州: {len(ALL_STATES)}个")
-    print(f"   对照国: {list(CONTROL_COUNTRIES.values())}")
-    print(f"   年份: {YEARS[0]}-{YEARS[-1]}")
+    print(f"State → Control country export data collection")
+    print(f"   States: {len(ALL_STATES)}")
+    print(f"   Control countries: {list(CONTROL_COUNTRIES.values())}")
+    print(f"   Years: {YEARS[0]}-{YEARS[-1]}")
     print("=" * 60)
     
-    # 请求数: 25州 × 4国 × 9年 = 900
+    # Requests: 25 states × 4 countries × 9 years = 900
     total_requests = len(ALL_STATES) * len(CONTROL_COUNTRIES) * len(YEARS)
     current = 0
     
@@ -178,12 +178,12 @@ def collect_all_data() -> dict:
                 
                 time.sleep(0.1)
     
-    print(f"\n✅ 采集完成!")
+    print(f"\n  Collection complete!")
     return state_data
 
 
 def build_output(state_data: dict) -> dict:
-    """构建输出JSON"""
+    """Build output JSON."""
     
     return {
         "metadata": {
@@ -193,9 +193,9 @@ def build_output(state_data: dict) -> dict:
             "generated_at": datetime.datetime.now().isoformat(),
             "years": YEARS,
             "notes": [
-                "用于州内DDD分析的对照国数据",
-                "对照国: JP, KR, UK, DE (排除CN避免贸易战干扰)",
-                "与v8州数据配合使用"
+                "Control country data for within-state DDD analysis",
+                "Control countries: JP, KR, UK, DE (CN excluded to avoid trade war confounding)",
+                "Used in conjunction with v8 state data"
             ]
         },
         
@@ -223,15 +223,15 @@ def build_output(state_data: dict) -> dict:
 
 
 def print_summary(state_data: dict):
-    """打印摘要"""
+    """Print summary."""
     print("\n" + "=" * 70)
-    print("📊 数据摘要: 各州对对照国出口 (2019)")
+    print("Data summary: State exports to control countries (2019)")
     print("=" * 70)
     
-    print(f"\n{'州':<5} {'组别':<8} {'→JP':<12} {'→KR':<12} {'→UK':<12} {'→DE':<12}")
+    print(f"\n{'State':<5} {'Group':<8} {'→JP':<12} {'→KR':<12} {'→UK':<12} {'→DE':<12}")
     print("-" * 65)
     
-    for state in ALL_STATES[:10]:  # 只显示前10个
+    for state in ALL_STATES[:10]:  # Show first 10 only
         data = state_data[state]
         group = data["group"]
         
@@ -242,41 +242,41 @@ def print_summary(state_data: dict):
         
         print(f"{state:<5} {group:<8} ${jp:>8.2f}B  ${kr:>8.2f}B  ${uk:>8.2f}B  ${de:>8.2f}B")
     
-    print("... (更多州省略)")
+    print("... (remaining states omitted)")
 
 
 def save_data(data: dict, path: str = "data/state_to_control_countries.json"):
-    """保存数据"""
+    """Save data to JSON file."""
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
-    print(f"\n📁 数据已保存: {path}")
+    print(f"\n  Data saved: {path}")
 
 
 def main():
     print("""
     ╔══════════════════════════════════════════════════════════════╗
     ║       State → Control Countries Export Collector            ║
-    ║       25州 × 4对照国 (JP/KR/UK/DE)                           ║
+    ║       25 states × 4 control countries (JP/KR/UK/DE)         ║
     ╚══════════════════════════════════════════════════════════════╝
     """)
     
-    print(f"⚠️  预计请求数: ~900个，耗时约8-10分钟\n")
+    print(f"  Estimated requests: ~900, ~8-10 min\n")
     
-    # 采集
+    # Collect
     state_data = collect_all_data()
     
-    # 摘要
+    # Summary
     print_summary(state_data)
     
-    # 保存
+    # Save
     output = build_output(state_data)
     save_data(output, "data/state_to_control_countries.json")
     
     print("\n" + "=" * 60)
-    print("✅ 完成!")
-    print("   此数据用于州内DDD分析")
-    print("   需配合 pnwer_analysis_data_v8.json 使用")
+    print("  Complete!")
+    print("   This data is used for within-state DDD analysis")
+    print("   Must be used with pnwer_analysis_data_v8.json")
     print("=" * 60)
 
 

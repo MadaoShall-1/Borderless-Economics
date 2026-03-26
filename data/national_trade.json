@@ -16,11 +16,11 @@
       2025
     ],
     "notes": [
-      "用于层1 DID分析",
+      "Used for Layer 1 DID analysis",
       "Treatment: CA, MX (USMCA)",
-      "Control: JP, KR, UK, DE (稳定可比大经济体)",
-      "排除CN (贸易战干扰)",
-      "Post期建议从2021开始 (剔除2020过渡年)"
+      "Control: JP, KR, UK, DE (stable comparable large economies)",
+      "CN excluded (trade war confounding)",
+      "Recommended post-period starts from 2021 (excluding 2020 transition year)"
     ]
   },
   "analysis_design": {

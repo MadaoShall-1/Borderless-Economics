@@ -1,12 +1,12 @@
 """
 National Trade Data Collector
-采集美国对各贸易伙伴的国家层面出口数据
+Collects U.S. national-level export data to each trading partner.
 
-用于层1 DID分析：
-- Treatment: US对CA/MX出口 (USMCA)
-- Control: US对JP/KR/UK/DE出口 (稳定可比大经济体)
+Used for Layer 1 DID analysis:
+- Treatment: US exports to CA/MX (USMCA)
+- Control: US exports to JP/KR/UK/DE (stable comparable large economies)
 
-注意：排除CN，因为同期被贸易战强冲击
+Note: CN excluded due to concurrent trade war impact.
 """
 
 import requests
@@ -16,17 +16,17 @@ from pathlib import Path
 import datetime
 
 # ============================================================================
-# 配置
+# Configuration
 # ============================================================================
 
 API_KEY = "f51f8af17882fc49a8c6a2eec80c9b9d522562fd"
 
-# 贸易伙伴
+# Trade partners
 COUNTRIES = {
     # USMCA (Treatment)
     "1220": {"code": "CA", "name": "Canada", "group": "usmca"},
     "2010": {"code": "MX", "name": "Mexico", "group": "usmca"},
-    # 对照国 (Control) - 稳定可比大经济体
+    # Control — stable comparable large economies
     "5880": {"code": "JP", "name": "Japan", "group": "control"},
     "5800": {"code": "KR", "name": "South Korea", "group": "control"},
     "4120": {"code": "UK", "name": "United Kingdom", "group": "control"},
@@ -41,7 +41,7 @@ NATIONAL_IMPORT_API = "https://api.census.gov/data/timeseries/intltrade/imports/
 
 
 # ============================================================================
-# HS2 → 产业映射
+# HS2 → Industry Mapping
 # ============================================================================
 
 def get_industry_from_hs2(hs2_code: str) -> str:
@@ -65,12 +65,12 @@ def get_industry_from_hs2(hs2_code: str) -> str:
 
 
 # ============================================================================
-# 数据采集
+# Data Collection
 # ============================================================================
 
 def fetch_national_trade(country_code: str, year: int, month: str, 
                          is_export: bool = True) -> dict:
-    """获取全美对某国的贸易数据（含产业分解）"""
+    """Fetch national-level trade data for a given country (with industry breakdown)."""
     
     if is_export:
         api_url = NATIONAL_EXPORT_API
@@ -105,7 +105,7 @@ def fetch_national_trade(country_code: str, year: int, month: str,
                         hs_code = row[hs_idx]
                         val_str = row[val_idx]
                         
-                        # 只取HS2级别
+                        # HS2-level only
                         if not hs_code or len(hs_code) != 2:
                             continue
                         if not val_str or val_str == '-':
@@ -127,16 +127,16 @@ def fetch_national_trade(country_code: str, year: int, month: str,
 
 
 def collect_all_data() -> dict:
-    """采集所有国家层面数据"""
+    """Collect all national-level trade data."""
     
     print("\n" + "=" * 60)
-    print("📊 国家层面贸易数据采集")
+    print("National-level trade data collection")
     print(f"   USMCA: CA, MX")
-    print(f"   对照: JP, KR, UK, DE")
-    print(f"   年份: {YEARS[0]}-{YEARS[-1]}")
+    print(f"   Control: JP, KR, UK, DE")
+    print(f"   Years: {YEARS[0]}-{YEARS[-1]}")
     print("=" * 60)
     
-    # 请求数: 6国 × 9年 × 2(出口+进口) = 108
+    # Requests: 6 countries × 9 years × 2 (exports+imports) = 108
     total_requests = len(COUNTRIES) * len(YEARS) * 2
     current = 0
     
@@ -153,13 +153,13 @@ def collect_all_data() -> dict:
         for year in YEARS:
             month = YEAR_2025_MONTH if year == 2025 else "12"
             
-            # 出口
+            # Exports
             current += 1
             print(f"\r[{current}/{total_requests}] US → {code} ({year})...", 
                   end="", flush=True)
             exports = fetch_national_trade(cty_census_code, year, month, is_export=True)
             
-            # 进口
+            # Imports
             current += 1
             print(f"\r[{current}/{total_requests}] US ← {code} ({year})...", 
                   end="", flush=True)
@@ -176,12 +176,12 @@ def collect_all_data() -> dict:
             
             time.sleep(0.15)
     
-    print(f"\n✅ 采集完成!")
+    print(f"\n  Collection complete!")
     return national_data
 
 
 def build_output(national_data: dict) -> dict:
-    """构建输出JSON"""
+    """Build output JSON."""
     
     return {
         "metadata": {
@@ -191,11 +191,11 @@ def build_output(national_data: dict) -> dict:
             "generated_at": datetime.datetime.now().isoformat(),
             "years": YEARS,
             "notes": [
-                "用于层1 DID分析",
+                "Used for Layer 1 DID analysis",
                 "Treatment: CA, MX (USMCA)",
-                "Control: JP, KR, UK, DE (稳定可比大经济体)",
-                "排除CN (贸易战干扰)",
-                "Post期建议从2021开始 (剔除2020过渡年)"
+                "Control: JP, KR, UK, DE (stable comparable large economies)",
+                "CN excluded (trade war confounding)",
+                "Recommended post-period starts from 2021 (excluding 2020 transition year)"
             ]
         },
         
@@ -221,12 +221,12 @@ def build_output(national_data: dict) -> dict:
 
 
 def print_summary(national_data: dict):
-    """打印摘要"""
+    """Print summary."""
     print("\n" + "=" * 70)
-    print("📊 数据摘要: US出口 (billions USD)")
+    print("Data summary: US exports (billions USD)")
     print("=" * 70)
     
-    print(f"\n{'国家':<8} {'组别':<10} {'2019':<12} {'2024':<12} {'增长':<10}")
+    print(f"\n{'Country':<8} {'Group':<10} {'2019':<12} {'2024':<12} {'Growth':<10}")
     print("-" * 55)
     
     for code, data in national_data.items():
@@ -236,7 +236,7 @@ def print_summary(national_data: dict):
         
         print(f"{code:<8} {data['group']:<10} ${exp_19:>8.1f}B    ${exp_24:>8.1f}B    {growth:>+6.1f}%")
     
-    # 计算组平均
+    # Group averages
     print("-" * 55)
     for group in ["usmca", "control"]:
         pre_total = sum(d["years"]["2019"]["exports"] for d in national_data.values() 
@@ -244,15 +244,15 @@ def print_summary(national_data: dict):
         post_total = sum(d["years"]["2024"]["exports"] for d in national_data.values() 
                         if d["group"] == group)
         growth = (post_total / pre_total - 1) * 100 if pre_total > 0 else 0
-        print(f"{group.upper():<8} {'平均':<10} ${pre_total/1e9:>8.1f}B    ${post_total/1e9:>8.1f}B    {growth:>+6.1f}%")
+        print(f"{group.upper():<8} {'avg':<10} ${pre_total/1e9:>8.1f}B    ${post_total/1e9:>8.1f}B    {growth:>+6.1f}%")
 
 
 def save_data(data: dict, path: str = "data/national_trade.json"):
-    """保存数据"""
+    """Save data to JSON file."""
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
-    print(f"\n📁 数据已保存: {path}")
+    print(f"\n  Data saved: {path}")
 
 
 def main():
@@ -263,21 +263,21 @@ def main():
     ╚══════════════════════════════════════════════════════════════╝
     """)
     
-    print(f"⚠️  预计请求数: ~108个，耗时约2分钟\n")
+    print(f"  Estimated requests: ~108, ~2 min\n")
     
-    # 采集
+    # Collect
     national_data = collect_all_data()
     
-    # 摘要
+    # Summary
     print_summary(national_data)
     
-    # 保存
+    # Save
     output = build_output(national_data)
     save_data(output, "data/national_trade.json")
     
     print("\n" + "=" * 60)
-    print("✅ 完成!")
-    print("   用于层1 DID: USMCA整体效应")
+    print("  Complete!")
+    print("   Used for Layer 1 DID: overall USMCA effect")
     print("=" * 60)
 
 

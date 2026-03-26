@@ -1,4 +1,3 @@
-
 import json
 import numpy as np
 from pathlib import Path
@@ -212,6 +211,13 @@ class Layer2_StateDDD:
             return self.control_state_data.get(state, {}).get(partner, {}).get(year, {}).get("exports", 0)
     
     def run_ddd(self) -> RegressionResult:
+        """
+        Full DDD with three-way crossed fixed effects using within transformation:
+        ln(X_{s,p,t}) = θ(PNWER_s × USMCA_p × Post_t) + FE_{s,t} + FE_{s,p} + FE_{p,t} + ε
+        
+        Within transformation: demean Y and X within each FE group
+        This avoids constructing dummy matrices and handles high-dimensional FE
+        """
         Y_list, pnwer_list, usmca_list, post_list = [], [], [], []
         state_idx_list, partner_idx_list, year_idx_list = [], [], []
         
@@ -249,6 +255,162 @@ class Layer2_StateDDD:
         
         print(f"    Panel size: {n} observations ({n_states} states × {n_partners} partners × {n_years} years)")
         
+        # DDD triple interaction (the only regressor we care about)
+        ddd = pnwer * usmca * post
+        
+        # Create group indices for three-way FE
+        # FE_{s,t}: state × year
+        st_groups = state_idx * n_years + year_idx
+        # FE_{s,p}: state × partner  
+        sp_groups = state_idx * n_partners + partner_idx
+        # FE_{p,t}: partner × year
+        pt_groups = partner_idx * n_years + year_idx
+        
+        print(f"    Applying within transformation for FE_{{s,t}}, FE_{{s,p}}, FE_{{p,t}}...")
+        
+        # Iterative within transformation (Frisch-Waugh-Lovell)
+        # Demean until convergence
+        Y_demean = Y.copy()
+        ddd_demean = ddd.copy().astype(float)
+        
+        max_iter = 100
+        tol = 1e-8
+        
+        for iteration in range(max_iter):
+            Y_old = Y_demean.copy()
+            
+            # Demean by state×year
+            for g in np.unique(st_groups):
+                mask = st_groups == g
+                if np.sum(mask) > 1:
+                    Y_demean[mask] -= np.mean(Y_demean[mask])
+                    ddd_demean[mask] -= np.mean(ddd_demean[mask])
+            
+            # Demean by state×partner
+            for g in np.unique(sp_groups):
+                mask = sp_groups == g
+                if np.sum(mask) > 1:
+                    Y_demean[mask] -= np.mean(Y_demean[mask])
+                    ddd_demean[mask] -= np.mean(ddd_demean[mask])
+            
+            # Demean by partner×year
+            for g in np.unique(pt_groups):
+                mask = pt_groups == g
+                if np.sum(mask) > 1:
+                    Y_demean[mask] -= np.mean(Y_demean[mask])
+                    ddd_demean[mask] -= np.mean(ddd_demean[mask])
+            
+            # Check convergence
+            change = np.max(np.abs(Y_demean - Y_old))
+            if change < tol:
+                print(f"    Within transformation converged in {iteration+1} iterations")
+                break
+        else:
+            print(f"    WARNING: Did not converge after {max_iter} iterations (change={change:.2e})")
+        
+        # Check if ddd_demean has any variation left
+        ddd_var = np.var(ddd_demean)
+        print(f"    Residual variance in DDD term: {ddd_var:.6f}")
+        
+        if ddd_var < 1e-10:
+            print("    ERROR: DDD term is collinear with fixed effects!")
+            return RegressionResult(n_obs=n)
+        
+        # Simple OLS on demeaned data (no intercept needed)
+        # θ = Cov(ddd_demean, Y_demean) / Var(ddd_demean)
+        theta = np.sum(ddd_demean * Y_demean) / np.sum(ddd_demean ** 2)
+        residuals = Y_demean - theta * ddd_demean
+        
+        # R-squared (within)
+        ss_res = np.sum(residuals ** 2)
+        ss_tot = np.sum(Y_demean ** 2)
+        r_squared = 1 - ss_res / ss_tot if ss_tot > 0 else 0
+        
+        print(f"    θ (raw) = {theta:.6f}, R² (within) = {r_squared:.4f}")
+        
+        # Cluster-robust SE (by state)
+        # V(θ) = (X'X)^{-1} * meat * (X'X)^{-1}
+        # where meat = Σ_g (X_g' e_g)(X_g' e_g)'
+        
+        XtX = np.sum(ddd_demean ** 2)
+        meat = 0.0
+        
+        for g in range(n_states):
+            mask = state_idx == g
+            if np.sum(mask) > 0:
+                x_g = ddd_demean[mask]
+                e_g = residuals[mask]
+                meat += (np.sum(x_g * e_g)) ** 2
+        
+        # Degrees of freedom adjustment
+        # df for FE: approximate as n_st + n_sp + n_pt - overlaps
+        n_st = len(np.unique(st_groups))
+        n_sp = len(np.unique(sp_groups))
+        n_pt = len(np.unique(pt_groups))
+        
+        # Conservative: use n_states as cluster count
+        adj = (n_states / (n_states - 1)) * ((n - 1) / (n - 1))  # simplified
+        
+        var_theta = adj * meat / (XtX ** 2)
+        se = np.sqrt(max(var_theta, 1e-20))
+        
+        t_stat = theta / se
+        df = n_states - 1
+        p_val = 2 * (1 - stats.t.cdf(abs(t_stat), df=df))
+        t_crit = stats.t.ppf(0.975, df=df)
+        
+        # Convert to percentage
+        pct = (np.exp(theta) - 1) * 100
+        pct_lo = (np.exp(theta - t_crit * se) - 1) * 100
+        pct_hi = (np.exp(theta + t_crit * se) - 1) * 100
+        
+        print(f"    θ = {pct:+.2f}% [{pct_lo:+.1f}%, {pct_hi:+.1f}%], t = {t_stat:.3f}, p = {p_val:.4f}")
+        
+        return RegressionResult(
+            coefficient=pct, std_error=se, t_stat=t_stat,
+            p_value=p_val, ci_lower=pct_lo, ci_upper=pct_hi,
+            n_obs=n, r_squared=r_squared, df=df
+        )
+    
+    def run_ddd_simplified(self) -> RegressionResult:
+        """
+        Simplified DDD with main effect FE + two-way interactions (for comparison)
+        """
+        Y_list, pnwer_list, usmca_list, post_list = [], [], [], []
+        state_idx_list, partner_idx_list, year_idx_list = [], [], []
+        
+        for s_i, state in enumerate(self.all_states):
+            is_pnwer = state in self.pnwer_states
+            
+            for p_i, partner in enumerate(self.all_partners):
+                is_usmca = partner in self.usmca_partners
+                
+                for y_i, year in enumerate(self.all_years):
+                    is_post = year in self.post_years
+                    exports = self._get_exports(state, partner, year)
+                    
+                    if exports > 0:
+                        Y_list.append(np.log(exports))
+                        pnwer_list.append(1 if is_pnwer else 0)
+                        usmca_list.append(1 if is_usmca else 0)
+                        post_list.append(1 if is_post else 0)
+                        state_idx_list.append(s_i)
+                        partner_idx_list.append(p_i)
+                        year_idx_list.append(y_i)
+        
+        Y = np.array(Y_list)
+        pnwer = np.array(pnwer_list)
+        usmca = np.array(usmca_list)
+        post = np.array(post_list)
+        state_idx = np.array(state_idx_list)
+        partner_idx = np.array(partner_idx_list)
+        year_idx = np.array(year_idx_list)
+        
+        n = len(Y)
+        n_states = len(self.all_states)
+        n_partners = len(self.all_partners)
+        n_years = len(self.all_years)
+        
         ddd = pnwer * usmca * post
         pnwer_usmca = pnwer * usmca
         pnwer_post = pnwer * post
@@ -276,8 +438,6 @@ class Layer2_StateDDD:
             partner_dummies,
             year_dummies
         ])
-        
-        print(f"    Design matrix: {X.shape[0]} rows × {X.shape[1]} columns")
         
         return self._run_ols_cluster(X, Y, state_idx, n_states)
     
@@ -504,12 +664,7 @@ class PNWERAnalysisV6:
 
 
 def main():
-    print("""
-    ╔══════════════════════════════════════════════════════════════╗
-    ║       PNWER Trade Analysis v6.0                             ║
-    ║       Layer 1: National DID  +  Layer 2: State DDD          ║
-    ╚══════════════════════════════════════════════════════════════╝
-    """)
+ 
     
     paths = [
         ("data/pnwer_analysis_data_v8.json", "pnwer_analysis_data_v8.json"),

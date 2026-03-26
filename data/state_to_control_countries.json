@@ -16,9 +16,9 @@
       2025
     ],
     "notes": [
-      "用于州内DDD分析的对照国数据",
-      "对照国: JP, KR, UK, DE (排除CN避免贸易战干扰)",
-      "与v8州数据配合使用"
+      "Control country data for within-state DDD analysis",
+      "Control countries: JP, KR, UK, DE (CN excluded to avoid trade war confounding)",
+      "Used in conjunction with v8 state data"
     ]
   },
   "control_countries": {

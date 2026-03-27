@@ -1,52 +1,122 @@
 import { useState } from "react";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from "recharts";
 
+// ═══════════════════════════════════════════════════════════════
+// Real data from local JSON files (Census Bureau / model outputs)
+// ═══════════════════════════════════════════════════════════════
+
+// US jurisdictions — trade values from tariff_bilateral_integrated.json (2024 $M)
+// Sector breakdowns from pnwer_analysis_data_v9.json state_trade (CA+MX 2024)
+// GDP impact % computed from gdp_at_risk_M / state GDP estimates
+// Top exports from v9 focus_products + actual export volumes
 const US = [
-  { id: "WA", name: "Washington", flag: "🇺🇸", trade: 38.2, topExport: "Aircraft & Parts", gdpImpact: -2.1, jobs: 142000, sectors: { Agriculture: 4.1, Manufacturing: 18.3, Energy: 8.7, Forestry: 2.1 } },
-  { id: "OR", name: "Oregon", flag: "🇺🇸", trade: 12.8, topExport: "Semiconductors", gdpImpact: -1.6, jobs: 52000, sectors: { Agriculture: 3.2, Manufacturing: 6.1, Energy: 1.4, Forestry: 1.8 } },
-  { id: "ID", name: "Idaho", flag: "🇺🇸", trade: 4.2, topExport: "Dairy Products", gdpImpact: -1.9, jobs: 18000, sectors: { Agriculture: 2.8, Manufacturing: 0.9, Energy: 0.3, Forestry: 0.6 } },
-  { id: "MT", name: "Montana", flag: "🇺🇸", trade: 3.1, topExport: "Wheat & Grains", gdpImpact: -2.4, jobs: 11000, sectors: { Agriculture: 1.9, Manufacturing: 0.4, Energy: 0.6, Forestry: 0.3 } },
-  { id: "AK", name: "Alaska", flag: "🇺🇸", trade: 5.6, topExport: "Seafood", gdpImpact: -1.3, jobs: 8500, sectors: { Agriculture: 0.8, Manufacturing: 1.2, Energy: 2.9, Forestry: 0.1 } },
+  { id: "WA", name: "Washington", flag: "🇺🇸", trade: 31.3, topExport: "Aircraft & Spacecraft", gdpImpact: -0.8, jobs: 38703,
+    sectors: { Agriculture: 4.70, Manufacturing: 6.91, Energy: 11.93, Forestry: 2.25 } },
+  { id: "OR", name: "Oregon", flag: "🇺🇸", trade: 14.3, topExport: "Integrated Circuits", gdpImpact: -1.8, jobs: 31312,
+    sectors: { Agriculture: 1.29, Manufacturing: 8.15, Energy: 0.45, Forestry: 0.98 } },
+  { id: "ID", name: "Idaho", flag: "🇺🇸", trade: 3.7, topExport: "Wheat & Agriculture", gdpImpact: -0.8, jobs: 6268,
+    sectors: { Agriculture: 1.25, Manufacturing: 0.54, Energy: 0.10, Forestry: 0.45 } },
+  { id: "MT", name: "Montana", flag: "🇺🇸", trade: 7.9, topExport: "Crude Petroleum", gdpImpact: -1.3, jobs: 4592,
+    sectors: { Agriculture: 0.80, Manufacturing: 0.48, Energy: 5.26, Forestry: 0.17 } },
+  { id: "AK", name: "Alaska", flag: "🇺🇸", trade: 1.7, topExport: "Minerals & Ores", gdpImpact: -0.3, jobs: 924,
+    sectors: { Agriculture: 0.12, Manufacturing: 0.33, Energy: 0.53, Forestry: 0.03 } },
 ];
+
+// Canadian provinces — no Census bilateral data available; marked as estimates
+// These are order-of-magnitude estimates for PNWER context
 const CA = [
-  { id: "BC", name: "British Columbia", flag: "🇨🇦", trade: 28.4, topExport: "Lumber & Wood", gdpImpact: -2.8, jobs: 198000, sectors: { Agriculture: 3.6, Manufacturing: 8.2, Energy: 5.1, Forestry: 6.8 } },
-  { id: "AB", name: "Alberta", flag: "🇨🇦", trade: 42.1, topExport: "Crude Oil", gdpImpact: -3.5, jobs: 245000, sectors: { Agriculture: 5.2, Manufacturing: 9.4, Energy: 22.1, Forestry: 1.8 } },
-  { id: "SK", name: "Saskatchewan", flag: "🇨🇦", trade: 16.7, topExport: "Potash & Uranium", gdpImpact: -2.9, jobs: 67000, sectors: { Agriculture: 8.4, Manufacturing: 2.1, Energy: 4.6, Forestry: 0.9 } },
-  { id: "YT", name: "Yukon", flag: "🇨🇦", trade: 0.8, topExport: "Gold & Minerals", gdpImpact: -1.1, jobs: 2200, sectors: { Agriculture: 0.05, Manufacturing: 0.1, Energy: 0.15, Forestry: 0.08 } },
-  { id: "NT", name: "NW Territories", flag: "🇨🇦", trade: 0.6, topExport: "Diamonds", gdpImpact: -0.9, jobs: 1800, sectors: { Agriculture: 0.02, Manufacturing: 0.08, Energy: 0.3, Forestry: 0.05 } },
+  { id: "BC", name: "British Columbia", flag: "🇨🇦", trade: 28.4, topExport: "Lumber & Wood", gdpImpact: -2.8, jobs: 198000,
+    sectors: { Agriculture: 3.6, Manufacturing: 8.2, Energy: 5.1, Forestry: 6.8 }, estimated: true },
+  { id: "AB", name: "Alberta", flag: "🇨🇦", trade: 42.1, topExport: "Crude Oil", gdpImpact: -3.5, jobs: 245000,
+    sectors: { Agriculture: 5.2, Manufacturing: 9.4, Energy: 22.1, Forestry: 1.8 }, estimated: true },
+  { id: "SK", name: "Saskatchewan", flag: "🇨🇦", trade: 16.7, topExport: "Potash & Uranium", gdpImpact: -2.9, jobs: 67000,
+    sectors: { Agriculture: 8.4, Manufacturing: 2.1, Energy: 4.6, Forestry: 0.9 }, estimated: true },
+  { id: "YT", name: "Yukon", flag: "🇨🇦", trade: 0.8, topExport: "Gold & Minerals", gdpImpact: -1.1, jobs: 2200,
+    sectors: { Agriculture: 0.05, Manufacturing: 0.1, Energy: 0.15, Forestry: 0.08 }, estimated: true },
+  { id: "NT", name: "NW Territories", flag: "🇨🇦", trade: 0.6, topExport: "Diamonds", gdpImpact: -0.9, jobs: 1800,
+    sectors: { Agriculture: 0.02, Manufacturing: 0.08, Energy: 0.3, Forestry: 0.05 }, estimated: true },
 ];
 const ALL = [...US, ...CA];
 const COLORS = ["#0B4F6C","#01BAEF","#20BF55","#FBB13C","#FE6847","#764BA2","#3A7CA5","#81C784","#F48FB1","#FFD54F"];
 const SECTOR_CLR = { Agriculture: "#4CAF50", Manufacturing: "#2196F3", Energy: "#FF9800", Forestry: "#795548" };
 
+// ═══ PNWER total trade to CA+MX by year (from pnwer_analysis_data_v9.json state_trade) ═══
 const YEARLY = [
-  { year: "2019", us: 156, ca: 162 },
-  { year: "2020", us: 128, ca: 134 },
-  { year: "2021", us: 168, ca: 171 },
-  { year: "2022", us: 189, ca: 198 },
-  { year: "2023", us: 195, ca: 204 },
-  { year: "2024", us: 201, ca: 211 },
+  { year: "2017", pnwer: 38.7 },
+  { year: "2018", pnwer: 42.9 },
+  { year: "2019", pnwer: 44.5 },
+  { year: "2020", pnwer: 36.6 },
+  { year: "2021", pnwer: 52.0 },
+  { year: "2022", pnwer: 66.8 },
+  { year: "2023", pnwer: 62.5 },
+  { year: "2024", pnwer: 58.8 },
+  { year: "2025", pnwer: 48.0 },
 ];
 
+// ═══ National US trade: USMCA vs Control (from national_trade.json, $B) ═══
+const NATIONAL_YEARLY = [
+  { year: "2017", usmca: 1138.1, control: 604.8 },
+  { year: "2018", usmca: 1228.0, control: 458.7 },
+  { year: "2019", usmca: 1224.2, control: 672.3 },
+  { year: "2020", usmca: 1062.2, control: 592.2 },
+  { year: "2021", usmca: 1326.6, control: 688.4 },
+  { year: "2022", usmca: 1575.5, control: 775.7 },
+  { year: "2023", usmca: 1569.0, control: 779.3 },
+  { year: "2024", usmca: 1601.3, control: 808.3 },
+  { year: "2025", usmca: 1457.8, control: 749.8 },
+];
+
+// ═══ DID model results (from analysis_results_v6.json) ═══
+// Layer 1: β = -0.12%, p = 0.9828 (insignificant at national level)
+// Layer 2: θ = +58.81%, p = 0.0314 (significant at 5%)
+// Indexed to 100 at 2017 for visualization
 const DID_DATA = [
-  { period: "Pre-USMCA", treated: 100, control: 100 },
-  { period: "USMCA", treated: 108, control: 103 },
-  { period: "Post-COVID", treated: 95, control: 88 },
-  { period: "Recovery", treated: 118, control: 106 },
-  { period: "Tariff Threat", treated: 112, control: 109 },
-  { period: "Projected", treated: 98, control: 110 },
+  { period: "2017", treated: 100.0, control: 100.0 },
+  { period: "2018", treated: 107.9, control: 75.9 },
+  { period: "2019", treated: 107.6, control: 111.2 },
+  { period: "2020", treated: 93.4, control: 97.9 },
+  { period: "2021", treated: 116.6, control: 113.8 },
+  { period: "2022", treated: 138.4, control: 128.3 },
+  { period: "2023", treated: 137.9, control: 128.9 },
+  { period: "2024", treated: 140.7, control: 133.7 },
+  { period: "2025", treated: 128.1, control: 124.0 },
 ];
 
-const DDD_DATA = ALL.map(j => ({
-  id: j.id, current: j.trade, post25: +(j.trade * 0.76).toFixed(1), post10: +(j.trade * 0.92).toFixed(1),
-}));
+// ═══ DDD chart: state-level trade 2024 vs model-predicted post-tariff ═══
+// From tariff_bilateral_integrated.json by_state
+const DDD_DATA = [
+  { id: "WA", current: 31.3, postModel: 28.1, actual25: 26.3 },
+  { id: "OR", current: 14.3, postModel: 11.9, actual25: 10.3 },
+  { id: "ID", current: 3.7, postModel: 3.3, actual25: 3.1 },
+  { id: "MT", current: 7.9, postModel: 7.4, actual25: 6.3 },
+  { id: "AK", current: 1.7, postModel: 1.6, actual25: 1.9 },
+];
 
+// ═══ Industry/Sector data (from tariff_bilateral_integrated.json by_industry) ═══
 const HS = [
-  { name: "Agriculture", code: "HS 01-24", products: 2847, risk: "$12.4B", icon: "🌾", color: "#4CAF50" },
-  { name: "Manufacturing", code: "HS 25-83", products: 4215, risk: "$47.2B", icon: "🏭", color: "#2196F3" },
-  { name: "Energy", code: "HS 27", products: 312, risk: "$38.9B", icon: "⚡", color: "#FF9800" },
-  { name: "Forestry", code: "HS 44-48", products: 689, risk: "$14.1B", icon: "🌲", color: "#795548" },
+  { name: "Agriculture", code: "HS 01-24", baseM: 8162, riskM: 1256, icon: "🌾", color: "#4CAF50" },
+  { name: "Manufacturing", code: "HS 84-90", baseM: 16415, riskM: 2888, icon: "🏭", color: "#2196F3" },
+  { name: "Energy", code: "HS 27", baseM: 18274, riskM: 631, icon: "⚡", color: "#FF9800" },
+  { name: "Forestry", code: "HS 44-49", baseM: 3883, riskM: 767, icon: "🌲", color: "#795548" },
+  { name: "Minerals", code: "HS 26, 72-76", baseM: 2658, riskM: 298, icon: "⛏️", color: "#9C27B0" },
+  { name: "Other", code: "Other HS", baseM: 9455, riskM: 728, icon: "📦", color: "#607D8B" },
 ];
+
+// ═══ Summary stats from tariff_bilateral_integrated.json ═══
+const SUMMARY = {
+  totalTrade2024B: 58.8,
+  totalTrade2025B: 48.0,
+  tradeLossB: -10.9,
+  tradeLossPct: -18.5,
+  gdpAtRiskM: 13156.3,
+  jobsAtRisk: 81799,
+  tariffEffectB: -6.6,
+  tariffSharePct: 60,
+  oilEffectB: -2.9,
+  oilSharePct: 26,
+  residualB: -1.4,
+  residualSharePct: 13,
+};
 
 export default function PNWERDashboard() {
   const [tab, setTab] = useState("overview");
@@ -81,6 +151,7 @@ export default function PNWERDashboard() {
         <div style={{ fontWeight: 700, fontSize: 15, color: "#0A2540" }}>{j.id}</div>
         <div style={{ fontSize: 11, color: "#5A6B7C" }}>{j.name}</div>
         <div style={{ fontSize: 13, fontWeight: 600, color: "#0B4F6C", marginTop: 5 }}>${j.trade}B</div>
+        {j.estimated && <div style={{ fontSize: 9, color: "#FBB13C", marginTop: 2 }}>est.</div>}
       </div>
     );
   };
@@ -118,10 +189,15 @@ export default function PNWERDashboard() {
               {" "}Across the Pacific Northwest
             </h1>
             <p style={{ fontSize: 16, color: "rgba(255,255,255,0.55)", lineHeight: 1.7, maxWidth: 580, marginBottom: 36 }}>
-              Interactive analysis of how trade policy changes affect 10 jurisdictions across the US-Canada border — powered by DID and DDD econometric modeling with complete HS code coverage.
+              Interactive analysis of how 2025 U.S. tariff actions affect 5 states and 5 provinces across the US-Canada border — powered by DID, Triple-DID, and CES/Armington econometric modeling.
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, maxWidth: 880 }}>
-              {[["$152.5B", "Total PNWER Trade", "#01BAEF"], ["10", "Jurisdictions Covered", "#20BF55"], ["8,063", "HS Codes Analyzed", "#FBB13C"], ["-$34.2B", "Trade at Risk (25%)", "#FE6847"]].map(([v, l, c], i) => (
+              {[
+                [`$${SUMMARY.totalTrade2024B}B`, "PNWER Trade (2024)", "#01BAEF"],
+                ["10", "Jurisdictions Covered", "#20BF55"],
+                [`$${SUMMARY.gdpAtRiskM.toLocaleString()}M`, "GDP at Risk", "#FBB13C"],
+                [`${SUMMARY.jobsAtRisk.toLocaleString()}`, "Jobs at Risk", "#FE6847"],
+              ].map(([v, l, c], i) => (
                 <div key={i} style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "18px 20px" }}>
                   <div style={{ fontSize: 26, fontWeight: 700, color: c, marginBottom: 3 }}>{v}</div>
                   <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: 0.6, lineHeight: 1.5 }}>{l}</div>
@@ -140,14 +216,14 @@ export default function PNWERDashboard() {
           <div>
             <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 2, fontWeight: 600, color: "#0B4F6C", marginBottom: 6 }}>Regional Overview</div>
             <div style={{ fontSize: 26, fontWeight: 700, color: "#0A2540", marginBottom: 4 }}>PNWER Jurisdictions at a Glance</div>
-            <div style={{ fontSize: 14, color: "#5A6B7C", lineHeight: 1.6, marginBottom: 24 }}>Select a jurisdiction to explore its trade profile, sector composition, and tariff vulnerability.</div>
+            <div style={{ fontSize: 14, color: "#5A6B7C", lineHeight: 1.6, marginBottom: 24 }}>Select a jurisdiction to explore its trade profile, sector composition, and tariff vulnerability. US data from Census Bureau; Canadian provinces are estimates pending extension.</div>
 
             <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 2, fontWeight: 700, marginBottom: 8, color: "#3A7CA5" }}>🇺🇸 United States</div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 10, marginBottom: 18 }}>
               {US.map(j => <JurCard key={j.id} j={j} />)}
             </div>
 
-            <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 2, fontWeight: 700, marginBottom: 8, color: "#FE6847" }}>🇨🇦 Canada</div>
+            <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 2, fontWeight: 700, marginBottom: 8, color: "#FE6847" }}>🇨🇦 Canada (Estimates)</div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 10, marginBottom: 18 }}>
               {CA.map(j => <JurCard key={j.id} j={j} />)}
             </div>
@@ -166,15 +242,15 @@ export default function PNWERDashboard() {
                   <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
                     <span style={{ fontSize: 34 }}>{sel.flag}</span>
                     <div>
-                      <div style={{ fontSize: 28, fontWeight: 700 }}>{sel.name}</div>
+                      <div style={{ fontSize: 28, fontWeight: 700 }}>{sel.name} {sel.estimated && <span style={{ fontSize: 13, color: "#FBB13C" }}>(estimated)</span>}</div>
                       <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginTop: 3 }}>Top Export: {sel.topExport}</div>
                     </div>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginTop: 18 }}>
                     {[
-                      ["Total Trade", "$" + sel.trade + "B", "#01BAEF"],
-                      ["Jobs Supported", (sel.jobs / 1000).toFixed(0) + "K", "white"],
-                      ["GDP Impact (25%)", sel.gdpImpact + "%", "#FE6847"],
+                      ["Total Trade (2024)", "$" + sel.trade + "B", "#01BAEF"],
+                      ["Jobs at Risk", sel.jobs.toLocaleString(), "white"],
+                      ["GDP Impact", sel.gdpImpact + "%", "#FE6847"],
                       ["Top Export", sel.topExport, "white"],
                     ].map(([l, v, c], i) => (
                       <div key={i} style={{ background: "rgba(255,255,255,0.06)", borderRadius: 10, padding: 14, border: "1px solid rgba(255,255,255,0.08)" }}>
@@ -229,41 +305,40 @@ export default function PNWERDashboard() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginTop: 24 }}>
               <div style={{ background: "white", borderRadius: 14, border: "1px solid #E4EAF0", padding: 24 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                  <span style={{ fontWeight: 600, fontSize: 14, color: "#0A2540" }}>Historical Trade Trends ($B)</span>
-                  <span style={{ fontSize: 11, padding: "3px 10px", borderRadius: 100, background: "rgba(1,186,239,0.08)", color: "#0B4F6C", fontWeight: 600 }}>2019–2024</span>
+                  <span style={{ fontWeight: 600, fontSize: 14, color: "#0A2540" }}>PNWER Trade to CA+MX ($B)</span>
+                  <span style={{ fontSize: 11, padding: "3px 10px", borderRadius: 100, background: "rgba(1,186,239,0.08)", color: "#0B4F6C", fontWeight: 600 }}>2017–2025</span>
                 </div>
                 <ResponsiveContainer width="100%" height={240}>
                   <AreaChart data={YEARLY}>
                     <defs>
-                      <linearGradient id="gU" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#01BAEF" stopOpacity={0.2} /><stop offset="100%" stopColor="#01BAEF" stopOpacity={0} /></linearGradient>
-                      <linearGradient id="gC" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#20BF55" stopOpacity={0.2} /><stop offset="100%" stopColor="#20BF55" stopOpacity={0} /></linearGradient>
+                      <linearGradient id="gPnwer" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#01BAEF" stopOpacity={0.2} /><stop offset="100%" stopColor="#01BAEF" stopOpacity={0} /></linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#EDF1F7" />
                     <XAxis dataKey="year" tick={{ fontSize: 12 }} />
                     <YAxis tick={{ fontSize: 12 }} />
-                    <Tooltip />
-                    <Area type="monotone" dataKey="us" name="US Exports" stroke="#01BAEF" fill="url(#gU)" strokeWidth={2.5} />
-                    <Area type="monotone" dataKey="ca" name="CA Exports" stroke="#20BF55" fill="url(#gC)" strokeWidth={2.5} />
+                    <Tooltip formatter={v => `$${v}B`} />
+                    <Area type="monotone" dataKey="pnwer" name="PNWER Total Trade" stroke="#01BAEF" fill="url(#gPnwer)" strokeWidth={2.5} />
                   </AreaChart>
                 </ResponsiveContainer>
+                <div style={{ fontSize: 10, color: "#5A6B7C", marginTop: 6, textAlign: "center" }}>Source: U.S. Census Bureau state-level trade data (5 PNWER states to CA+MX)</div>
               </div>
               <div style={{ background: "white", borderRadius: 14, border: "1px solid #E4EAF0", padding: 24 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                   <span style={{ fontWeight: 600, fontSize: 14, color: "#0A2540" }}>Trade Share by Jurisdiction</span>
-                  <span style={{ fontSize: 11, padding: "3px 10px", borderRadius: 100, background: "rgba(1,186,239,0.08)", color: "#0B4F6C", fontWeight: 600 }}>$152.5B Total</span>
+                  <span style={{ fontSize: 11, padding: "3px 10px", borderRadius: 100, background: "rgba(1,186,239,0.08)", color: "#0B4F6C", fontWeight: 600 }}>${SUMMARY.totalTrade2024B}B Total (US)</span>
                 </div>
                 <ResponsiveContainer width="100%" height={240}>
                   <PieChart>
-                    <Pie data={ALL.map((j, i) => ({ name: j.id, value: j.trade }))} cx="50%" cy="50%" innerRadius={55} outerRadius={90} paddingAngle={2} dataKey="value">
-                      {ALL.map((j, i) => <Cell key={j.id} fill={COLORS[i]} />)}
+                    <Pie data={US.map((j, i) => ({ name: j.id + " " + j.name, value: j.trade }))} cx="50%" cy="50%" innerRadius={55} outerRadius={90} paddingAngle={2} dataKey="value">
+                      {US.map((j, i) => <Cell key={j.id} fill={COLORS[i]} />)}
                     </Pie>
                     <Tooltip formatter={v => `$${v}B`} />
                   </PieChart>
                 </ResponsiveContainer>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 7, justifyContent: "center" }}>
-                  {ALL.map((j, i) => (
+                  {US.map((j, i) => (
                     <div key={j.id} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10 }}>
-                      <div style={{ width: 8, height: 8, borderRadius: 2, background: COLORS[i] }} />{j.id}
+                      <div style={{ width: 8, height: 8, borderRadius: 2, background: COLORS[i] }} />{j.id} ({j.name})
                     </div>
                   ))}
                 </div>
@@ -277,10 +352,10 @@ export default function PNWERDashboard() {
           <div>
             <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 2, fontWeight: 600, color: "#0B4F6C", marginBottom: 6 }}>Econometric Analysis</div>
             <div style={{ fontSize: 26, fontWeight: 700, color: "#0A2540", marginBottom: 4 }}>Tariff Impact Modeling</div>
-            <div style={{ fontSize: 14, color: "#5A6B7C", lineHeight: 1.6, marginBottom: 24 }}>Explore our two-layer framework using historical trade data and advanced econometric methods.</div>
+            <div style={{ fontSize: 14, color: "#5A6B7C", lineHeight: 1.6, marginBottom: 24 }}>Three-layer framework: National DID, State-level Triple-DID, and CES/Armington tariff shock model.</div>
 
             <div style={{ display: "flex", gap: 2, background: "#EDF1F7", borderRadius: 10, padding: 3, width: "fit-content", marginBottom: 20 }}>
-              {[["did", "Difference-in-Differences"], ["ddd", "Triple Difference (DDD)"], ["hs", "HS Code Coverage"]].map(([id, label]) => (
+              {[["did", "Layer 1: DID"], ["ddd", "Layer 2: Triple-DID"], ["impact", "Layer 3: Tariff Impact"]].map(([id, label]) => (
                 <button key={id} onClick={() => setModel(id)} style={{ padding: "9px 20px", borderRadius: 8, border: "none", background: model === id ? "white" : "transparent", color: model === id ? "#0A2540" : "#5A6B7C", fontFamily: "inherit", fontSize: 13, fontWeight: 500, cursor: "pointer", boxShadow: model === id ? "0 1px 4px rgba(0,0,0,0.08)" : "none" }}>{label}</button>
               ))}
             </div>
@@ -290,32 +365,72 @@ export default function PNWERDashboard() {
               <div>
                 <div style={{ background: "linear-gradient(135deg, rgba(1,186,239,0.04), rgba(32,191,85,0.04))", border: "1px solid rgba(1,186,239,0.12)", borderRadius: 12, padding: 20, marginBottom: 20 }}>
                   <h4 style={{ fontSize: 15, fontWeight: 600, color: "#0A2540", marginBottom: 6 }}>Layer 1: National-Level Difference-in-Differences</h4>
-                  <p style={{ fontSize: 13, color: "#5A6B7C", lineHeight: 1.65 }}>Compares US exports to USMCA partners (treatment) against non-USMCA countries (control) across pre/post-tariff periods to isolate causal tariff effects.</p>
+                  <p style={{ fontSize: 13, color: "#5A6B7C", lineHeight: 1.65 }}>
+                    ln(X<sub>p,t</sub>) = β(USMCA<sub>p</sub> × Post<sub>t</sub>) + FE<sub>p</sub> + FE<sub>t</sub> + ε — Compares US trade with USMCA partners (CA, MX) vs. control countries (JP, KR, UK, DE) across pre-USMCA (2017–2019) vs. post (2021–2025).
+                  </p>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
                   <div style={{ background: "white", borderRadius: 14, border: "1px solid #E4EAF0", padding: 24 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                      <span style={{ fontWeight: 600, fontSize: 14, color: "#0A2540" }}>DID: Treatment vs Control</span>
-                      <span style={{ fontSize: 11, padding: "3px 10px", borderRadius: 100, background: "rgba(1,186,239,0.08)", color: "#0B4F6C", fontWeight: 600 }}>National</span>
+                      <span style={{ fontWeight: 600, fontSize: 14, color: "#0A2540" }}>National: USMCA vs Control (indexed)</span>
+                      <span style={{ fontSize: 11, padding: "3px 10px", borderRadius: 100, background: "rgba(1,186,239,0.08)", color: "#0B4F6C", fontWeight: 600 }}>2017=100</span>
                     </div>
                     <ResponsiveContainer width="100%" height={280}>
                       <LineChart data={DID_DATA}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#EDF1F7" />
                         <XAxis dataKey="period" tick={{ fontSize: 10 }} />
-                        <YAxis tick={{ fontSize: 12 }} domain={[80, 125]} />
+                        <YAxis tick={{ fontSize: 12 }} domain={[70, 150]} />
                         <Tooltip />
                         <Line type="monotone" dataKey="treated" name="USMCA Partners" stroke="#01BAEF" strokeWidth={3} dot={{ r: 5, fill: "#01BAEF" }} />
-                        <Line type="monotone" dataKey="control" name="Non-USMCA" stroke="#FBB13C" strokeWidth={3} dot={{ r: 5, fill: "#FBB13C" }} strokeDasharray="8 4" />
+                        <Line type="monotone" dataKey="control" name="Non-USMCA Control" stroke="#FBB13C" strokeWidth={3} dot={{ r: 5, fill: "#FBB13C" }} strokeDasharray="8 4" />
                       </LineChart>
                     </ResponsiveContainer>
+                    <div style={{ fontSize: 10, color: "#5A6B7C", marginTop: 6, textAlign: "center" }}>Source: Census Bureau national trade data</div>
                   </div>
                   <div style={{ background: "white", borderRadius: 14, border: "1px solid #E4EAF0", padding: 24 }}>
-                    <div style={{ fontWeight: 600, fontSize: 14, color: "#0A2540", marginBottom: 16 }}>Key Findings</div>
+                    <div style={{ fontWeight: 600, fontSize: 14, color: "#0A2540", marginBottom: 16 }}>Layer 1 Results</div>
                     {[
-                      ["📉", "Tariff Elasticity", "-0.42", "Trade drops 0.42% per 1% tariff increase"],
-                      ["⚡", "Immediate Shock", "-12.4%", "First-quarter decline at 25% tariff"],
-                      ["📊", "Treatment Effect", "-8.2pp", "Divergence from control trajectory"],
-                      ["🔄", "Recovery Period", "18 mo.", "Estimated partial equilibrium time"],
+                      ["📉", "DID Coefficient (β)", "-0.12%", "USMCA effect on national trade — statistically insignificant"],
+                      ["📊", "p-value", "0.9828", "Cannot reject null: no significant national USMCA effect"],
+                      ["🔢", "Observations", "48", "6 countries × 8 years (excl. 2020)"],
+                      ["📐", "R²", "0.9948", "Very high fit with partner + year fixed effects"],
+                    ].map(([icon, label, val, desc], i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: "#F7F9FC", borderRadius: 10, marginBottom: 8 }}>
+                        <span style={{ fontSize: 26 }}>{icon}</span>
+                        <div>
+                          <div style={{ fontSize: 11, color: "#5A6B7C" }}>{label}</div>
+                          <div style={{ fontSize: 18, fontWeight: 700, color: "#0A2540" }}>{val}</div>
+                          <div style={{ fontSize: 11, color: "#5A6B7C" }}>{desc}</div>
+                        </div>
+                      </div>
+                    ))}
+                    <div style={{ background: "rgba(251,177,60,0.08)", border: "1px solid rgba(251,177,60,0.2)", borderRadius: 8, padding: 12, marginTop: 12 }}>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: "#0A2540", marginBottom: 4 }}>Key Insight</div>
+                      <div style={{ fontSize: 12, color: "#5A6B7C", lineHeight: 1.6 }}>At the national level, USMCA and non-USMCA trade grew at similar rates (~18%). The USMCA effect is masked by national aggregation — motivating Layer 2 state-level analysis.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* DDD */}
+            {model === "ddd" && (
+              <div>
+                <div style={{ background: "linear-gradient(135deg, rgba(1,186,239,0.04), rgba(32,191,85,0.04))", border: "1px solid rgba(1,186,239,0.12)", borderRadius: 12, padding: 20, marginBottom: 20 }}>
+                  <h4 style={{ fontSize: 15, fontWeight: 600, color: "#0A2540", marginBottom: 6 }}>Layer 2: State-Level Triple Difference (DDD)</h4>
+                  <p style={{ fontSize: 13, color: "#5A6B7C", lineHeight: 1.65 }}>
+                    θ measures whether PNWER states' exports to USMCA partners grew more (relative to control countries) than non-PNWER states. Three-way crossed FE: State × Year, State × Partner, Partner × Year.
+                  </p>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
+                  <div style={{ background: "white", borderRadius: 14, border: "1px solid #E4EAF0", padding: 24 }}>
+                    <div style={{ fontWeight: 600, fontSize: 14, color: "#0A2540", marginBottom: 16 }}>Layer 2 Results</div>
+                    {[
+                      ["🎯", "DDD Coefficient (θ)", "+58.81%", "PNWER states gained ~59% more from USMCA than other states"],
+                      ["📊", "p-value", "0.0314", "Significant at 5% level"],
+                      ["🔢", "Observations", "1,200", "25 states × 6 partners × 8 years"],
+                      ["📐", "t-statistic", "2.286", "Robust to three-way fixed effects"],
                     ].map(([icon, label, val, desc], i) => (
                       <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: "#F7F9FC", borderRadius: 10, marginBottom: 8 }}>
                         <span style={{ fontSize: 26 }}>{icon}</span>
@@ -327,54 +442,64 @@ export default function PNWERDashboard() {
                       </div>
                     ))}
                   </div>
-                </div>
-              </div>
-            )}
-
-            {/* DDD */}
-            {model === "ddd" && (
-              <div>
-                <div style={{ background: "linear-gradient(135deg, rgba(1,186,239,0.04), rgba(32,191,85,0.04))", border: "1px solid rgba(1,186,239,0.12)", borderRadius: 12, padding: 20, marginBottom: 20 }}>
-                  <h4 style={{ fontSize: 15, fontWeight: 600, color: "#0A2540", marginBottom: 6 }}>Layer 2: State-Level Triple Difference</h4>
-                  <p style={{ fontSize: 13, color: "#5A6B7C", lineHeight: 1.65 }}>Three-way crossed fixed effects (State x Year, State x Partner, Partner x Year) for granular jurisdiction-level tariff impact estimates.</p>
-                </div>
-
-                <div style={{ background: "white", borderRadius: 14, border: "1px solid #E4EAF0", padding: 24, marginBottom: 20 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-                    <span style={{ fontSize: 13, fontWeight: 500 }}>Adjust Tariff Rate</span>
-                    <span style={{ fontSize: 26, fontWeight: 700, color: "#FE6847" }}>{tariff}%</span>
-                  </div>
-                  <input type="range" min="0" max="50" value={tariff} onChange={e => setTariff(Number(e.target.value))} style={{ width: "100%", accentColor: "#FE6847" }} />
-                  <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
-                    {["0% Baseline", "10% Moderate", "25% Current", "50% Escalation"].map(l => (
-                      <span key={l} style={{ fontSize: 10, color: "#5A6B7C" }}>{l}</span>
-                    ))}
+                  <div style={{ background: "white", borderRadius: 14, border: "1px solid #E4EAF0", padding: 24 }}>
+                    <div style={{ fontWeight: 600, fontSize: 14, color: "#0A2540", marginBottom: 16 }}>Descriptive DDD Decomposition</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                      {[
+                        ["PNWER→USMCA growth", "+37.7%", "#20BF55"],
+                        ["PNWER→Control growth", "-16.7%", "#FE6847"],
+                        ["PNWER within-DID", "+54.4%", "#01BAEF"],
+                        ["Non-PNWER within-DID", "-4.1%", "#FBB13C"],
+                      ].map(([label, val, color], i) => (
+                        <div key={i} style={{ background: "#F7F9FC", borderRadius: 8, padding: 12 }}>
+                          <div style={{ fontSize: 10, color: "#5A6B7C", marginBottom: 4 }}>{label}</div>
+                          <div style={{ fontSize: 20, fontWeight: 700, color }}>{val}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ background: "rgba(32,191,85,0.08)", border: "1px solid rgba(32,191,85,0.15)", borderRadius: 8, padding: 12, marginTop: 14 }}>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: "#0A2540", marginBottom: 4 }}>Key Insight</div>
+                      <div style={{ fontSize: 12, color: "#5A6B7C", lineHeight: 1.6 }}>PNWER states benefited disproportionately from USMCA — meaning they also face disproportionate risk from tariff disruption. Simple DDD: +58.5%, consistent with regression θ = +58.81%.</div>
+                    </div>
                   </div>
                 </div>
 
                 <div style={{ background: "white", borderRadius: 14, border: "1px solid #E4EAF0", padding: 24, marginBottom: 20 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                    <span style={{ fontWeight: 600, fontSize: 14, color: "#0A2540" }}>Trade Impact by Jurisdiction ($B)</span>
-                    <span style={{ fontSize: 11, padding: "3px 10px", borderRadius: 100, background: "rgba(1,186,239,0.08)", color: "#0B4F6C", fontWeight: 600 }}>Tariff: {tariff}%</span>
+                    <span style={{ fontWeight: 600, fontSize: 14, color: "#0A2540" }}>State Trade: 2024 Baseline vs 2025 Actual ($B)</span>
+                    <span style={{ fontSize: 11, padding: "3px 10px", borderRadius: 100, background: "rgba(254,104,71,0.08)", color: "#FE6847", fontWeight: 600 }}>Post-Tariff</span>
                   </div>
                   <ResponsiveContainer width="100%" height={320}>
                     <BarChart data={DDD_DATA} barGap={4}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#EDF1F7" />
                       <XAxis dataKey="id" tick={{ fontSize: 12 }} />
                       <YAxis tick={{ fontSize: 12 }} />
-                      <Tooltip />
-                      <Bar dataKey="current" name="Current Trade" fill="#01BAEF" radius={[5, 5, 0, 0]} />
-                      <Bar dataKey={tariff >= 20 ? "post25" : "post10"} name={`Post-Tariff (${tariff}%)`} fill="#FE6847" radius={[5, 5, 0, 0]} opacity={0.8} />
+                      <Tooltip formatter={v => `$${v}B`} />
+                      <Bar dataKey="current" name="2024 Trade" fill="#01BAEF" radius={[5, 5, 0, 0]} />
+                      <Bar dataKey="postModel" name="Model Predicted" fill="#FBB13C" radius={[5, 5, 0, 0]} opacity={0.8} />
+                      <Bar dataKey="actual25" name="2025 Actual" fill="#FE6847" radius={[5, 5, 0, 0]} opacity={0.8} />
                     </BarChart>
                   </ResponsiveContainer>
+                  <div style={{ fontSize: 10, color: "#5A6B7C", marginTop: 6, textAlign: "center" }}>Source: Census Bureau bilateral trade data + CES/Armington model</div>
+                </div>
+              </div>
+            )}
+
+            {/* Layer 3: Tariff Impact */}
+            {model === "impact" && (
+              <div>
+                <div style={{ background: "linear-gradient(135deg, rgba(1,186,239,0.04), rgba(32,191,85,0.04))", border: "1px solid rgba(1,186,239,0.12)", borderRadius: 12, padding: 20, marginBottom: 20 }}>
+                  <h4 style={{ fontSize: 15, fontWeight: 600, color: "#0A2540", marginBottom: 6 }}>Layer 3: CES/Armington Tariff Shock Model</h4>
+                  <p style={{ fontSize: 13, color: "#5A6B7C", lineHeight: 1.65 }}>Calibrated to PNWER Census data with region-specific effective tariff rates (CA ~8%, MX ~9%). PNWER rates are ~3x the national average due to energy/forestry/minerals mix with lower USMCA compliance and Section 232 stacking.</p>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                {/* Summary cards */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 20 }}>
                   {[
-                    ["💰", "rgba(254,104,71,0.08)", "Total Trade at Risk", "$" + (tariff * 1.37).toFixed(1) + "B", "#FE6847"],
-                    ["👷", "rgba(251,177,60,0.08)", "Jobs at Risk", (tariff * 3200).toLocaleString() + "+", "#FBB13C"],
-                    ["📦", "rgba(1,186,239,0.08)", "Products Affected", Math.round(8063 * (tariff / 50)).toLocaleString(), "#0B4F6C"],
-                    ["🏭", "rgba(32,191,85,0.08)", "Sectors Impacted", "4 / 4", "#20BF55"],
+                    ["💰", "rgba(254,104,71,0.08)", "Trade Loss (2025)", `$${Math.abs(SUMMARY.tradeLossB)}B (${SUMMARY.tradeLossPct}%)`, "#FE6847"],
+                    ["📉", "rgba(251,177,60,0.08)", "GDP at Risk", `$${(SUMMARY.gdpAtRiskM / 1000).toFixed(1)}B`, "#FBB13C"],
+                    ["👷", "rgba(1,186,239,0.08)", "Jobs at Risk", SUMMARY.jobsAtRisk.toLocaleString(), "#0B4F6C"],
+                    ["🔄", "rgba(32,191,85,0.08)", "Tariff-Driven Share", `${SUMMARY.tariffSharePct}%`, "#20BF55"],
                   ].map(([icon, bg, label, val, color], i) => (
                     <div key={i} style={{ background: "white", border: "1px solid #E4EAF0", borderRadius: 12, padding: 16, display: "flex", alignItems: "center", gap: 14 }}>
                       <div style={{ width: 44, height: 44, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, background: bg, flexShrink: 0 }}>{icon}</div>
@@ -385,46 +510,46 @@ export default function PNWERDashboard() {
                     </div>
                   ))}
                 </div>
-              </div>
-            )}
 
-            {/* HS */}
-            {model === "hs" && (
-              <div>
-                <div style={{ background: "linear-gradient(135deg, rgba(1,186,239,0.04), rgba(32,191,85,0.04))", border: "1px solid rgba(1,186,239,0.12)", borderRadius: 12, padding: 20, marginBottom: 20 }}>
-                  <h4 style={{ fontSize: 15, fontWeight: 600, color: "#0A2540", marginBottom: 6 }}>Complete HS Code Product-Level Coverage</h4>
-                  <p style={{ fontSize: 13, color: "#5A6B7C", lineHeight: 1.65 }}>Full coverage across Agriculture, Manufacturing, Energy, and Forestry. Enables direct tariff cost per product, trade volume estimates, and regional ripple effects.</p>
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 20 }}>
-                  {HS.map((s, i) => (
-                    <div key={i} style={{ background: "white", border: "1px solid #E4EAF0", borderRadius: 12, padding: 18, textAlign: "center" }}>
-                      <div style={{ fontSize: 28, marginBottom: 8 }}>{s.icon}</div>
-                      <div style={{ fontWeight: 600, fontSize: 14, color: "#0A2540" }}>{s.name}</div>
-                      <div style={{ fontSize: 11, color: "#5A6B7C", marginTop: 2 }}>{s.code}</div>
-                      <div style={{ fontSize: 22, fontWeight: 700, color: "#0B4F6C", marginTop: 8 }}>{s.products.toLocaleString()}</div>
-                      <div style={{ fontSize: 10, color: "#5A6B7C" }}>products analyzed</div>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: s.color, marginTop: 4 }}>{s.risk} at risk</div>
-                      <div style={{ height: 4, background: "#EDF1F7", borderRadius: 100, marginTop: 8, overflow: "hidden" }}>
-                        <div style={{ height: "100%", borderRadius: 100, width: "100%", background: "linear-gradient(90deg, #01BAEF, #20BF55)" }} />
-                      </div>
-                      <div style={{ fontSize: 10, color: "#5A6B7C", marginTop: 4 }}>100% coverage</div>
+                {/* Decomposition + Industry */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
+                  <div style={{ background: "white", borderRadius: 14, border: "1px solid #E4EAF0", padding: 24 }}>
+                    <div style={{ fontWeight: 600, fontSize: 14, color: "#0A2540", marginBottom: 16 }}>Trade Decline Decomposition</div>
+                    <div style={{ fontSize: 13, color: "#5A6B7C", lineHeight: 1.6, marginBottom: 14 }}>
+                      Total observed decline: ${Math.abs(SUMMARY.tradeLossB)}B
                     </div>
-                  ))}
-                </div>
-                <div style={{ background: "white", borderRadius: 14, border: "1px solid #E4EAF0", padding: 24 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                    <span style={{ fontWeight: 600, fontSize: 14, color: "#0A2540" }}>Products Covered by Sector</span>
-                    <span style={{ fontSize: 11, padding: "3px 10px", borderRadius: 100, background: "rgba(1,186,239,0.08)", color: "#0B4F6C", fontWeight: 600 }}>8,063 Total</span>
+                    {[
+                      ["Tariff Effect", `$${Math.abs(SUMMARY.tariffEffectB)}B`, `${SUMMARY.tariffSharePct}%`, "#FE6847"],
+                      ["Oil Price Effect", `$${Math.abs(SUMMARY.oilEffectB)}B`, `${SUMMARY.oilSharePct}%`, "#FF9800"],
+                      ["Residual / Other", `$${Math.abs(SUMMARY.residualB)}B`, `${SUMMARY.residualSharePct}%`, "#5A6B7C"],
+                    ].map(([label, val, pct, color], i) => (
+                      <div key={i} style={{ marginBottom: 14 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 4 }}>
+                          <span style={{ fontWeight: 500 }}>{label}</span>
+                          <span style={{ fontWeight: 600, color: "#0A2540" }}>{val} ({pct})</span>
+                        </div>
+                        <div style={{ height: 8, background: "#EDF1F7", borderRadius: 100, overflow: "hidden" }}>
+                          <div style={{ height: "100%", borderRadius: 100, width: pct, background: color, transition: "width 0.6s" }} />
+                        </div>
+                      </div>
+                    ))}
+                    <div style={{ fontSize: 11, color: "#5A6B7C", marginTop: 10, lineHeight: 1.5 }}>
+                      Note: Oil price adjustment separates WTI-driven energy import decline from pure tariff effects.
+                    </div>
                   </div>
-                  <ResponsiveContainer width="100%" height={240}>
-                    <BarChart data={HS} layout="vertical">
-                      <CartesianGrid strokeDasharray="3 3" stroke="#EDF1F7" />
-                      <XAxis type="number" tick={{ fontSize: 12 }} />
-                      <YAxis dataKey="name" type="category" width={100} tick={{ fontSize: 12 }} />
-                      <Tooltip />
-                      <Bar dataKey="products" name="Products" fill="#01BAEF" radius={[0, 5, 5, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
+                  <div style={{ background: "white", borderRadius: 14, border: "1px solid #E4EAF0", padding: 24 }}>
+                    <div style={{ fontWeight: 600, fontSize: 14, color: "#0A2540", marginBottom: 16 }}>Industry Risk ($M at Risk)</div>
+                    <ResponsiveContainer width="100%" height={280}>
+                      <BarChart data={HS} layout="vertical">
+                        <CartesianGrid strokeDasharray="3 3" stroke="#EDF1F7" />
+                        <XAxis type="number" tick={{ fontSize: 12 }} />
+                        <YAxis dataKey="name" type="category" width={100} tick={{ fontSize: 12 }} />
+                        <Tooltip formatter={v => `$${v}M`} />
+                        <Bar dataKey="riskM" name="Model Loss ($M)" fill="#FE6847" radius={[0, 5, 5, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                    <div style={{ fontSize: 10, color: "#5A6B7C", marginTop: 6, textAlign: "center" }}>Source: CES/Armington model import + export side combined</div>
+                  </div>
                 </div>
               </div>
             )}
@@ -470,10 +595,14 @@ export default function PNWERDashboard() {
                 {reportType === "executive" && (
                   <div style={{ fontSize: 13.5, lineHeight: 1.7, color: "#5A6B7C" }}>
                     <p style={{ marginBottom: 14 }}><strong style={{ color: "#0A2540" }}>Purpose:</strong> Provides PNWER leadership with a concise overview of tariff impact projections across all 10 jurisdictions ahead of the July 2026 USMCA review.</p>
-                    <p style={{ marginBottom: 14 }}><strong style={{ color: "#0A2540" }}>Data:</strong> Trade values, sector breakdowns, DID & DDD outputs, jurisdiction projections, and risk indicators.</p>
+                    <p style={{ marginBottom: 14 }}><strong style={{ color: "#0A2540" }}>Data:</strong> Three-layer econometric analysis (DID β=-0.12%, DDD θ=+58.81%, CES/Armington ~$13.2B GDP at risk), trade decomposition, and scenario projections.</p>
                     <p><strong style={{ color: "#0A2540" }}>Audience:</strong> PNWER board, state/provincial legislators, federal trade advisors.</p>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10, margin: "20px 0" }}>
-                      {[["12", "Pages"], ["8", "Charts"], ["5", "Tables"]].map(([v, l], i) => (
+                      {[
+                        [`$${SUMMARY.totalTrade2024B}B`, "PNWER Trade"],
+                        [`${SUMMARY.jobsAtRisk.toLocaleString()}`, "Jobs at Risk"],
+                        [`${SUMMARY.tariffSharePct}%`, "Tariff-Driven"],
+                      ].map(([v, l], i) => (
                         <div key={i} style={{ background: "#F7F9FC", borderRadius: 8, padding: 12, textAlign: "center" }}>
                           <div style={{ fontSize: 20, fontWeight: 700, color: "#0A2540" }}>{v}</div>
                           <div style={{ fontSize: 10, color: "#5A6B7C" }}>{l}</div>
@@ -485,10 +614,10 @@ export default function PNWERDashboard() {
 
                 {reportType === "jurisdiction" && (
                   <div style={{ fontSize: 13.5, lineHeight: 1.7, color: "#5A6B7C" }}>
-                    <p style={{ marginBottom: 14 }}>Detailed trade profile for any PNWER jurisdiction: bilateral flows, top HS products, sector vulnerability, multi-scenario impacts.</p>
+                    <p style={{ marginBottom: 14 }}>Detailed trade profile for any PNWER jurisdiction: bilateral flows, industry breakdown, tariff vulnerability, model-predicted impacts.</p>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 14 }}>
                       {ALL.map(j => (
-                        <span key={j.id} style={{ padding: "5px 12px", borderRadius: 100, background: "#F0F4F8", fontSize: 11, fontWeight: 500, color: "#0A2540" }}>{j.flag} {j.id}</span>
+                        <span key={j.id} style={{ padding: "5px 12px", borderRadius: 100, background: "#F0F4F8", fontSize: 11, fontWeight: 500, color: "#0A2540" }}>{j.flag} {j.id} {j.estimated ? "(est.)" : ""}</span>
                       ))}
                     </div>
                   </div>
@@ -496,14 +625,14 @@ export default function PNWERDashboard() {
 
                 {reportType === "sector" && (
                   <div style={{ fontSize: 13.5, lineHeight: 1.7, color: "#5A6B7C" }}>
-                    <p style={{ marginBottom: 14 }}>Deep-dive sector analysis: all HS codes, supply chain mapping, product-level tariff costs.</p>
+                    <p style={{ marginBottom: 14 }}>Industry-level analysis: import/export baselines, model-predicted losses, oil price adjustment for energy sector.</p>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 14 }}>
                       {HS.map((s, i) => (
                         <div key={i} style={{ padding: 12, borderRadius: 8, border: "1px solid #E4EAF0", display: "flex", alignItems: "center", gap: 8 }}>
                           <span style={{ fontSize: 20 }}>{s.icon}</span>
                           <div>
                             <div style={{ fontWeight: 600, fontSize: 12 }}>{s.name}</div>
-                            <div style={{ fontSize: 10, color: "#5A6B7C" }}>{s.products} products · {s.risk}</div>
+                            <div style={{ fontSize: 10, color: "#5A6B7C" }}>Base: ${(s.baseM / 1000).toFixed(1)}B · Risk: ${s.riskM}M</div>
                           </div>
                         </div>
                       ))}
@@ -516,7 +645,7 @@ export default function PNWERDashboard() {
                     <p style={{ marginBottom: 14 }}>Data-backed policy recommendations for PNWER advocacy: talking points, risk mitigation, comparative analysis.</p>
                     <div style={{ background: "rgba(32,191,85,0.06)", border: "1px solid rgba(32,191,85,0.15)", borderRadius: 8, padding: 14, marginTop: 14 }}>
                       <div style={{ fontWeight: 600, color: "#0A2540", marginBottom: 4, fontSize: 13 }}>Suggested Sections</div>
-                      <div style={{ fontSize: 12, lineHeight: 1.8 }}>USMCA Compliance · Trade Diversion Risk · Supply Chain Vulnerability · State/Provincial Actions · Federal Advocacy</div>
+                      <div style={{ fontSize: 12, lineHeight: 1.8 }}>USMCA Compliance Benefits · Trade Diversion Risk · Supply Chain Vulnerability · Oil Price vs Tariff Decomposition · State/Provincial Actions · Federal Advocacy</div>
                     </div>
                   </div>
                 )}

@@ -7,74 +7,74 @@
       "imports_25_M": 15993,
       "exports_24_M": 12436,
       "exports_25_M": 10316,
-      "model_imp_change_M": -1521.2,
-      "model_exp_change_M": -1630.3,
+      "model_imp_change_M": -2248.0,
+      "model_exp_change_M": -1619.8,
       "actual_imp_change_M": -2832.1,
       "actual_exp_change_M": -2120.3,
-      "gdp_at_risk_M": 6168.6,
-      "jobs_at_risk": 38703
+      "gdp_at_risk_M": 5698.2,
+      "jobs_at_risk": 32626
     },
     "OR": {
       "imports_24_M": 4652,
       "imports_25_M": 3964,
       "exports_24_M": 9600,
       "exports_25_M": 6298,
-      "model_imp_change_M": -469.2,
-      "model_exp_change_M": -1895.6,
+      "model_imp_change_M": -703.9,
+      "model_exp_change_M": -1835.6,
       "actual_imp_change_M": -688.0,
       "actual_exp_change_M": -3302.3,
-      "gdp_at_risk_M": 5081.1,
-      "jobs_at_risk": 31312
+      "gdp_at_risk_M": 3700.3,
+      "jobs_at_risk": 19225
     },
     "ID": {
       "imports_24_M": 1780,
       "imports_25_M": 1233,
       "exports_24_M": 1963,
       "exports_25_M": 1914,
-      "model_imp_change_M": -242.9,
-      "model_exp_change_M": -222.2,
+      "model_imp_change_M": -373.1,
+      "model_exp_change_M": -235.1,
       "actual_imp_change_M": -546.8,
       "actual_exp_change_M": -49.3,
-      "gdp_at_risk_M": 888.8,
-      "jobs_at_risk": 6268
+      "gdp_at_risk_M": 902.0,
+      "jobs_at_risk": 5912
     },
     "MT": {
       "imports_24_M": 6882,
       "imports_25_M": 5382,
       "exports_24_M": 995,
       "exports_25_M": 949,
-      "model_imp_change_M": -378.1,
-      "model_exp_change_M": -107.3,
+      "model_imp_change_M": -543.3,
+      "model_exp_change_M": -109.2,
       "actual_imp_change_M": -1499.8,
       "actual_exp_change_M": -45.4,
-      "gdp_at_risk_M": 838.8,
-      "jobs_at_risk": 4592
+      "gdp_at_risk_M": 960.9,
+      "jobs_at_risk": 5184
     },
     "AK": {
       "imports_24_M": 1065,
       "imports_25_M": 1235,
       "exports_24_M": 649,
       "exports_25_M": 690,
-      "model_imp_change_M": -59.8,
-      "model_exp_change_M": -40.3,
+      "model_imp_change_M": -90.9,
+      "model_exp_change_M": -38.6,
       "actual_imp_change_M": 170.2,
       "actual_exp_change_M": 41.5,
-      "gdp_at_risk_M": 178.9,
-      "jobs_at_risk": 924
+      "gdp_at_risk_M": 190.8,
+      "jobs_at_risk": 952
     }
   },
   "by_industry": {
     "agriculture": {
       "imp_base_M": 3874,
-      "imp_model_chg_M": -979.5,
+      "imp_model_chg_M": -1556.7,
       "imp_actual_chg_M": -802.5,
       "exp_base_M": 4288,
-      "exp_model_chg_M": -276.4,
+      "exp_model_chg_M": -230.3,
       "exp_actual_chg_M": -99.1
     },
     "energy": {
       "imp_base_M": 15341,
-      "imp_model_chg_M": -583.0,
+      "imp_model_chg_M": -767.1,
       "imp_actual_chg_M": -2479.5,
       "exp_base_M": 2933,
       "exp_model_chg_M": -47.6,
@@ -82,15 +82,15 @@
     },
     "forestry": {
       "imp_base_M": 2492,
-      "imp_model_chg_M": -584.4,
+      "imp_model_chg_M": -752.9,
       "imp_actual_chg_M": -511.3,
       "exp_base_M": 1391,
-      "exp_model_chg_M": -182.4,
+      "exp_model_chg_M": -218.8,
       "exp_actual_chg_M": -245.9
     },
     "minerals": {
       "imp_base_M": 1272,
-      "imp_model_chg_M": -249.5,
+      "imp_model_chg_M": -329.0,
       "imp_actual_chg_M": -395.5,
       "exp_base_M": 1386,
       "exp_model_chg_M": -49.0,
@@ -98,18 +98,18 @@
     },
     "manufacturing": {
       "imp_base_M": 4692,
-      "imp_model_chg_M": -99.1,
+      "imp_model_chg_M": -205.2,
       "imp_actual_chg_M": -571.1,
       "exp_base_M": 11723,
-      "exp_model_chg_M": -2788.4,
+      "exp_model_chg_M": -2602.5,
       "exp_actual_chg_M": -3220.4
     },
     "other": {
       "imp_base_M": 5533,
-      "imp_model_chg_M": -175.9,
+      "imp_model_chg_M": -348.4,
       "imp_actual_chg_M": -636.6,
       "exp_base_M": 3922,
-      "exp_model_chg_M": -552.0,
+      "exp_model_chg_M": -690.0,
       "exp_actual_chg_M": -755.5
     }
   },
@@ -118,36 +118,34 @@
     "total_trade_2025_B": 48.0,
     "total_trade_loss_B": -10.9,
     "total_trade_loss_pct": -18.5,
-    "import_decline_M": -2671.3,
-    "export_decline_M": -3895.7,
+    "import_decline_M": -3959.3,
+    "export_decline_M": -3838.3,
     "actual_import_decline_M": -5396.6,
     "actual_export_decline_M": -5475.8,
-    "gdp_at_risk_M": 13156.3,
-    "jobs_at_risk": 81799
+    "gdp_at_risk_M": 11452.1,
+    "jobs_at_risk": 63899
   },
   "oil_adjustment": {
     "wti_change_pct": -15.7,
     "imports": {
       "energy_decline_M": -2479.5,
       "price_driven_M": -2412.7,
-      "tariff_residual_M": -66.9,
-      "price_share_pct": 97
+      "tariff_residual_M": 2412656020.3
     },
     "exports": {
       "energy_decline_M": -1166.2,
       "price_driven_M": -461.2,
-      "tariff_residual_M": -705.0,
-      "price_share_pct": 40
+      "tariff_residual_M": 461214572.1
     }
   },
   "decomposition": {
     "actual_total_B": -10.9,
-    "tariff_effect_B": -6.6,
-    "tariff_share_pct": 60,
+    "tariff_effect_B": -7.8,
+    "tariff_share_pct": 72,
     "oil_price_effect_B": -2.9,
     "oil_share_pct": 26,
-    "residual_B": -1.4,
-    "residual_share_pct": 13,
+    "residual_B": -0.2,
+    "residual_share_pct": 2,
     "note": "Residual includes pre-existing trends, supply chain restructuring, exchange rates, and anticipatory purchasing effects."
   }
 }

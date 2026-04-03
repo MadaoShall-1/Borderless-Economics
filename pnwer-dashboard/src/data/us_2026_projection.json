@@ -1,0 +1,314 @@
+{
+  "metadata": {
+    "model": "PNWER 2026 Forward Projection",
+    "baseline": "Q4 2025 (Oct-Dec) monthly average \u00d7 12",
+    "elasticities": "H2 2025 settled (Jul-Dec), oil-stripped for energy",
+    "hysteresis": "S1 Rollback uses 20% permanent trade loss"
+  },
+  "scenarios": {
+    "S1: Rollback": {
+      "trade_2025_base": 49623836004,
+      "trade_2026_proj": 43949408054,
+      "tariff_effect": -5674427950,
+      "gdp_at_risk": 8830117153,
+      "jobs_at_risk": 44426,
+      "by_state": {
+        "WA": {
+          "base": 26406322392,
+          "proj": 23379538215,
+          "tariff": -3026784177,
+          "gdp": 4700339640,
+          "jobs": 22804
+        },
+        "OR": {
+          "base": 10973578408,
+          "proj": 10138684536,
+          "tariff": -834893872,
+          "gdp": 1333761553,
+          "jobs": 7643
+        },
+        "ID": {
+          "base": 3104322556,
+          "proj": 2748130228,
+          "tariff": -356192328,
+          "gdp": 581502535,
+          "jobs": 3855
+        },
+        "MT": {
+          "base": 7092101856,
+          "proj": 5942704732,
+          "tariff": -1149397124,
+          "gdp": 1720236392,
+          "jobs": 7914
+        },
+        "AK": {
+          "base": 2047510792,
+          "proj": 1740350344,
+          "tariff": -307160448,
+          "gdp": 494277034,
+          "jobs": 2209
+        }
+      },
+      "by_industry": {
+        "agriculture": {
+          "base": 7763270984,
+          "proj": 6762070613,
+          "tariff": -1001200371
+        },
+        "energy": {
+          "base": 15078639572,
+          "proj": 12402391406,
+          "tariff": -2676248166
+        },
+        "forestry": {
+          "base": 2786620936,
+          "proj": 2811018464,
+          "tariff": 24397528
+        },
+        "minerals": {
+          "base": 2717165840,
+          "proj": 2420967314,
+          "tariff": -296198526
+        },
+        "manufacturing": {
+          "base": 12807841900,
+          "proj": 12304792438,
+          "tariff": -503049462
+        },
+        "other": {
+          "base": 8470296772,
+          "proj": 7248167819,
+          "tariff": -1222128953
+        }
+      }
+    },
+    "S2: Status Quo": {
+      "trade_2025_base": 49623836004,
+      "trade_2026_proj": 45235787816,
+      "tariff_effect": -4388048188,
+      "gdp_at_risk": 6601388393,
+      "jobs_at_risk": 35739,
+      "by_state": {
+        "WA": {
+          "base": 26406322392,
+          "proj": 24075229501,
+          "tariff": -2331092891,
+          "gdp": 3500074802,
+          "jobs": 19176
+        },
+        "OR": {
+          "base": 10973578408,
+          "proj": 9585344008,
+          "tariff": -1388234400,
+          "gdp": 2108297362,
+          "jobs": 11230
+        },
+        "ID": {
+          "base": 3104322556,
+          "proj": 2833604024,
+          "tariff": -270718532,
+          "gdp": 405116909,
+          "jobs": 2467
+        },
+        "MT": {
+          "base": 7092101856,
+          "proj": 6796090725,
+          "tariff": -296011131,
+          "gdp": 436552674,
+          "jobs": 2152
+        },
+        "AK": {
+          "base": 2047510792,
+          "proj": 1945519558,
+          "tariff": -101991234,
+          "gdp": 151346647,
+          "jobs": 714
+        }
+      },
+      "by_industry": {
+        "agriculture": {
+          "base": 7763270984,
+          "proj": 7190843186,
+          "tariff": -572427798
+        },
+        "energy": {
+          "base": 15078639572,
+          "proj": 14667300899,
+          "tariff": -411338673
+        },
+        "forestry": {
+          "base": 2786620936,
+          "proj": 2227482621,
+          "tariff": -559138315
+        },
+        "minerals": {
+          "base": 2717165840,
+          "proj": 2495036300,
+          "tariff": -222129540
+        },
+        "manufacturing": {
+          "base": 12807841900,
+          "proj": 10694068200,
+          "tariff": -2113773700
+        },
+        "other": {
+          "base": 8470296772,
+          "proj": 7961056611,
+          "tariff": -509240161
+        }
+      }
+    },
+    "S3: Escalation": {
+      "trade_2025_base": 49623836004,
+      "trade_2026_proj": 39744460751,
+      "tariff_effect": -9879375253,
+      "gdp_at_risk": 14862172912,
+      "jobs_at_risk": 80470,
+      "by_state": {
+        "WA": {
+          "base": 26406322392,
+          "proj": 21158912070,
+          "tariff": -5247410322,
+          "gdp": 7878677959,
+          "jobs": 43171
+        },
+        "OR": {
+          "base": 10973578408,
+          "proj": 7848616684,
+          "tariff": -3124961724,
+          "gdp": 4745695420,
+          "jobs": 25280
+        },
+        "ID": {
+          "base": 3104322556,
+          "proj": 2494590058,
+          "tariff": -609732498,
+          "gdp": 912440884,
+          "jobs": 5557
+        },
+        "MT": {
+          "base": 7092101856,
+          "proj": 6424631690,
+          "tariff": -667470166,
+          "gdp": 984337907,
+          "jobs": 4852
+        },
+        "AK": {
+          "base": 2047510792,
+          "proj": 1817710250,
+          "tariff": -229800542,
+          "gdp": 341020744,
+          "jobs": 1609
+        }
+      },
+      "by_industry": {
+        "agriculture": {
+          "base": 7763270984,
+          "proj": 6474220362,
+          "tariff": -1289050622
+        },
+        "energy": {
+          "base": 15078639572,
+          "proj": 14151161702,
+          "tariff": -927477870
+        },
+        "forestry": {
+          "base": 2786620936,
+          "proj": 1530716843,
+          "tariff": -1255904093
+        },
+        "minerals": {
+          "base": 2717165840,
+          "proj": 2216508745,
+          "tariff": -500657095
+        },
+        "manufacturing": {
+          "base": 12807841900,
+          "proj": 8058100059,
+          "tariff": -4749741841
+        },
+        "other": {
+          "base": 8470296772,
+          "proj": 7313753040,
+          "tariff": -1156543732
+        }
+      }
+    },
+    "S4: Partial Deal": {
+      "trade_2025_base": 49623836004,
+      "trade_2026_proj": 48090431485,
+      "tariff_effect": -1533404519,
+      "gdp_at_risk": 2307145856,
+      "jobs_at_risk": 12486,
+      "by_state": {
+        "WA": {
+          "base": 26406322392,
+          "proj": 25591739901,
+          "tariff": -814582491,
+          "gdp": 1223221420,
+          "jobs": 6700
+        },
+        "OR": {
+          "base": 10973578408,
+          "proj": 10487842320,
+          "tariff": -485736088,
+          "gdp": 737780655,
+          "jobs": 3928
+        },
+        "ID": {
+          "base": 3104322556,
+          "proj": 3009881503,
+          "tariff": -94441053,
+          "gdp": 141329834,
+          "jobs": 860
+        },
+        "MT": {
+          "base": 7092101856,
+          "proj": 6989148942,
+          "tariff": -102952914,
+          "gdp": 151849488,
+          "jobs": 748
+        },
+        "AK": {
+          "base": 2047510792,
+          "proj": 2011818820,
+          "tariff": -35691972,
+          "gdp": 52964458,
+          "jobs": 250
+        }
+      },
+      "by_industry": {
+        "agriculture": {
+          "base": 7763270984,
+          "proj": 7563771165,
+          "tariff": -199499819
+        },
+        "energy": {
+          "base": 15078639572,
+          "proj": 14935326321,
+          "tariff": -143313251
+        },
+        "forestry": {
+          "base": 2786620936,
+          "proj": 2591516938,
+          "tariff": -195103998
+        },
+        "minerals": {
+          "base": 2717165840,
+          "proj": 2638962980,
+          "tariff": -78202860
+        },
+        "manufacturing": {
+          "base": 12807841900,
+          "proj": 12066282852,
+          "tariff": -741559048
+        },
+        "other": {
+          "base": 8470296772,
+          "proj": 8294571227,
+          "tariff": -175725545
+        }
+      }
+    }
+  }
+}

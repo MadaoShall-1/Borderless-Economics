@@ -1,0 +1,254 @@
+{
+  "metadata": {
+    "generated_at": "2026-04-03T02:29:53.508055",
+    "baseline_month": "2026-02",
+    "baseline_label": "Feb 2026",
+    "predicted_month": "2026-03",
+    "predicted_label": "Mar 2026",
+    "tariff_ca": 31.0,
+    "tariff_mx": 35.0,
+    "model": "CES/Armington with H2 2025 calibrated elasticities",
+    "momentum": "30% damped MoM"
+  },
+  "totals": {
+    "current": 4310001559,
+    "predicted": 3982387170,
+    "delta": -327614389,
+    "gdp": 643388687,
+    "jobs": 3207
+  },
+  "by_industry": {
+    "agriculture": {
+      "current_imp": 236464981,
+      "current_exp": 325070049,
+      "current": 561535030,
+      "predicted": 452124270,
+      "delta": -109410760,
+      "pct_change": -19.5,
+      "gdp_risk": 175920417,
+      "jobs_risk": 1460
+    },
+    "energy": {
+      "current_imp": 1199526924,
+      "current_exp": 191099235,
+      "current": 1390626159,
+      "predicted": 1117743806,
+      "delta": -272882353,
+      "pct_change": -19.6,
+      "gdp_risk": 397554381,
+      "jobs_risk": 1363
+    },
+    "forestry": {
+      "current_imp": 135194346,
+      "current_exp": 88495146,
+      "current": 223689492,
+      "predicted": 223772208,
+      "delta": 82716,
+      "pct_change": 0.0,
+      "gdp_risk": 0,
+      "jobs_risk": 0
+    },
+    "minerals": {
+      "current_imp": 62468004,
+      "current_exp": 128242805,
+      "current": 190710809,
+      "predicted": 202883483,
+      "delta": 12172674,
+      "pct_change": 6.4,
+      "gdp_risk": 0,
+      "jobs_risk": 0
+    },
+    "manufacturing": {
+      "current_imp": 326995422,
+      "current_exp": 977147773,
+      "current": 1304143195,
+      "predicted": 1395833489,
+      "delta": 91690294,
+      "pct_change": 7.0,
+      "gdp_risk": 0,
+      "jobs_risk": 0
+    },
+    "other": {
+      "current_imp": 395306626,
+      "current_exp": 243990248,
+      "current": 639296874,
+      "predicted": 590029915,
+      "delta": -49266959,
+      "pct_change": -7.7,
+      "gdp_risk": 69913889,
+      "jobs_risk": 385
+    }
+  },
+  "by_product": {
+    "0808": {
+      "name": "Apples & Pears",
+      "industry": "agriculture",
+      "current_imp": 0,
+      "current_exp": 109191002,
+      "current": 109191002,
+      "predicted": 78154481,
+      "delta": -31036521,
+      "pct_change": -28.4
+    },
+    "0402": {
+      "name": "Dairy",
+      "industry": "agriculture",
+      "current_imp": 0,
+      "current_exp": 11260100,
+      "current": 11260100,
+      "predicted": 5843925,
+      "delta": -5416175,
+      "pct_change": -48.1
+    },
+    "1001": {
+      "name": "Wheat",
+      "industry": "agriculture",
+      "current_imp": 2161290,
+      "current_exp": 8209304,
+      "current": 10370594,
+      "predicted": 7940476,
+      "delta": -2430118,
+      "pct_change": -23.4
+    },
+    "1205": {
+      "name": "Canola",
+      "industry": "agriculture",
+      "current_imp": 1118052,
+      "current_exp": 27712,
+      "current": 1145764,
+      "predicted": 1069495,
+      "delta": -76269,
+      "pct_change": -6.7
+    },
+    "0201": {
+      "name": "Beef",
+      "industry": "agriculture",
+      "current_imp": 24896208,
+      "current_exp": 2723032,
+      "current": 27619240,
+      "predicted": 25310460,
+      "delta": -2308780,
+      "pct_change": -8.4
+    },
+    "2709": {
+      "name": "Crude Oil",
+      "industry": "energy",
+      "current_imp": 1137496924,
+      "current_exp": 435290,
+      "current": 1137932214,
+      "predicted": 1044515473,
+      "delta": -93416741,
+      "pct_change": -8.2
+    },
+    "2710": {
+      "name": "Refined Petroleum",
+      "industry": "energy",
+      "current_imp": 62144460,
+      "current_exp": 327058380,
+      "current": 389202840,
+      "predicted": 395447246,
+      "delta": 6244406,
+      "pct_change": 1.6
+    },
+    "2711": {
+      "name": "Natural Gas",
+      "industry": "energy",
+      "current_imp": 1122748662,
+      "current_exp": 658288,
+      "current": 1123406950,
+      "predicted": 1011870135,
+      "delta": -111536815,
+      "pct_change": -9.9
+    },
+    "4407": {
+      "name": "Lumber",
+      "industry": "forestry",
+      "current_imp": 78558586,
+      "current_exp": 21617604,
+      "current": 100176190,
+      "predicted": 82640805,
+      "delta": -17535385,
+      "pct_change": -17.5
+    },
+    "4418": {
+      "name": "Builders Woodwork",
+      "industry": "forestry",
+      "current_imp": 18045766,
+      "current_exp": 25008420,
+      "current": 43054186,
+      "predicted": 29784840,
+      "delta": -13269346,
+      "pct_change": -30.8
+    },
+    "4703": {
+      "name": "Woodpulp",
+      "industry": "forestry",
+      "current_imp": 3750270,
+      "current_exp": 3349816,
+      "current": 7100086,
+      "predicted": 2602499,
+      "delta": -4497587,
+      "pct_change": -63.3
+    },
+    "7601": {
+      "name": "Aluminum",
+      "industry": "minerals",
+      "current_imp": 9593718,
+      "current_exp": 4644704,
+      "current": 14238422,
+      "predicted": 8144507,
+      "delta": -6093915,
+      "pct_change": -42.8
+    },
+    "7208": {
+      "name": "Steel",
+      "industry": "minerals",
+      "current_imp": 0,
+      "current_exp": 663396,
+      "current": 663396,
+      "predicted": 207324,
+      "delta": -456072,
+      "pct_change": -68.7
+    },
+    "8708": {
+      "name": "Auto Parts",
+      "industry": "manufacturing",
+      "current_imp": 16320812,
+      "current_exp": 500332864,
+      "current": 516653676,
+      "predicted": 337762700,
+      "delta": -178890976,
+      "pct_change": -34.6
+    },
+    "8413": {
+      "name": "Pumps",
+      "industry": "manufacturing",
+      "current_imp": 12114946,
+      "current_exp": 8407028,
+      "current": 20521974,
+      "predicted": 13784881,
+      "delta": -6737093,
+      "pct_change": -32.8
+    },
+    "8481": {
+      "name": "Valves",
+      "industry": "manufacturing",
+      "current_imp": 4919304,
+      "current_exp": 11303310,
+      "current": 16222614,
+      "predicted": 12849044,
+      "delta": -3373570,
+      "pct_change": -20.8
+    },
+    "8432": {
+      "name": "Ag Machinery",
+      "industry": "manufacturing",
+      "current_imp": 4369274,
+      "current_exp": 6140516,
+      "current": 10509790,
+      "predicted": 10433444,
+      "delta": -76346,
+      "pct_change": -0.7
+    }
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "by_state": {
+    "WA": {
+      "trade_2024": 31261259099,
+      "trade_2025": 26308859175,
+      "gdp_at_risk": 5698204394.073414,
+      "jobs_at_risk": 32626
+    },
+    "OR": {
+      "trade_2024": 14252824562,
+      "trade_2025": 10262560056,
+      "gdp_at_risk": 3700284504.997265,
+      "jobs_at_risk": 19225
+    },
+    "ID": {
+      "trade_2024": 3742373103,
+      "trade_2025": 3146321570,
+      "gdp_at_risk": 901956455.1260049,
+      "jobs_at_risk": 5912
+    },
+    "MT": {
+      "trade_2024": 7876498040,
+      "trade_2025": 6331294088,
+      "gdp_at_risk": 960929728.5369501,
+      "jobs_at_risk": 5184
+    },
+    "AK": {
+      "trade_2024": 1713548599,
+      "trade_2025": 1925160611,
+      "gdp_at_risk": 190759110.64578995,
+      "jobs_at_risk": 952
+    }
+  },
+  "by_industry": {
+    "agriculture": {
+      "imp_base": 3873545343,
+      "imp_model": -1556707465.9575,
+      "imp_actual": -802539168,
+      "exp_base": 4287677317,
+      "exp_model": -230295730.35999995,
+      "exp_actual": -99085400
+    },
+    "energy": {
+      "imp_base": 15341166537,
+      "imp_model": -767058326.8500001,
+      "imp_actual": -2479517239,
+      "exp_base": 2932693314,
+      "exp_model": -47608445.331,
+      "exp_actual": -1166203802
+    },
+    "forestry": {
+      "imp_base": 2491919294,
+      "imp_model": -752917579.0292,
+      "imp_actual": -511285005,
+      "exp_base": 1391331508,
+      "exp_model": -218827416.264,
+      "exp_actual": -245942346
+    },
+    "minerals": {
+      "imp_base": 1272056834,
+      "imp_model": -328998447.42880005,
+      "imp_actual": -395502832,
+      "exp_base": 1385946828,
+      "exp_model": -48955315.19999999,
+      "exp_actual": 11346176
+    },
+    "manufacturing": {
+      "imp_base": 4692151617,
+      "imp_model": -205215643.277,
+      "imp_actual": -571084142,
+      "exp_base": 11723355857,
+      "exp_model": -2602547724.266,
+      "exp_actual": -3220399018
+    },
+    "other": {
+      "imp_base": 5532917450,
+      "imp_model": -348409315.4344001,
+      "imp_actual": -636624891,
+      "exp_base": 3921741504,
+      "exp_model": -690015434.115,
+      "exp_actual": -755470236
+    }
+  },
+  "totals": {
+    "trade_2024": 58846503403,
+    "trade_2025": 47974195500,
+    "gdp_at_risk": 11452134193.379425,
+    "jobs_at_risk": 63899
+  }
+}

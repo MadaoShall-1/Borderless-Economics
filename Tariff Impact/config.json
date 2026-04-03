@@ -1,0 +1,327 @@
+{
+  "US": {
+    "regions": [
+      "WA",
+      "OR",
+      "ID",
+      "MT",
+      "AK"
+    ],
+    "region_names": {
+      "WA": "Washington",
+      "OR": "Oregon",
+      "ID": "Idaho",
+      "MT": "Montana",
+      "AK": "Alaska"
+    },
+    "partners": [
+      "CA",
+      "MX"
+    ],
+    "currency": "USD",
+    "side": "US",
+    "import_tau": {
+      "CA": {
+        "agriculture": 0.1,
+        "energy": 0.02,
+        "forestry": 0.25,
+        "minerals": 0.34,
+        "manufacturing": 0.15,
+        "other": 0.15
+      },
+      "MX": {
+        "agriculture": 0.12,
+        "energy": 0.1,
+        "forestry": 0.17,
+        "minerals": 0.34,
+        "manufacturing": 0.17,
+        "other": 0.17
+      }
+    },
+    "export_tau": {
+      "CA": {
+        "agriculture": 0.06,
+        "energy": 0.08,
+        "forestry": 0.14,
+        "minerals": 0.06,
+        "manufacturing": 0.17,
+        "other": 0.12
+      },
+      "MX": {
+        "agriculture": 0.04,
+        "energy": 0.03,
+        "forestry": 0.08,
+        "minerals": 0.05,
+        "manufacturing": 0.15,
+        "other": 0.11
+      }
+    },
+    "imp_elast": {
+      "agriculture": -1.5,
+      "energy": -0.5,
+      "forestry": -1.2,
+      "minerals": -0.8,
+      "manufacturing": -2.0,
+      "other": -1.5
+    },
+    "exp_elast": {
+      "agriculture": -1.2,
+      "energy": -0.3,
+      "forestry": -1.0,
+      "minerals": -0.6,
+      "manufacturing": -1.5,
+      "other": -1.2
+    },
+    "agg_scale": {
+      "agriculture": 0.85,
+      "energy": 0.8,
+      "forestry": 0.9,
+      "minerals": 0.85,
+      "manufacturing": 0.22,
+      "other": 0.4
+    },
+    "io_mult": {
+      "agriculture": 1.55,
+      "energy": 1.45,
+      "forestry": 1.45,
+      "minerals": 1.5,
+      "manufacturing": 1.45,
+      "other": 1.4
+    },
+    "exp_mult": {
+      "agriculture": 1.65,
+      "energy": 1.5,
+      "forestry": 1.5,
+      "minerals": 1.55,
+      "manufacturing": 1.55,
+      "other": 1.45
+    },
+    "jobs_per_m": {
+      "agriculture": 8.0,
+      "energy": 3.5,
+      "forestry": 6.0,
+      "minerals": 5.0,
+      "manufacturing": 4.5,
+      "other": 5.5
+    },
+    "exp_jobs": {
+      "agriculture": 8.5,
+      "energy": 3.0,
+      "forestry": 6.5,
+      "minerals": 5.0,
+      "manufacturing": 5.0,
+      "other": 5.5
+    },
+    "imp_elast_annual": {
+      "agriculture": -1.5,
+      "energy": -0.5,
+      "forestry": -1.2,
+      "minerals": -0.8,
+      "manufacturing": -2.0,
+      "other": -1.5
+    },
+    "exp_elast_annual": {
+      "agriculture": -1.2,
+      "energy": -0.3,
+      "forestry": -1.0,
+      "minerals": -0.6,
+      "manufacturing": -1.5,
+      "other": -1.2
+    },
+    "imp_elast_h2": {
+      "agriculture": -1.16,
+      "energy": -1.55,
+      "forestry": -0.89,
+      "minerals": -0.58,
+      "manufacturing": -0.57,
+      "other": -0.05
+    },
+    "exp_elast_h2": {
+      "agriculture": -0.05,
+      "energy": -0.1,
+      "forestry": -0.97,
+      "minerals": -0.05,
+      "manufacturing": -1.24,
+      "other": -1.27
+    },
+    "forward_scenarios": {
+      "S1_rollback": {
+        "description": "Full tariff rollback to pre-Feb 2025 levels",
+        "tariff_multiplier": 0.0,
+        "note": "Trade recovers but with hysteresis \u2014 ~80% of original levels"
+      },
+      "S2_status_quo": {
+        "description": "Current H2 2025 tariff rates continue through 2026",
+        "imp_elast": {
+          "agriculture": -1.16,
+          "energy": -1.55,
+          "forestry": -0.89,
+          "minerals": -0.58,
+          "manufacturing": -0.57,
+          "other": -0.05
+        },
+        "exp_elast": {
+          "agriculture": -0.05,
+          "energy": -0.1,
+          "forestry": -0.97,
+          "minerals": -0.05,
+          "manufacturing": -1.24,
+          "other": -1.27
+        },
+        "note": "Use H2 settled elasticities as base"
+      },
+      "S3_escalation": {
+        "description": "Further tariff increases (IEEPA to 50%, S232 maintained)",
+        "imp_elast": {
+          "agriculture": -1.74,
+          "energy": -2.33,
+          "forestry": -1.33,
+          "minerals": -0.87,
+          "manufacturing": -0.85,
+          "other": -0.08
+        },
+        "exp_elast": {
+          "agriculture": -0.08,
+          "energy": -0.15,
+          "forestry": -1.46,
+          "minerals": -0.08,
+          "manufacturing": -1.86,
+          "other": -1.91
+        },
+        "tariff_multiplier": 1.5,
+        "note": "Elasticities deepen 50% as firms exhaust short-run buffers"
+      },
+      "S4_partial_deal": {
+        "description": "Partial deal: USMCA goods exempt, S232 reduced to 25%",
+        "tariff_multiplier": 0.5,
+        "imp_elast": {
+          "agriculture": -0.81,
+          "energy": -1.08,
+          "forestry": -0.62,
+          "minerals": -0.41,
+          "manufacturing": -0.4,
+          "other": -0.03
+        },
+        "exp_elast": {
+          "agriculture": -0.03,
+          "energy": -0.07,
+          "forestry": -0.68,
+          "minerals": -0.03,
+          "manufacturing": -0.87,
+          "other": -0.89
+        },
+        "note": "Lower tariffs + adaptation reduces elasticity"
+      }
+    },
+    "elasticity_calibration": {
+      "annual": "Back-calibrated from 2024 vs 2025 annual totals",
+      "h2": "Back-calibrated from Jul-Dec 2025 monthly YoY (settled post-shock)",
+      "key_findings": [
+        "Jan 2025 pre-tariff surge inflates annual imports 20-40% above trend",
+        "Agriculture \u03b5 fades from -3.8 (Apr) to -1.0 (Dec) as USMCA exemptions approved",
+        "Forestry \u03b5 deepens from -0.2 (Feb) to -1.2 (Dec) \u2014 slow construction adjustment",
+        "Manufacturing \u03b5 settles at -0.6 by Q4 after S232 auto disruption",
+        "CA rolled back ag retaliation Sep 2025 \u2014 visible in export \u03b5 turning positive"
+      ],
+      "energy_method": "Oil price stripped using monthly WTI: \u03b5_clean = (actual - base\u00d7WTI_change) / (base \u00d7 \u03c4)"
+    }
+  },
+  "CA": {
+    "regions": [
+      "BC",
+      "AB",
+      "SK",
+      "YT",
+      "NT"
+    ],
+    "region_names": {
+      "BC": "British Columbia",
+      "AB": "Alberta",
+      "SK": "Saskatchewan",
+      "YT": "Yukon",
+      "NT": "Northwest Territories"
+    },
+    "partners": [
+      "US"
+    ],
+    "currency": "CAD",
+    "cad_usd": 0.73,
+    "side": "CA",
+    "import_tau": {
+      "US": {
+        "agriculture": 0.08,
+        "energy": 0.02,
+        "forestry": 0.1,
+        "minerals": 0.15,
+        "manufacturing": 0.2,
+        "other": 0.12
+      }
+    },
+    "export_tau": {
+      "US": {
+        "agriculture": 0.1,
+        "energy": 0.02,
+        "forestry": 0.25,
+        "minerals": 0.34,
+        "manufacturing": 0.15,
+        "other": 0.15
+      }
+    },
+    "imp_elast": {
+      "agriculture": -0.05,
+      "energy": -3.52,
+      "forestry": -0.76,
+      "minerals": -0.55,
+      "manufacturing": -0.25,
+      "other": -0.75
+    },
+    "exp_elast": {
+      "agriculture": -1.19,
+      "energy": -0.05,
+      "forestry": -0.5,
+      "minerals": -0.13,
+      "manufacturing": -0.05,
+      "other": -0.34
+    },
+    "agg_scale": {
+      "agriculture": 1.0,
+      "energy": 1.0,
+      "forestry": 1.0,
+      "minerals": 1.0,
+      "manufacturing": 1.0,
+      "other": 1.0
+    },
+    "io_mult": {
+      "agriculture": 1.5,
+      "energy": 1.4,
+      "forestry": 1.4,
+      "minerals": 1.45,
+      "manufacturing": 1.4,
+      "other": 1.35
+    },
+    "exp_mult": {
+      "agriculture": 1.6,
+      "energy": 1.45,
+      "forestry": 1.45,
+      "minerals": 1.5,
+      "manufacturing": 1.5,
+      "other": 1.4
+    },
+    "jobs_per_m": {
+      "agriculture": 7.5,
+      "energy": 2.5,
+      "forestry": 5.5,
+      "minerals": 4.0,
+      "manufacturing": 4.0,
+      "other": 5.0
+    },
+    "exp_jobs": {
+      "agriculture": 8.0,
+      "energy": 2.0,
+      "forestry": 6.0,
+      "minerals": 4.5,
+      "manufacturing": 4.5,
+      "other": 5.0
+    }
+  }
+}

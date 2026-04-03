@@ -1,9 +1,11 @@
 """
 PNWER Tariff Impact — Industry-Level Analysis
 Runs the bilateral model at 6-industry granularity with oil price decomposition.
+Outputs: us_industry_results.json + tariff_bilateral_integrated.json
 """
 
-from tariff_analysis import *
+import json, os
+from tariff_model import *
 
 def run():
     data = load_data()
@@ -89,6 +91,111 @@ def run():
               f" ${d['gdp']/1e6:>7,.0f}M {d['jobs']:>6,.0f}")
 
     print("=" * 80)
+
+    # ══════ JSON OUTPUT ══════
+    os.makedirs(JSON_OUT, exist_ok=True)
+
+    # 1. us_industry_results.json (for dashboard Overview cards)
+    results_json = {
+        "by_state": {
+            s: {
+                "trade_2024": by_state[s]["t24"],
+                "trade_2025": by_state[s]["t25"],
+                "gdp_at_risk": by_state[s]["gdp"],
+                "jobs_at_risk": round(by_state[s]["jobs"]),
+            } for s in PNWER_STATES
+        },
+        "by_industry": {
+            ind: {
+                "imp_base": by_ind[ind]["imp_base"],
+                "imp_model": by_ind[ind]["imp_m"],
+                "imp_actual": by_ind[ind]["imp_act"],
+                "exp_base": by_ind[ind]["exp_base"],
+                "exp_model": by_ind[ind]["exp_m"],
+                "exp_actual": by_ind[ind]["exp_act"],
+            } for ind in INDUSTRIES
+        },
+        "totals": {
+            "trade_2024": totals["t24"],
+            "trade_2025": totals["t25"],
+            "gdp_at_risk": totals["gdp"],
+            "jobs_at_risk": round(totals["jobs"]),
+        }
+    }
+    p1 = os.path.join(JSON_OUT, "us_industry_results.json")
+    with open(p1, 'w') as f:
+        json.dump(results_json, f, indent=2)
+    print(f"\n  → JSON saved: {p1}")
+
+    # 2. tariff_bilateral_integrated.json (for dashboard Total Impact + Modeling)
+    integrated_json = {
+        "import_side": {},
+        "export_side": {},
+        "by_state": {
+            s: {
+                "imports_24_M": round(sum(get_val(st, s, p, "2024", "imports") for p in ["CA","MX"]) / 1e6),
+                "imports_25_M": round(sum(get_val(st, s, p, "2025", "imports") for p in ["CA","MX"]) / 1e6),
+                "exports_24_M": round(sum(get_val(st, s, p, "2024", "exports") for p in ["CA","MX"]) / 1e6),
+                "exports_25_M": round(sum(get_val(st, s, p, "2025", "exports") for p in ["CA","MX"]) / 1e6),
+                "model_imp_change_M": round(by_state[s]["imp_m"] / 1e6, 1),
+                "model_exp_change_M": round(by_state[s]["exp_m"] / 1e6, 1),
+                "actual_imp_change_M": round(by_state[s]["imp_act"] / 1e6, 1),
+                "actual_exp_change_M": round(by_state[s]["exp_act"] / 1e6, 1),
+                "gdp_at_risk_M": round(by_state[s]["gdp"] / 1e6, 1),
+                "jobs_at_risk": round(by_state[s]["jobs"]),
+            } for s in PNWER_STATES
+        },
+        "by_industry": {
+            ind: {
+                "imp_base_M": round(by_ind[ind]["imp_base"] / 1e6),
+                "imp_model_chg_M": round(by_ind[ind]["imp_m"] / 1e6, 1),
+                "imp_actual_chg_M": round(by_ind[ind]["imp_act"] / 1e6, 1),
+                "exp_base_M": round(by_ind[ind]["exp_base"] / 1e6),
+                "exp_model_chg_M": round(by_ind[ind]["exp_m"] / 1e6, 1),
+                "exp_actual_chg_M": round(by_ind[ind]["exp_act"] / 1e6, 1),
+            } for ind in INDUSTRIES
+        },
+        "summary": {
+            "total_trade_2024_B": round(totals["t24"] / 1e9, 1),
+            "total_trade_2025_B": round(totals["t25"] / 1e9, 1),
+            "total_trade_loss_B": round(actual, 1),
+            "total_trade_loss_pct": round(actual / (totals["t24"] / 1e9) * 100, 1),
+            "import_decline_M": round(totals["imp_m"] / 1e6, 1),
+            "export_decline_M": round(totals["exp_m"] / 1e6, 1),
+            "actual_import_decline_M": round(totals["imp_act"] / 1e6, 1),
+            "actual_export_decline_M": round(totals["exp_act"] / 1e6, 1),
+            "gdp_at_risk_M": round(totals["gdp"] / 1e6, 1),
+            "jobs_at_risk": round(totals["jobs"]),
+        },
+        "oil_adjustment": {
+            "wti_change_pct": round(WTI_CHG * 100, 1),
+            "imports": {
+                "energy_decline_M": round(by_ind["energy"]["imp_act"] / 1e6, 1),
+                "price_driven_M": round(oil_imp / 1e6, 1),
+                "tariff_residual_M": round((by_ind["energy"]["imp_act"] - oil_imp * 1e6) / 1e6, 1) if oil_imp != 0 else 0,
+            },
+            "exports": {
+                "energy_decline_M": round(by_ind["energy"]["exp_act"] / 1e6, 1),
+                "price_driven_M": round(oil_exp / 1e6, 1),
+                "tariff_residual_M": round((by_ind["energy"]["exp_act"] - oil_exp * 1e6) / 1e6, 1) if oil_exp != 0 else 0,
+            },
+        },
+        "decomposition": {
+            "actual_total_B": round(actual, 1),
+            "tariff_effect_B": round(tariff, 1),
+            "tariff_share_pct": round(abs(tariff / actual) * 100) if actual != 0 else 0,
+            "oil_price_effect_B": round(oil, 1),
+            "oil_share_pct": round(abs(oil / actual) * 100) if actual != 0 else 0,
+            "residual_B": round(residual, 1),
+            "residual_share_pct": round(abs(residual / actual) * 100) if actual != 0 else 0,
+            "note": "Residual includes pre-existing trends, supply chain restructuring, exchange rates, and anticipatory purchasing effects.",
+        },
+    }
+    p2 = os.path.join(JSON_OUT, "tariff_bilateral_integrated.json")
+    with open(p2, 'w') as f:
+        json.dump(integrated_json, f, indent=2)
+    print(f"  → JSON saved: {p2}")
+
 
 if __name__ == "__main__":
     run()

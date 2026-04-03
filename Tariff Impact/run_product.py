@@ -8,7 +8,7 @@ import os
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from tariff_analysis import *
+from tariff_model import *
 
 def run():
     data = load_data()

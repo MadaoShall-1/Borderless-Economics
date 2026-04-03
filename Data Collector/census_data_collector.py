@@ -1,10 +1,11 @@
 """
 PNWER Trade Analysis Data Collector v9
+升级: HS4 产品级关税分析 + 原有行业级分析
 
-Collects two layers of trade data from the U.S. Census Bureau API:
-1. Industry-level (HS2 → 6 industries) for all 25 states × CA/MX
-2. Product-level (HS4 detail) for PNWER 5 states × CA/MX
-3. National-level trade with industry breakdown
+新增:
+1. PNWER 5州拉取 HS4 级别的产品贸易数据 (对 CA/MX)
+2. 保留原有 HS2→行业 汇总 (25州全部)
+3. 输出包含 product-level 和 industry-level 两层
 """
 
 import requests
@@ -14,7 +15,7 @@ from pathlib import Path
 import datetime
 
 # ============================================================================
-# Configuration
+# 配置
 # ============================================================================
 
 API_KEY = "f51f8af17882fc49a8c6a2eec80c9b9d522562fd"
@@ -132,7 +133,7 @@ HS4_NAMES = {
 
 
 # ============================================================================
-# HS2 → Industry Mapping
+# HS2 → 产业映射 (保持不变)
 # ============================================================================
 
 def get_industry_from_hs2(hs2_code: str) -> str:
@@ -155,11 +156,11 @@ def get_industry_from_hs2(hs2_code: str) -> str:
 
 
 # ============================================================================
-# Data Collection — Industry Level (HS2 aggregation)
+# 数据采集 — 原有行业级 (HS2 汇总)
 # ============================================================================
 
 def fetch_state_trade_industry(state, country_code, year, month, is_export=True):
-    """Fetch HS2-level data aggregated to 6 industries (all 25 states)."""
+    """HS2 级别 → 汇总到 6 个行业 (所有 25 州用)"""
     api_url = STATE_EXPORT_API if is_export else STATE_IMPORT_API
     val_field = "ALL_VAL_YR" if is_export else "GEN_VAL_YR"
     hs_field = "E_COMMODITY" if is_export else "I_COMMODITY"
@@ -205,11 +206,11 @@ def fetch_state_trade_industry(state, country_code, year, month, is_export=True)
 
 
 # ============================================================================
-# Data Collection — Product Level (HS4 detail, PNWER 5 states × CA/MX only)
+# 数据采集 — 新增产品级 (HS4 明细, 仅 PNWER 5 州 × CA/MX)
 # ============================================================================
 
 def fetch_state_trade_hs4(state, country_code, year, month, is_export=True):
-    """Fetch HS4-level product detail — returns trade value per HS4 code."""
+    """HS4 级别产品明细 — 返回每个 HS4 的贸易额"""
     api_url = STATE_EXPORT_API if is_export else STATE_IMPORT_API
     val_field = "ALL_VAL_YR" if is_export else "GEN_VAL_YR"
     hs_field = "E_COMMODITY" if is_export else "I_COMMODITY"
@@ -241,7 +242,7 @@ def fetch_state_trade_hs4(state, country_code, year, month, is_export=True):
                         value = int(val_str)
                         if value <= 0:
                             continue
-                        # Take first 4 digits as HS4
+                        # 取前 4 位作为 HS4
                         hs4 = hs_code[:4]
                         if hs4 in ALL_FOCUS_HS4:
                             hs4_totals[hs4] = hs4_totals.get(hs4, 0) + value
@@ -254,7 +255,7 @@ def fetch_state_trade_hs4(state, country_code, year, month, is_export=True):
 
 
 # ============================================================================
-# National-Level Trade Data
+# 全美国家级数据
 # ============================================================================
 
 def fetch_national_trade(country_code, year, month, is_export=True):
@@ -298,24 +299,24 @@ def fetch_national_trade(country_code, year, month, is_export=True):
 
 
 # ============================================================================
-# Main Collection Pipeline
+# 主采集流程
 # ============================================================================
 
 def collect_all():
     print("""
     ╔══════════════════════════════════════════════════════════════╗
     ║       PNWER Trade Data Collector v9                         ║
-    ║       Industry (25 states) + Product HS4 (PNWER 5 states)   ║
+    ║       行业级 (25州) + 产品级 HS4 (PNWER 5州)                  ║
     ╚══════════════════════════════════════════════════════════════╝
     """)
 
     # ================================================================
-    # Part 1: Industry-level data (all 25 states, same as v8)
+    # Part 1: 行业级数据 (所有 25 州, 和 v8 一样)
     # ================================================================
     print("=" * 60)
-    print(f"[Part 1] Industry-level data ({len(ALL_STATES)} states × 2 partners × {len(YEARS)} years)")
+    print(f"[Part 1] 行业级数据 ({len(ALL_STATES)} 州 × 2 国 × {len(YEARS)} 年)")
     n_req = len(ALL_STATES) * 2 * len(YEARS) * 2
-    print(f"  Estimated requests: {n_req}, ~{n_req * 0.15 / 60:.0f} min")
+    print(f"  预计请求: {n_req}, 耗时 ~{n_req * 0.15 / 60:.0f} 分钟")
     print("=" * 60)
 
     state_data = {}
@@ -356,16 +357,16 @@ def collect_all():
                     }
                 time.sleep(0.1)
 
-    print(f"\n  Part 1 complete!")
+    print(f"\n  Part 1 完成!")
 
     # ================================================================
-    # Part 2: Product-level HS4 data (PNWER 5 states × CA/MX only)
+    # Part 2: 产品级 HS4 数据 (仅 PNWER 5 州 × CA/MX)
     # ================================================================
     print("\n" + "=" * 60)
     n_hs4 = len(PNWER_STATES) * 2 * len(YEARS) * 2
-    print(f"[Part 2] Product-level HS4 data (PNWER 5 states × 2 partners × {len(YEARS)} years)")
-    print(f"  Focus products: {len(ALL_FOCUS_HS4)} HS4 codes")
-    print(f"  Estimated requests: {n_hs4}, ~{n_hs4 * 0.15 / 60:.0f} min")
+    print(f"[Part 2] 产品级 HS4 数据 (PNWER 5 州 × 2 国 × {len(YEARS)} 年)")
+    print(f"  关注产品: {len(ALL_FOCUS_HS4)} 个 HS4 代码")
+    print(f"  预计请求: {n_hs4}, 耗时 ~{n_hs4 * 0.15 / 60:.0f} 分钟")
     print("=" * 60)
 
     product_data = {}
@@ -395,13 +396,13 @@ def collect_all():
                 product_data[state][partner][str(year)] = yr_data
                 time.sleep(0.1)
 
-    print(f"\n  Part 2 complete!")
+    print(f"\n  Part 2 完成!")
 
     # ================================================================
-    # Part 3: National-level data (with industry breakdown)
+    # Part 3: 国家级数据 (含行业拆分)
     # ================================================================
     print("\n" + "=" * 60)
-    print(f"[Part 3] National-level data ({len(COUNTRIES)} countries × {len(YEARS)} years)")
+    print(f"[Part 3] 国家级数据 ({len(COUNTRIES)} 国 × {len(YEARS)} 年)")
     print("=" * 60)
 
     national_data = {}
@@ -432,23 +433,125 @@ def collect_all():
             }
             time.sleep(0.15)
 
-    print(f"\n  Part 3 complete!")
+    print(f"\n  Part 3 完成!")
 
     return state_data, product_data, national_data
 
 
-def build_and_save(state_data, product_data, national_data):
+# ============================================================================
+# 数据采集 — 月度行业级 (PNWER 5 州 × CA/MX, 2024-2025)
+# ============================================================================
+
+MONTHLY_YEARS = [2024, 2025]
+MONTHLY_MONTHS = list(range(1, 13))  # 1-12
+
+def fetch_state_trade_monthly(state, country_code, year, month, is_export=True):
+    """月度 HS2 级别 → 汇总到 6 个行业 (用 ALL_VAL_MO / GEN_VAL_MO)"""
+    api_url = STATE_EXPORT_API if is_export else STATE_IMPORT_API
+    val_field = "ALL_VAL_MO" if is_export else "GEN_VAL_MO"
+    hs_field = "E_COMMODITY" if is_export else "I_COMMODITY"
+
+    params = {
+        "get": f"STATE,CTY_CODE,{hs_field},{val_field}",
+        "time": f"{year}-{month:02d}",
+        "STATE": state,
+        "CTY_CODE": country_code,
+        "key": API_KEY
+    }
+
+    try:
+        response = requests.get(api_url, params=params, timeout=30)
+        if response.status_code == 200:
+            data = response.json()
+            if data and len(data) > 1:
+                headers = data[0]
+                val_idx = headers.index(val_field)
+                hs_idx = headers.index(hs_field)
+
+                industry_totals = {}
+                total = 0
+                for row in data[1:]:
+                    try:
+                        hs_code = row[hs_idx]
+                        val_str = row[val_idx]
+                        if not hs_code or len(hs_code) != 2:
+                            continue
+                        if not val_str or val_str == '-':
+                            continue
+                        value = int(val_str)
+                        industry = get_industry_from_hs2(hs_code)
+                        if industry:
+                            industry_totals[industry] = industry_totals.get(industry, 0) + value
+                            total += value
+                    except (ValueError, IndexError):
+                        pass
+                return {"total": total, "by_industry": industry_totals}
+        return None
+    except Exception:
+        return None
+
+
+def collect_monthly():
+    """Part 4: 月度数据 (PNWER 5 州 × CA/MX × 24 个月)"""
+    n_req = len(PNWER_STATES) * 2 * len(MONTHLY_YEARS) * 12 * 2
+    print("\n" + "=" * 60)
+    print(f"[Part 4] 月度数据 (PNWER 5 州 × 2 国 × 24 个月)")
+    print(f"  预计请求: {n_req}, 耗时 ~{n_req * 0.6 / 60:.0f} 分钟")
+    print("=" * 60)
+
+    monthly_data = {}
+    current = 0
+    failed = 0
+
+    for state in PNWER_STATES:
+        monthly_data[state] = {}
+        for cty_code, partner in [("1220", "CA"), ("2010", "MX")]:
+            monthly_data[state][partner] = {}
+            for year in MONTHLY_YEARS:
+                for month in MONTHLY_MONTHS:
+                    month_key = f"{year}-{month:02d}"
+
+                    current += 1
+                    print(f"\r  [{current}/{n_req}] {state} → {partner} {month_key} exp", end="", flush=True)
+                    exports = fetch_state_trade_monthly(state, cty_code, year, month, is_export=True)
+
+                    current += 1
+                    print(f"\r  [{current}/{n_req}] {state} ← {partner} {month_key} imp", end="", flush=True)
+                    imports = fetch_state_trade_monthly(state, cty_code, year, month, is_export=False)
+
+                    if exports is None and imports is None:
+                        failed += 1
+                        continue
+
+                    monthly_data[state][partner][month_key] = {
+                        "exports": {
+                            "total": exports["total"] if exports else 0,
+                            **(exports["by_industry"] if exports else {})
+                        },
+                        "imports": {
+                            "total": imports["total"] if imports else 0,
+                            **(imports["by_industry"] if imports else {})
+                        }
+                    }
+                    time.sleep(0.5)
+
+    print(f"\n  Part 4 完成! (failed: {failed})")
+    return monthly_data
+
+
+def build_and_save(state_data, product_data, national_data, monthly_data=None):
     output = {
         "metadata": {
-            "version": "9.0",
-            "description": "PNWER Trade Analysis — Industry + Product Level",
+            "version": "9.1",
+            "description": "PNWER Trade Analysis — Industry + Product + Monthly",
             "source": "U.S. Census Bureau API (statehs endpoint)",
             "generated_at": datetime.datetime.now().isoformat(),
             "years": YEARS,
             "notes": [
-                "25-state industry level: 5 PNWER + 20 control (HS2 → 6 industries)",
-                "5-state product level: PNWER only × CA/MX (HS4 focus products)",
-                "National level with industry breakdown (for Layer 1 DID)",
+                "25 州行业级: 5 PNWER + 20 对照 (HS2 → 6 行业)",
+                "5 州产品级: PNWER only × CA/MX (HS4 重点产品)",
+                "5 州月度级: PNWER × CA/MX × 2024-2025 (HS2 → 6 行业, 月度)",
+                "国家级含行业拆分 (用于 Layer 1 DID)",
             ]
         },
         "industries": {
@@ -471,25 +574,28 @@ def build_and_save(state_data, product_data, national_data):
         "product_trade": product_data,
     }
 
+    if monthly_data:
+        output["monthly_trade"] = monthly_data
+
     path = "data/pnwer_analysis_data_v9.json"
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(output, f, indent=2, ensure_ascii=False)
-    print(f"\n  Saved: {path}")
+    print(f"\n  保存: {path}")
 
-    # Also save v8-compatible version (without product_trade, for backward compatibility)
+    # 也保存 v8 兼容版本 (不含 product_trade, 保持后向兼容)
     v8_compat = {k: v for k, v in output.items() if k != "product_trade"}
     v8_path = "data/pnwer_analysis_data_v8.json"
     with open(v8_path, 'w', encoding='utf-8') as f:
         json.dump(v8_compat, f, indent=2, ensure_ascii=False)
-    print(f"  Saved v8-compatible: {v8_path}")
+    print(f"  保存 v8 兼容: {v8_path}")
 
     return output
 
 
 def print_product_summary(product_data):
     print("\n" + "=" * 75)
-    print("Product-level data summary (per-state, CA bilateral, 2024 vs 2025)")
+    print("产品级数据摘要 (per-state, CA bilateral, 2024 vs 2025)")
     print("=" * 75)
 
     for state in PNWER_STATES:
@@ -512,17 +618,36 @@ def print_product_summary(product_data):
 
 def main():
     state_data, product_data, national_data = collect_all()
-    output = build_and_save(state_data, product_data, national_data)
+    monthly_data = collect_monthly()
+    output = build_and_save(state_data, product_data, national_data, monthly_data)
     print_product_summary(product_data)
 
+    # Save monthly as standalone file (for dashboard/trend analysis)
+    monthly_path = "data/us_monthly_trade.json"
+    Path(monthly_path).parent.mkdir(parents=True, exist_ok=True)
+    with open(monthly_path, 'w', encoding='utf-8') as f:
+        json.dump({
+            "metadata": {
+                "source": "U.S. Census Bureau API (statehs, monthly)",
+                "generated_at": datetime.datetime.now().isoformat(),
+                "states": PNWER_STATES,
+                "partners": ["CA", "MX"],
+                "months": [f"{y}-{m:02d}" for y in MONTHLY_YEARS for m in range(1,13)],
+            },
+            "monthly_trade": monthly_data
+        }, f, indent=2, ensure_ascii=False)
+    print(f"  月度独立文件: {monthly_path}")
+
     total_req = len(ALL_STATES)*2*len(YEARS)*2 + len(PNWER_STATES)*2*len(YEARS)*2 + len(COUNTRIES)*len(YEARS)*2
+    monthly_req = len(PNWER_STATES) * 2 * len(MONTHLY_YEARS) * 12 * 2
     print(f"\n{'='*60}")
-    print(f"  v9 collection complete!")
-    print(f"  Total requests: {total_req}")
-    print(f"  Industry level: {len(ALL_STATES)} states × 2 partners × {len(YEARS)} years")
-    print(f"  Product level: {len(PNWER_STATES)} states × 2 partners × {len(YEARS)} years × {len(ALL_FOCUS_HS4)} HS4 codes")
-    print(f"  National level: {len(COUNTRIES)} countries × {len(YEARS)} years")
-    print(f"  Per-state products: 5 industries × 3 each = 15 per state")
+    print(f"  v9.1 采集完成!")
+    print(f"  年度请求数: {total_req}")
+    print(f"  月度请求数: {monthly_req}")
+    print(f"  行业级: {len(ALL_STATES)} 州 × 2 国 × {len(YEARS)} 年")
+    print(f"  产品级: {len(PNWER_STATES)} 州 × 2 国 × {len(YEARS)} 年 × {len(ALL_FOCUS_HS4)} HS4")
+    print(f"  月度级: {len(PNWER_STATES)} 州 × 2 国 × {len(MONTHLY_YEARS)*12} 个月")
+    print(f"  国家级: {len(COUNTRIES)} 国 × {len(YEARS)} 年")
     print(f"{'='*60}")
 
 

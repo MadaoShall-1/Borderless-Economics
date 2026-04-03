@@ -15,3 +15,5 @@ venv/
 .venv/
 dist/
 build/
+
+data/12100175*.csv

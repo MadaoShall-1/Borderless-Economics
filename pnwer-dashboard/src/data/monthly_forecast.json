@@ -1,50 +1,50 @@
 {
   "metadata": {
-    "generated_at": "2026-04-03T02:29:53.508055",
+    "generated_at": "2026-04-10T01:45:02.525185",
     "baseline_month": "2026-02",
     "baseline_label": "Feb 2026",
     "predicted_month": "2026-03",
     "predicted_label": "Mar 2026",
-    "tariff_ca": 31.0,
-    "tariff_mx": 35.0,
+    "tariff_ca": 15.0,
+    "tariff_mx": 12.0,
     "model": "CES/Armington with H2 2025 calibrated elasticities",
     "momentum": "30% damped MoM"
   },
   "totals": {
     "current": 4310001559,
-    "predicted": 3982387170,
-    "delta": -327614389,
-    "gdp": 643388687,
-    "jobs": 3207
+    "predicted": 4493077499,
+    "delta": 183075940,
+    "gdp": 266713045,
+    "jobs": 992
   },
   "by_industry": {
     "agriculture": {
       "current_imp": 236464981,
       "current_exp": 325070049,
       "current": 561535030,
-      "predicted": 452124270,
-      "delta": -109410760,
-      "pct_change": -19.5,
-      "gdp_risk": 175920417,
-      "jobs_risk": 1460
+      "predicted": 551609600,
+      "delta": -9925430,
+      "pct_change": -1.8,
+      "gdp_risk": 15958995,
+      "jobs_risk": 132
     },
     "energy": {
       "current_imp": 1199526924,
       "current_exp": 191099235,
       "current": 1390626159,
-      "predicted": 1117743806,
-      "delta": -272882353,
-      "pct_change": -19.6,
-      "gdp_risk": 397554381,
-      "jobs_risk": 1363
+      "predicted": 1218507932,
+      "delta": -172118227,
+      "pct_change": -12.4,
+      "gdp_risk": 250754050,
+      "jobs_risk": 860
     },
     "forestry": {
       "current_imp": 135194346,
       "current_exp": 88495146,
       "current": 223689492,
-      "predicted": 223772208,
-      "delta": 82716,
-      "pct_change": 0.0,
+      "predicted": 259633980,
+      "delta": 35944488,
+      "pct_change": 16.1,
       "gdp_risk": 0,
       "jobs_risk": 0
     },
@@ -52,9 +52,9 @@
       "current_imp": 62468004,
       "current_exp": 128242805,
       "current": 190710809,
-      "predicted": 202883483,
-      "delta": 12172674,
-      "pct_change": 6.4,
+      "predicted": 216137235,
+      "delta": 25426426,
+      "pct_change": 13.3,
       "gdp_risk": 0,
       "jobs_risk": 0
     },
@@ -62,9 +62,9 @@
       "current_imp": 326995422,
       "current_exp": 977147773,
       "current": 1304143195,
-      "predicted": 1395833489,
-      "delta": 91690294,
-      "pct_change": 7.0,
+      "predicted": 1559732250,
+      "delta": 255589055,
+      "pct_change": 19.6,
       "gdp_risk": 0,
       "jobs_risk": 0
     },
@@ -72,11 +72,11 @@
       "current_imp": 395306626,
       "current_exp": 243990248,
       "current": 639296874,
-      "predicted": 590029915,
-      "delta": -49266959,
-      "pct_change": -7.7,
-      "gdp_risk": 69913889,
-      "jobs_risk": 385
+      "predicted": 687456503,
+      "delta": 48159629,
+      "pct_change": 7.5,
+      "gdp_risk": 0,
+      "jobs_risk": 0
     }
   },
   "by_product": {
@@ -86,9 +86,9 @@
       "current_imp": 0,
       "current_exp": 109191002,
       "current": 109191002,
-      "predicted": 78154481,
-      "delta": -31036521,
-      "pct_change": -28.4
+      "predicted": 109513230,
+      "delta": 322228,
+      "pct_change": 0.3
     },
     "0402": {
       "name": "Dairy",
@@ -96,9 +96,9 @@
       "current_imp": 0,
       "current_exp": 11260100,
       "current": 11260100,
-      "predicted": 5843925,
-      "delta": -5416175,
-      "pct_change": -48.1
+      "predicted": 12201482,
+      "delta": 941382,
+      "pct_change": 8.4
     },
     "1001": {
       "name": "Wheat",
@@ -106,9 +106,9 @@
       "current_imp": 2161290,
       "current_exp": 8209304,
       "current": 10370594,
-      "predicted": 7940476,
-      "delta": -2430118,
-      "pct_change": -23.4
+      "predicted": 9535354,
+      "delta": -835240,
+      "pct_change": -8.1
     },
     "1205": {
       "name": "Canola",
@@ -116,9 +116,9 @@
       "current_imp": 1118052,
       "current_exp": 27712,
       "current": 1145764,
-      "predicted": 1069495,
-      "delta": -76269,
-      "pct_change": -6.7
+      "predicted": 1376097,
+      "delta": 230333,
+      "pct_change": 20.1
     },
     "0201": {
       "name": "Beef",
@@ -126,9 +126,9 @@
       "current_imp": 24896208,
       "current_exp": 2723032,
       "current": 27619240,
-      "predicted": 25310460,
-      "delta": -2308780,
-      "pct_change": -8.4
+      "predicted": 27306639,
+      "delta": -312601,
+      "pct_change": -1.1
     },
     "2709": {
       "name": "Crude Oil",
@@ -146,9 +146,9 @@
       "current_imp": 62144460,
       "current_exp": 327058380,
       "current": 389202840,
-      "predicted": 395447246,
-      "delta": 6244406,
-      "pct_change": 1.6
+      "predicted": 415619102,
+      "delta": 26416262,
+      "pct_change": 6.8
     },
     "2711": {
       "name": "Natural Gas",
@@ -166,9 +166,9 @@
       "current_imp": 78558586,
       "current_exp": 21617604,
       "current": 100176190,
-      "predicted": 82640805,
-      "delta": -17535385,
-      "pct_change": -17.5
+      "predicted": 102946163,
+      "delta": 2769973,
+      "pct_change": 2.8
     },
     "4418": {
       "name": "Builders Woodwork",
@@ -176,9 +176,9 @@
       "current_imp": 18045766,
       "current_exp": 25008420,
       "current": 43054186,
-      "predicted": 29784840,
-      "delta": -13269346,
-      "pct_change": -30.8
+      "predicted": 43005769,
+      "delta": -48417,
+      "pct_change": -0.1
     },
     "4703": {
       "name": "Woodpulp",
@@ -186,9 +186,9 @@
       "current_imp": 3750270,
       "current_exp": 3349816,
       "current": 7100086,
-      "predicted": 2602499,
-      "delta": -4497587,
-      "pct_change": -63.3
+      "predicted": 6780405,
+      "delta": -319681,
+      "pct_change": -4.5
     },
     "7601": {
       "name": "Aluminum",
@@ -196,9 +196,9 @@
       "current_imp": 9593718,
       "current_exp": 4644704,
       "current": 14238422,
-      "predicted": 8144507,
-      "delta": -6093915,
-      "pct_change": -42.8
+      "predicted": 11495893,
+      "delta": -2742529,
+      "pct_change": -19.3
     },
     "7208": {
       "name": "Steel",
@@ -206,9 +206,9 @@
       "current_imp": 0,
       "current_exp": 663396,
       "current": 663396,
-      "predicted": 207324,
-      "delta": -456072,
-      "pct_change": -68.7
+      "predicted": 692326,
+      "delta": 28930,
+      "pct_change": 4.4
     },
     "8708": {
       "name": "Auto Parts",
@@ -216,9 +216,9 @@
       "current_imp": 16320812,
       "current_exp": 500332864,
       "current": 516653676,
-      "predicted": 337762700,
-      "delta": -178890976,
-      "pct_change": -34.6
+      "predicted": 544639637,
+      "delta": 27985961,
+      "pct_change": 5.4
     },
     "8413": {
       "name": "Pumps",
@@ -226,9 +226,9 @@
       "current_imp": 12114946,
       "current_exp": 8407028,
       "current": 20521974,
-      "predicted": 13784881,
-      "delta": -6737093,
-      "pct_change": -32.8
+      "predicted": 20397970,
+      "delta": -124004,
+      "pct_change": -0.6
     },
     "8481": {
       "name": "Valves",
@@ -236,9 +236,9 @@
       "current_imp": 4919304,
       "current_exp": 11303310,
       "current": 16222614,
-      "predicted": 12849044,
-      "delta": -3373570,
-      "pct_change": -20.8
+      "predicted": 16448802,
+      "delta": 226188,
+      "pct_change": 1.4
     },
     "8432": {
       "name": "Ag Machinery",
@@ -246,9 +246,9 @@
       "current_imp": 4369274,
       "current_exp": 6140516,
       "current": 10509790,
-      "predicted": 10433444,
-      "delta": -76346,
-      "pct_change": -0.7
+      "predicted": 12073850,
+      "delta": 1564060,
+      "pct_change": 14.9
     }
   }
 }

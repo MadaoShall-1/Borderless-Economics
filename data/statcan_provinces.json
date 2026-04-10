@@ -1,0 +1,4142 @@
+{
+  "metadata": {
+    "source": "Statistics Canada Table 12-10-0175-01 (CSV)",
+    "generated": "2026-04-04 21:34:59.207956",
+    "unit": "Canadian dollars",
+    "partner": "United States",
+    "provinces": [
+      "BC",
+      "AB",
+      "SK",
+      "YT",
+      "NT"
+    ],
+    "note": "Exports = Domestic export + Re-export. Values in CAD (×0.73 for USD)."
+  },
+  "napcs_to_industry": {
+    "farm_fish": "agriculture",
+    "energy": "energy",
+    "ores": "minerals",
+    "metals": "minerals",
+    "chemical": "other",
+    "forestry": "forestry",
+    "machinery": "manufacturing",
+    "electronics": "manufacturing",
+    "vehicles": "manufacturing",
+    "aircraft": "manufacturing",
+    "consumer": "other",
+    "special": "other"
+  },
+  "province_trade": {
+    "SK": {
+      "2017": {
+        "total": {
+          "exports": 16034227000.0,
+          "imports": 9851349000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 3532260000.0,
+            "imports": 245781000.0
+          },
+          "energy": {
+            "exports": 8071262000.0,
+            "imports": 1563919000.0
+          },
+          "ores": {
+            "exports": 2796406000.0,
+            "imports": 32412000.0
+          },
+          "metals": {
+            "exports": 345279000.0,
+            "imports": 505824000.0
+          },
+          "chemical": {
+            "exports": 221483000.0,
+            "imports": 1493479000.0
+          },
+          "forestry": {
+            "exports": 358746000.0,
+            "imports": 310511000.0
+          },
+          "machinery": {
+            "exports": 342019000.0,
+            "imports": 3157468000.0
+          },
+          "electronics": {
+            "exports": 103763000.0,
+            "imports": 361231000.0
+          },
+          "vehicles": {
+            "exports": 99654000.0,
+            "imports": 1352040000.0
+          },
+          "aircraft": {
+            "exports": 7402000.0,
+            "imports": 147541000.0
+          },
+          "consumer": {
+            "exports": 81319000.0,
+            "imports": 658017000.0
+          },
+          "special": {
+            "exports": 74634000.0,
+            "imports": 23127000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 3532260000.0,
+            "imports": 245781000.0
+          },
+          "energy": {
+            "exports": 8071262000.0,
+            "imports": 1563919000.0
+          },
+          "minerals": {
+            "exports": 3141685000.0,
+            "imports": 538236000.0
+          },
+          "other": {
+            "exports": 377436000.0,
+            "imports": 2174623000.0
+          },
+          "forestry": {
+            "exports": 358746000.0,
+            "imports": 310511000.0
+          },
+          "manufacturing": {
+            "exports": 552838000.0,
+            "imports": 5018280000.0
+          }
+        }
+      },
+      "2018": {
+        "total": {
+          "exports": 16833561000.0,
+          "imports": 9274148000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 3573620000.0,
+            "imports": 293282000.0
+          },
+          "energy": {
+            "exports": 8175508000.0,
+            "imports": 320677000.0
+          },
+          "ores": {
+            "exports": 3105373000.0,
+            "imports": 40912000.0
+          },
+          "metals": {
+            "exports": 586399000.0,
+            "imports": 461654000.0
+          },
+          "chemical": {
+            "exports": 208581000.0,
+            "imports": 1567209000.0
+          },
+          "forestry": {
+            "exports": 373558000.0,
+            "imports": 302067000.0
+          },
+          "machinery": {
+            "exports": 432542000.0,
+            "imports": 3388828000.0
+          },
+          "electronics": {
+            "exports": 100489000.0,
+            "imports": 434472000.0
+          },
+          "vehicles": {
+            "exports": 106926000.0,
+            "imports": 1560943000.0
+          },
+          "aircraft": {
+            "exports": 2804000.0,
+            "imports": 189922000.0
+          },
+          "consumer": {
+            "exports": 94019000.0,
+            "imports": 688919000.0
+          },
+          "special": {
+            "exports": 73743000.0,
+            "imports": 25267000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 3573620000.0,
+            "imports": 293282000.0
+          },
+          "energy": {
+            "exports": 8175508000.0,
+            "imports": 320677000.0
+          },
+          "minerals": {
+            "exports": 3691772000.0,
+            "imports": 502566000.0
+          },
+          "other": {
+            "exports": 376343000.0,
+            "imports": 2281395000.0
+          },
+          "forestry": {
+            "exports": 373558000.0,
+            "imports": 302067000.0
+          },
+          "manufacturing": {
+            "exports": 642761000.0,
+            "imports": 5574165000.0
+          }
+        }
+      },
+      "2019": {
+        "total": {
+          "exports": 16066864000.0,
+          "imports": 8685354000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 3192761000.0,
+            "imports": 382082000.0
+          },
+          "energy": {
+            "exports": 7899320000.0,
+            "imports": 238939000.0
+          },
+          "ores": {
+            "exports": 3159034000.0,
+            "imports": 43567000.0
+          },
+          "metals": {
+            "exports": 413451000.0,
+            "imports": 395434000.0
+          },
+          "chemical": {
+            "exports": 264340000.0,
+            "imports": 1458069000.0
+          },
+          "forestry": {
+            "exports": 289804000.0,
+            "imports": 306623000.0
+          },
+          "machinery": {
+            "exports": 466928000.0,
+            "imports": 3114303000.0
+          },
+          "electronics": {
+            "exports": 77081000.0,
+            "imports": 427232000.0
+          },
+          "vehicles": {
+            "exports": 114193000.0,
+            "imports": 1380251000.0
+          },
+          "aircraft": {
+            "exports": 9760000.0,
+            "imports": 146436000.0
+          },
+          "consumer": {
+            "exports": 104783000.0,
+            "imports": 765548000.0
+          },
+          "special": {
+            "exports": 75412000.0,
+            "imports": 26872000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 3192761000.0,
+            "imports": 382082000.0
+          },
+          "energy": {
+            "exports": 7899320000.0,
+            "imports": 238939000.0
+          },
+          "minerals": {
+            "exports": 3572485000.0,
+            "imports": 439001000.0
+          },
+          "other": {
+            "exports": 444535000.0,
+            "imports": 2250489000.0
+          },
+          "forestry": {
+            "exports": 289804000.0,
+            "imports": 306623000.0
+          },
+          "manufacturing": {
+            "exports": 667962000.0,
+            "imports": 5068222000.0
+          }
+        }
+      },
+      "2020": {
+        "total": {
+          "exports": 13130448000.0,
+          "imports": 8237781000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 3260327000.0,
+            "imports": 323114000.0
+          },
+          "energy": {
+            "exports": 5253859000.0,
+            "imports": 1150367000.0
+          },
+          "ores": {
+            "exports": 2950881000.0,
+            "imports": 37959000.0
+          },
+          "metals": {
+            "exports": 158369000.0,
+            "imports": 376187000.0
+          },
+          "chemical": {
+            "exports": 193908000.0,
+            "imports": 1448098000.0
+          },
+          "forestry": {
+            "exports": 463143000.0,
+            "imports": 312066000.0
+          },
+          "machinery": {
+            "exports": 468657000.0,
+            "imports": 2270352000.0
+          },
+          "electronics": {
+            "exports": 94443000.0,
+            "imports": 443440000.0
+          },
+          "vehicles": {
+            "exports": 115472000.0,
+            "imports": 918766000.0
+          },
+          "aircraft": {
+            "exports": 2854000.0,
+            "imports": 189756000.0
+          },
+          "consumer": {
+            "exports": 100261000.0,
+            "imports": 749288000.0
+          },
+          "special": {
+            "exports": 68270000.0,
+            "imports": 18382000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 3260327000.0,
+            "imports": 323114000.0
+          },
+          "energy": {
+            "exports": 5253859000.0,
+            "imports": 1150367000.0
+          },
+          "minerals": {
+            "exports": 3109250000.0,
+            "imports": 414146000.0
+          },
+          "other": {
+            "exports": 362439000.0,
+            "imports": 2215768000.0
+          },
+          "forestry": {
+            "exports": 463143000.0,
+            "imports": 312066000.0
+          },
+          "manufacturing": {
+            "exports": 681426000.0,
+            "imports": 3822314000.0
+          }
+        }
+      },
+      "2021": {
+        "total": {
+          "exports": 19906595000.0,
+          "imports": 8858863000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 4274673000.0,
+            "imports": 573375000.0
+          },
+          "energy": {
+            "exports": 9287599000.0,
+            "imports": 433798000.0
+          },
+          "ores": {
+            "exports": 3778590000.0,
+            "imports": 21525000.0
+          },
+          "metals": {
+            "exports": 470269000.0,
+            "imports": 531072000.0
+          },
+          "chemical": {
+            "exports": 218259000.0,
+            "imports": 1657706000.0
+          },
+          "forestry": {
+            "exports": 901555000.0,
+            "imports": 381053000.0
+          },
+          "machinery": {
+            "exports": 541016000.0,
+            "imports": 2664506000.0
+          },
+          "electronics": {
+            "exports": 102507000.0,
+            "imports": 423102000.0
+          },
+          "vehicles": {
+            "exports": 141908000.0,
+            "imports": 1224316000.0
+          },
+          "aircraft": {
+            "exports": 3191000.0,
+            "imports": 181303000.0
+          },
+          "consumer": {
+            "exports": 119949000.0,
+            "imports": 739975000.0
+          },
+          "special": {
+            "exports": 67075000.0,
+            "imports": 27140000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 4274673000.0,
+            "imports": 573375000.0
+          },
+          "energy": {
+            "exports": 9287599000.0,
+            "imports": 433798000.0
+          },
+          "minerals": {
+            "exports": 4248859000.0,
+            "imports": 552597000.0
+          },
+          "other": {
+            "exports": 405283000.0,
+            "imports": 2424821000.0
+          },
+          "forestry": {
+            "exports": 901555000.0,
+            "imports": 381053000.0
+          },
+          "manufacturing": {
+            "exports": 788622000.0,
+            "imports": 4493227000.0
+          }
+        }
+      },
+      "2022": {
+        "total": {
+          "exports": 29331583000.0,
+          "imports": 12279598000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 6124981000.0,
+            "imports": 1067807000.0
+          },
+          "energy": {
+            "exports": 14007722000.0,
+            "imports": 203908000.0
+          },
+          "ores": {
+            "exports": 6543321000.0,
+            "imports": 33403000.0
+          },
+          "metals": {
+            "exports": 378457000.0,
+            "imports": 665637000.0
+          },
+          "chemical": {
+            "exports": 236211000.0,
+            "imports": 2268219000.0
+          },
+          "forestry": {
+            "exports": 704203000.0,
+            "imports": 465926000.0
+          },
+          "machinery": {
+            "exports": 878685000.0,
+            "imports": 4287209000.0
+          },
+          "electronics": {
+            "exports": 101676000.0,
+            "imports": 602971000.0
+          },
+          "vehicles": {
+            "exports": 148486000.0,
+            "imports": 1506100000.0
+          },
+          "aircraft": {
+            "exports": 6240000.0,
+            "imports": 306360000.0
+          },
+          "consumer": {
+            "exports": 129304000.0,
+            "imports": 836410000.0
+          },
+          "special": {
+            "exports": 72298000.0,
+            "imports": 35649000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 6124981000.0,
+            "imports": 1067807000.0
+          },
+          "energy": {
+            "exports": 14007722000.0,
+            "imports": 203908000.0
+          },
+          "minerals": {
+            "exports": 6921778000.0,
+            "imports": 699040000.0
+          },
+          "other": {
+            "exports": 437813000.0,
+            "imports": 3140278000.0
+          },
+          "forestry": {
+            "exports": 704203000.0,
+            "imports": 465926000.0
+          },
+          "manufacturing": {
+            "exports": 1135087000.0,
+            "imports": 6702640000.0
+          }
+        }
+      },
+      "2023": {
+        "total": {
+          "exports": 27160681000.0,
+          "imports": 12679702000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 6613481000.0,
+            "imports": 870028000.0
+          },
+          "energy": {
+            "exports": 12888667000.0,
+            "imports": 283972000.0
+          },
+          "ores": {
+            "exports": 5026798000.0,
+            "imports": 34504000.0
+          },
+          "metals": {
+            "exports": 491616000.0,
+            "imports": 672665000.0
+          },
+          "chemical": {
+            "exports": 256346000.0,
+            "imports": 2148012000.0
+          },
+          "forestry": {
+            "exports": 433024000.0,
+            "imports": 502732000.0
+          },
+          "machinery": {
+            "exports": 935820000.0,
+            "imports": 4683801000.0
+          },
+          "electronics": {
+            "exports": 102865000.0,
+            "imports": 665608000.0
+          },
+          "vehicles": {
+            "exports": 184635000.0,
+            "imports": 1638124000.0
+          },
+          "aircraft": {
+            "exports": 5664000.0,
+            "imports": 248375000.0
+          },
+          "consumer": {
+            "exports": 144146000.0,
+            "imports": 902771000.0
+          },
+          "special": {
+            "exports": 77618000.0,
+            "imports": 29117000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 6613481000.0,
+            "imports": 870028000.0
+          },
+          "energy": {
+            "exports": 12888667000.0,
+            "imports": 283972000.0
+          },
+          "minerals": {
+            "exports": 5518414000.0,
+            "imports": 707169000.0
+          },
+          "other": {
+            "exports": 478110000.0,
+            "imports": 3079900000.0
+          },
+          "forestry": {
+            "exports": 433024000.0,
+            "imports": 502732000.0
+          },
+          "manufacturing": {
+            "exports": 1228984000.0,
+            "imports": 7235908000.0
+          }
+        }
+      },
+      "2024": {
+        "total": {
+          "exports": 26717564000.0,
+          "imports": 13394125000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 5721881000.0,
+            "imports": 885717000.0
+          },
+          "energy": {
+            "exports": 14404864000.0,
+            "imports": 166144000.0
+          },
+          "ores": {
+            "exports": 4230783000.0,
+            "imports": 31266000.0
+          },
+          "metals": {
+            "exports": 418701000.0,
+            "imports": 593155000.0
+          },
+          "chemical": {
+            "exports": 337658000.0,
+            "imports": 2313963000.0
+          },
+          "forestry": {
+            "exports": 435308000.0,
+            "imports": 530038000.0
+          },
+          "machinery": {
+            "exports": 590791000.0,
+            "imports": 4967086000.0
+          },
+          "electronics": {
+            "exports": 138401000.0,
+            "imports": 647128000.0
+          },
+          "vehicles": {
+            "exports": 209893000.0,
+            "imports": 1941525000.0
+          },
+          "aircraft": {
+            "exports": 7000000.0,
+            "imports": 290428000.0
+          },
+          "consumer": {
+            "exports": 144319000.0,
+            "imports": 1001180000.0
+          },
+          "special": {
+            "exports": 77965000.0,
+            "imports": 26496000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 5721881000.0,
+            "imports": 885717000.0
+          },
+          "energy": {
+            "exports": 14404864000.0,
+            "imports": 166144000.0
+          },
+          "minerals": {
+            "exports": 4649484000.0,
+            "imports": 624421000.0
+          },
+          "other": {
+            "exports": 559942000.0,
+            "imports": 3341639000.0
+          },
+          "forestry": {
+            "exports": 435308000.0,
+            "imports": 530038000.0
+          },
+          "manufacturing": {
+            "exports": 946085000.0,
+            "imports": 7846167000.0
+          }
+        }
+      },
+      "2025": {
+        "total": {
+          "exports": 23655136000.0,
+          "imports": 13264645000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 4828653000.0,
+            "imports": 728711000.0
+          },
+          "energy": {
+            "exports": 12732833000.0,
+            "imports": 495129000.0
+          },
+          "ores": {
+            "exports": 4161636000.0,
+            "imports": 28461000.0
+          },
+          "metals": {
+            "exports": 243385000.0,
+            "imports": 522045000.0
+          },
+          "chemical": {
+            "exports": 300815000.0,
+            "imports": 2431853000.0
+          },
+          "forestry": {
+            "exports": 316056000.0,
+            "imports": 488646000.0
+          },
+          "machinery": {
+            "exports": 486965000.0,
+            "imports": 4716759000.0
+          },
+          "electronics": {
+            "exports": 146706000.0,
+            "imports": 750016000.0
+          },
+          "vehicles": {
+            "exports": 184567000.0,
+            "imports": 1616635000.0
+          },
+          "aircraft": {
+            "exports": 6272000.0,
+            "imports": 415485000.0
+          },
+          "consumer": {
+            "exports": 163264000.0,
+            "imports": 1044830000.0
+          },
+          "special": {
+            "exports": 83985000.0,
+            "imports": 26078000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 4828653000.0,
+            "imports": 728711000.0
+          },
+          "energy": {
+            "exports": 12732833000.0,
+            "imports": 495129000.0
+          },
+          "minerals": {
+            "exports": 4405021000.0,
+            "imports": 550506000.0
+          },
+          "other": {
+            "exports": 548064000.0,
+            "imports": 3502761000.0
+          },
+          "forestry": {
+            "exports": 316056000.0,
+            "imports": 488646000.0
+          },
+          "manufacturing": {
+            "exports": 824510000.0,
+            "imports": 7498895000.0
+          }
+        }
+      },
+      "2026": {
+        "total": {
+          "exports": 1857559000.0,
+          "imports": 1213320000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 402557000.0,
+            "imports": 63829000.0
+          },
+          "energy": {
+            "exports": 983455000.0,
+            "imports": 31771000.0
+          },
+          "ores": {
+            "exports": 337774000.0,
+            "imports": 3428000.0
+          },
+          "metals": {
+            "exports": 8499000.0,
+            "imports": 32636000.0
+          },
+          "chemical": {
+            "exports": 29906000.0,
+            "imports": 476048000.0
+          },
+          "forestry": {
+            "exports": 17054000.0,
+            "imports": 32728000.0
+          },
+          "machinery": {
+            "exports": 31669000.0,
+            "imports": 342077000.0
+          },
+          "electronics": {
+            "exports": 9072000.0,
+            "imports": 43587000.0
+          },
+          "vehicles": {
+            "exports": 9427000.0,
+            "imports": 102365000.0
+          },
+          "aircraft": {
+            "exports": 48000.0,
+            "imports": 10015000.0
+          },
+          "consumer": {
+            "exports": 20603000.0,
+            "imports": 73323000.0
+          },
+          "special": {
+            "exports": 7495000.0,
+            "imports": 1513000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 402557000.0,
+            "imports": 63829000.0
+          },
+          "energy": {
+            "exports": 983455000.0,
+            "imports": 31771000.0
+          },
+          "minerals": {
+            "exports": 346273000.0,
+            "imports": 36064000.0
+          },
+          "other": {
+            "exports": 58004000.0,
+            "imports": 550884000.0
+          },
+          "forestry": {
+            "exports": 17054000.0,
+            "imports": 32728000.0
+          },
+          "manufacturing": {
+            "exports": 50216000.0,
+            "imports": 498044000.0
+          }
+        }
+      }
+    },
+    "AB": {
+      "2017": {
+        "total": {
+          "exports": 87519059000.0,
+          "imports": 17757125000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 2296740000.0,
+            "imports": 1133501000.0
+          },
+          "energy": {
+            "exports": 69110935000.0,
+            "imports": 390501000.0
+          },
+          "ores": {
+            "exports": 173065000.0,
+            "imports": 96272000.0
+          },
+          "metals": {
+            "exports": 559316000.0,
+            "imports": 751588000.0
+          },
+          "chemical": {
+            "exports": 7227902000.0,
+            "imports": 6883570000.0
+          },
+          "forestry": {
+            "exports": 2669729000.0,
+            "imports": 703105000.0
+          },
+          "machinery": {
+            "exports": 1647580000.0,
+            "imports": 2301426000.0
+          },
+          "electronics": {
+            "exports": 565640000.0,
+            "imports": 1064196000.0
+          },
+          "vehicles": {
+            "exports": 364140000.0,
+            "imports": 940187000.0
+          },
+          "aircraft": {
+            "exports": 273166000.0,
+            "imports": 1515009000.0
+          },
+          "consumer": {
+            "exports": 2197835000.0,
+            "imports": 1803718000.0
+          },
+          "special": {
+            "exports": 433007000.0,
+            "imports": 174056000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 2296740000.0,
+            "imports": 1133501000.0
+          },
+          "energy": {
+            "exports": 69110935000.0,
+            "imports": 390501000.0
+          },
+          "minerals": {
+            "exports": 732381000.0,
+            "imports": 847860000.0
+          },
+          "other": {
+            "exports": 9858744000.0,
+            "imports": 8861344000.0
+          },
+          "forestry": {
+            "exports": 2669729000.0,
+            "imports": 703105000.0
+          },
+          "manufacturing": {
+            "exports": 2850526000.0,
+            "imports": 5820818000.0
+          }
+        }
+      },
+      "2018": {
+        "total": {
+          "exports": 103039172000.0,
+          "imports": 20144690000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 2169227000.0,
+            "imports": 1167936000.0
+          },
+          "energy": {
+            "exports": 82521801000.0,
+            "imports": 547958000.0
+          },
+          "ores": {
+            "exports": 273666000.0,
+            "imports": 125421000.0
+          },
+          "metals": {
+            "exports": 745641000.0,
+            "imports": 753320000.0
+          },
+          "chemical": {
+            "exports": 7727965000.0,
+            "imports": 8437337000.0
+          },
+          "forestry": {
+            "exports": 3094772000.0,
+            "imports": 729787000.0
+          },
+          "machinery": {
+            "exports": 2118887000.0,
+            "imports": 2563466000.0
+          },
+          "electronics": {
+            "exports": 748315000.0,
+            "imports": 1135324000.0
+          },
+          "vehicles": {
+            "exports": 428811000.0,
+            "imports": 1064811000.0
+          },
+          "aircraft": {
+            "exports": 322599000.0,
+            "imports": 1592843000.0
+          },
+          "consumer": {
+            "exports": 2452827000.0,
+            "imports": 1843642000.0
+          },
+          "special": {
+            "exports": 434661000.0,
+            "imports": 182846000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 2169227000.0,
+            "imports": 1167936000.0
+          },
+          "energy": {
+            "exports": 82521801000.0,
+            "imports": 547958000.0
+          },
+          "minerals": {
+            "exports": 1019307000.0,
+            "imports": 878741000.0
+          },
+          "other": {
+            "exports": 10615453000.0,
+            "imports": 10463825000.0
+          },
+          "forestry": {
+            "exports": 3094772000.0,
+            "imports": 729787000.0
+          },
+          "manufacturing": {
+            "exports": 3618612000.0,
+            "imports": 6356444000.0
+          }
+        }
+      },
+      "2019": {
+        "total": {
+          "exports": 103523118000.0,
+          "imports": 17949228000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 2262845000.0,
+            "imports": 1261503000.0
+          },
+          "energy": {
+            "exports": 83660765000.0,
+            "imports": 424636000.0
+          },
+          "ores": {
+            "exports": 253359000.0,
+            "imports": 104765000.0
+          },
+          "metals": {
+            "exports": 582402000.0,
+            "imports": 549790000.0
+          },
+          "chemical": {
+            "exports": 6829596000.0,
+            "imports": 7087965000.0
+          },
+          "forestry": {
+            "exports": 2765883000.0,
+            "imports": 676185000.0
+          },
+          "machinery": {
+            "exports": 2504758000.0,
+            "imports": 2531042000.0
+          },
+          "electronics": {
+            "exports": 695794000.0,
+            "imports": 1132029000.0
+          },
+          "vehicles": {
+            "exports": 475958000.0,
+            "imports": 1020048000.0
+          },
+          "aircraft": {
+            "exports": 352338000.0,
+            "imports": 1221141000.0
+          },
+          "consumer": {
+            "exports": 2674335000.0,
+            "imports": 1764348000.0
+          },
+          "special": {
+            "exports": 465081000.0,
+            "imports": 175776000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 2262845000.0,
+            "imports": 1261503000.0
+          },
+          "energy": {
+            "exports": 83660765000.0,
+            "imports": 424636000.0
+          },
+          "minerals": {
+            "exports": 835761000.0,
+            "imports": 654555000.0
+          },
+          "other": {
+            "exports": 9969012000.0,
+            "imports": 9028089000.0
+          },
+          "forestry": {
+            "exports": 2765883000.0,
+            "imports": 676185000.0
+          },
+          "manufacturing": {
+            "exports": 4028848000.0,
+            "imports": 5904260000.0
+          }
+        }
+      },
+      "2020": {
+        "total": {
+          "exports": 77543239000.0,
+          "imports": 14453711000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 2313927000.0,
+            "imports": 1150217000.0
+          },
+          "energy": {
+            "exports": 58986186000.0,
+            "imports": 378364000.0
+          },
+          "ores": {
+            "exports": 189317000.0,
+            "imports": 86848000.0
+          },
+          "metals": {
+            "exports": 814979000.0,
+            "imports": 506611000.0
+          },
+          "chemical": {
+            "exports": 5967581000.0,
+            "imports": 6141261000.0
+          },
+          "forestry": {
+            "exports": 3191553000.0,
+            "imports": 597796000.0
+          },
+          "machinery": {
+            "exports": 1638261000.0,
+            "imports": 1723866000.0
+          },
+          "electronics": {
+            "exports": 557077000.0,
+            "imports": 920710000.0
+          },
+          "vehicles": {
+            "exports": 348631000.0,
+            "imports": 729432000.0
+          },
+          "aircraft": {
+            "exports": 375136000.0,
+            "imports": 334244000.0
+          },
+          "consumer": {
+            "exports": 2804231000.0,
+            "imports": 1691703000.0
+          },
+          "special": {
+            "exports": 356358000.0,
+            "imports": 192661000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 2313927000.0,
+            "imports": 1150217000.0
+          },
+          "energy": {
+            "exports": 58986186000.0,
+            "imports": 378364000.0
+          },
+          "minerals": {
+            "exports": 1004296000.0,
+            "imports": 593459000.0
+          },
+          "other": {
+            "exports": 9128170000.0,
+            "imports": 8025625000.0
+          },
+          "forestry": {
+            "exports": 3191553000.0,
+            "imports": 597796000.0
+          },
+          "manufacturing": {
+            "exports": 2919105000.0,
+            "imports": 3708252000.0
+          }
+        }
+      },
+      "2021": {
+        "total": {
+          "exports": 122641401000.0,
+          "imports": 19374879000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 2630067000.0,
+            "imports": 1545633000.0
+          },
+          "energy": {
+            "exports": 97643852000.0,
+            "imports": 949270000.0
+          },
+          "ores": {
+            "exports": 338333000.0,
+            "imports": 63495000.0
+          },
+          "metals": {
+            "exports": 710962000.0,
+            "imports": 704971000.0
+          },
+          "chemical": {
+            "exports": 8678345000.0,
+            "imports": 8802822000.0
+          },
+          "forestry": {
+            "exports": 5216557000.0,
+            "imports": 644574000.0
+          },
+          "machinery": {
+            "exports": 1976506000.0,
+            "imports": 1861300000.0
+          },
+          "electronics": {
+            "exports": 643249000.0,
+            "imports": 967631000.0
+          },
+          "vehicles": {
+            "exports": 326543000.0,
+            "imports": 896266000.0
+          },
+          "aircraft": {
+            "exports": 377396000.0,
+            "imports": 961511000.0
+          },
+          "consumer": {
+            "exports": 3748857000.0,
+            "imports": 1814677000.0
+          },
+          "special": {
+            "exports": 350734000.0,
+            "imports": 162725000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 2630067000.0,
+            "imports": 1545633000.0
+          },
+          "energy": {
+            "exports": 97643852000.0,
+            "imports": 949270000.0
+          },
+          "minerals": {
+            "exports": 1049295000.0,
+            "imports": 768466000.0
+          },
+          "other": {
+            "exports": 12777936000.0,
+            "imports": 10780224000.0
+          },
+          "forestry": {
+            "exports": 5216557000.0,
+            "imports": 644574000.0
+          },
+          "manufacturing": {
+            "exports": 3323694000.0,
+            "imports": 4686708000.0
+          }
+        }
+      },
+      "2022": {
+        "total": {
+          "exports": 183861559000.0,
+          "imports": 26380282000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 3552973000.0,
+            "imports": 1913629000.0
+          },
+          "energy": {
+            "exports": 155345057000.0,
+            "imports": 1350336000.0
+          },
+          "ores": {
+            "exports": 482823000.0,
+            "imports": 90175000.0
+          },
+          "metals": {
+            "exports": 974039000.0,
+            "imports": 887899000.0
+          },
+          "chemical": {
+            "exports": 9946359000.0,
+            "imports": 12105194000.0
+          },
+          "forestry": {
+            "exports": 5017269000.0,
+            "imports": 779818000.0
+          },
+          "machinery": {
+            "exports": 2361445000.0,
+            "imports": 2349610000.0
+          },
+          "electronics": {
+            "exports": 849133000.0,
+            "imports": 1236677000.0
+          },
+          "vehicles": {
+            "exports": 366569000.0,
+            "imports": 1481751000.0
+          },
+          "aircraft": {
+            "exports": 471151000.0,
+            "imports": 2141008000.0
+          },
+          "consumer": {
+            "exports": 4113460000.0,
+            "imports": 1924846000.0
+          },
+          "special": {
+            "exports": 381282000.0,
+            "imports": 119339000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 3552973000.0,
+            "imports": 1913629000.0
+          },
+          "energy": {
+            "exports": 155345057000.0,
+            "imports": 1350336000.0
+          },
+          "minerals": {
+            "exports": 1456862000.0,
+            "imports": 978074000.0
+          },
+          "other": {
+            "exports": 14441101000.0,
+            "imports": 14149379000.0
+          },
+          "forestry": {
+            "exports": 5017269000.0,
+            "imports": 779818000.0
+          },
+          "manufacturing": {
+            "exports": 4048298000.0,
+            "imports": 7209046000.0
+          }
+        }
+      },
+      "2023": {
+        "total": {
+          "exports": 155926086000.0,
+          "imports": 25836047000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 4391332000.0,
+            "imports": 1711983000.0
+          },
+          "energy": {
+            "exports": 127196374000.0,
+            "imports": 2336901000.0
+          },
+          "ores": {
+            "exports": 271011000.0,
+            "imports": 79266000.0
+          },
+          "metals": {
+            "exports": 1209857000.0,
+            "imports": 863685000.0
+          },
+          "chemical": {
+            "exports": 9007574000.0,
+            "imports": 11113736000.0
+          },
+          "forestry": {
+            "exports": 3317806000.0,
+            "imports": 813961000.0
+          },
+          "machinery": {
+            "exports": 3231559000.0,
+            "imports": 2578346000.0
+          },
+          "electronics": {
+            "exports": 1009489000.0,
+            "imports": 1265467000.0
+          },
+          "vehicles": {
+            "exports": 513557000.0,
+            "imports": 1421169000.0
+          },
+          "aircraft": {
+            "exports": 394361000.0,
+            "imports": 1531974000.0
+          },
+          "consumer": {
+            "exports": 4933658000.0,
+            "imports": 1864346000.0
+          },
+          "special": {
+            "exports": 449511000.0,
+            "imports": 255217000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 4391332000.0,
+            "imports": 1711983000.0
+          },
+          "energy": {
+            "exports": 127196374000.0,
+            "imports": 2336901000.0
+          },
+          "minerals": {
+            "exports": 1480868000.0,
+            "imports": 942951000.0
+          },
+          "other": {
+            "exports": 14390743000.0,
+            "imports": 13233299000.0
+          },
+          "forestry": {
+            "exports": 3317806000.0,
+            "imports": 813961000.0
+          },
+          "manufacturing": {
+            "exports": 5148966000.0,
+            "imports": 6796956000.0
+          }
+        }
+      },
+      "2024": {
+        "total": {
+          "exports": 161935817000.0,
+          "imports": 25362997000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 4767200000.0,
+            "imports": 1771355000.0
+          },
+          "energy": {
+            "exports": 132888494000.0,
+            "imports": 1977557000.0
+          },
+          "ores": {
+            "exports": 239298000.0,
+            "imports": 106640000.0
+          },
+          "metals": {
+            "exports": 1206288000.0,
+            "imports": 798551000.0
+          },
+          "chemical": {
+            "exports": 8669671000.0,
+            "imports": 11267105000.0
+          },
+          "forestry": {
+            "exports": 3559645000.0,
+            "imports": 830666000.0
+          },
+          "machinery": {
+            "exports": 3334083000.0,
+            "imports": 2717581000.0
+          },
+          "electronics": {
+            "exports": 1111748000.0,
+            "imports": 1321337000.0
+          },
+          "vehicles": {
+            "exports": 557548000.0,
+            "imports": 1404686000.0
+          },
+          "aircraft": {
+            "exports": 309460000.0,
+            "imports": 881350000.0
+          },
+          "consumer": {
+            "exports": 4836160000.0,
+            "imports": 2036898000.0
+          },
+          "special": {
+            "exports": 456220000.0,
+            "imports": 249279000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 4767200000.0,
+            "imports": 1771355000.0
+          },
+          "energy": {
+            "exports": 132888494000.0,
+            "imports": 1977557000.0
+          },
+          "minerals": {
+            "exports": 1445586000.0,
+            "imports": 905191000.0
+          },
+          "other": {
+            "exports": 13962051000.0,
+            "imports": 13553282000.0
+          },
+          "forestry": {
+            "exports": 3559645000.0,
+            "imports": 830666000.0
+          },
+          "manufacturing": {
+            "exports": 5312839000.0,
+            "imports": 6324954000.0
+          }
+        }
+      },
+      "2025": {
+        "total": {
+          "exports": 151793431000.0,
+          "imports": 22692336000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 4168787000.0,
+            "imports": 2041609000.0
+          },
+          "energy": {
+            "exports": 124253895000.0,
+            "imports": 1557461000.0
+          },
+          "ores": {
+            "exports": 423366000.0,
+            "imports": 71973000.0
+          },
+          "metals": {
+            "exports": 1059447000.0,
+            "imports": 613772000.0
+          },
+          "chemical": {
+            "exports": 7463193000.0,
+            "imports": 9337282000.0
+          },
+          "forestry": {
+            "exports": 3303715000.0,
+            "imports": 769743000.0
+          },
+          "machinery": {
+            "exports": 3307923000.0,
+            "imports": 2680514000.0
+          },
+          "electronics": {
+            "exports": 1066309000.0,
+            "imports": 1379376000.0
+          },
+          "vehicles": {
+            "exports": 621647000.0,
+            "imports": 1066356000.0
+          },
+          "aircraft": {
+            "exports": 375341000.0,
+            "imports": 1065549000.0
+          },
+          "consumer": {
+            "exports": 5078455000.0,
+            "imports": 1823584000.0
+          },
+          "special": {
+            "exports": 671355000.0,
+            "imports": 285113000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 4168787000.0,
+            "imports": 2041609000.0
+          },
+          "energy": {
+            "exports": 124253895000.0,
+            "imports": 1557461000.0
+          },
+          "minerals": {
+            "exports": 1482813000.0,
+            "imports": 685745000.0
+          },
+          "other": {
+            "exports": 13213003000.0,
+            "imports": 11445979000.0
+          },
+          "forestry": {
+            "exports": 3303715000.0,
+            "imports": 769743000.0
+          },
+          "manufacturing": {
+            "exports": 5371220000.0,
+            "imports": 6191795000.0
+          }
+        }
+      },
+      "2026": {
+        "total": {
+          "exports": 12968175000.0,
+          "imports": 1320027000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 288666000.0,
+            "imports": 158288000.0
+          },
+          "energy": {
+            "exports": 10717518000.0,
+            "imports": 102267000.0
+          },
+          "ores": {
+            "exports": 80400000.0,
+            "imports": 4989000.0
+          },
+          "metals": {
+            "exports": 98888000.0,
+            "imports": 63585000.0
+          },
+          "chemical": {
+            "exports": 555528000.0,
+            "imports": 310763000.0
+          },
+          "forestry": {
+            "exports": 237377000.0,
+            "imports": 54249000.0
+          },
+          "machinery": {
+            "exports": 345968000.0,
+            "imports": 173187000.0
+          },
+          "electronics": {
+            "exports": 90915000.0,
+            "imports": 93690000.0
+          },
+          "vehicles": {
+            "exports": 40573000.0,
+            "imports": 64289000.0
+          },
+          "aircraft": {
+            "exports": 28612000.0,
+            "imports": 137452000.0
+          },
+          "consumer": {
+            "exports": 420366000.0,
+            "imports": 135282000.0
+          },
+          "special": {
+            "exports": 63366000.0,
+            "imports": 21987000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 288666000.0,
+            "imports": 158288000.0
+          },
+          "energy": {
+            "exports": 10717518000.0,
+            "imports": 102267000.0
+          },
+          "minerals": {
+            "exports": 179288000.0,
+            "imports": 68574000.0
+          },
+          "other": {
+            "exports": 1039260000.0,
+            "imports": 468032000.0
+          },
+          "forestry": {
+            "exports": 237377000.0,
+            "imports": 54249000.0
+          },
+          "manufacturing": {
+            "exports": 506068000.0,
+            "imports": 468618000.0
+          }
+        }
+      }
+    },
+    "BC": {
+      "2017": {
+        "total": {
+          "exports": 22289350000.0,
+          "imports": 20265357000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 1563927000.0,
+            "imports": 1965964000.0
+          },
+          "energy": {
+            "exports": 4537764000.0,
+            "imports": 1898248000.0
+          },
+          "ores": {
+            "exports": 136529000.0,
+            "imports": 887251000.0
+          },
+          "metals": {
+            "exports": 2536516000.0,
+            "imports": 1367654000.0
+          },
+          "chemical": {
+            "exports": 544159000.0,
+            "imports": 1176027000.0
+          },
+          "forestry": {
+            "exports": 7374660000.0,
+            "imports": 2357972000.0
+          },
+          "machinery": {
+            "exports": 1370558000.0,
+            "imports": 2194608000.0
+          },
+          "electronics": {
+            "exports": 1109952000.0,
+            "imports": 1254783000.0
+          },
+          "vehicles": {
+            "exports": 343617000.0,
+            "imports": 1719067000.0
+          },
+          "aircraft": {
+            "exports": 255884000.0,
+            "imports": 1016913000.0
+          },
+          "consumer": {
+            "exports": 2233015000.0,
+            "imports": 4118628000.0
+          },
+          "special": {
+            "exports": 282772000.0,
+            "imports": 308242000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 1563927000.0,
+            "imports": 1965964000.0
+          },
+          "energy": {
+            "exports": 4537764000.0,
+            "imports": 1898248000.0
+          },
+          "minerals": {
+            "exports": 2673045000.0,
+            "imports": 2254905000.0
+          },
+          "other": {
+            "exports": 3059946000.0,
+            "imports": 5602897000.0
+          },
+          "forestry": {
+            "exports": 7374660000.0,
+            "imports": 2357972000.0
+          },
+          "manufacturing": {
+            "exports": 3080011000.0,
+            "imports": 6185371000.0
+          }
+        }
+      },
+      "2018": {
+        "total": {
+          "exports": 22665627000.0,
+          "imports": 22723475000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 1610312000.0,
+            "imports": 2034511000.0
+          },
+          "energy": {
+            "exports": 4155011000.0,
+            "imports": 2578402000.0
+          },
+          "ores": {
+            "exports": 190493000.0,
+            "imports": 844375000.0
+          },
+          "metals": {
+            "exports": 2758834000.0,
+            "imports": 1422013000.0
+          },
+          "chemical": {
+            "exports": 553578000.0,
+            "imports": 1250685000.0
+          },
+          "forestry": {
+            "exports": 7284730000.0,
+            "imports": 2504164000.0
+          },
+          "machinery": {
+            "exports": 1517098000.0,
+            "imports": 2503084000.0
+          },
+          "electronics": {
+            "exports": 1072508000.0,
+            "imports": 1276406000.0
+          },
+          "vehicles": {
+            "exports": 368159000.0,
+            "imports": 2130214000.0
+          },
+          "aircraft": {
+            "exports": 336322000.0,
+            "imports": 1793596000.0
+          },
+          "consumer": {
+            "exports": 2517399000.0,
+            "imports": 4070018000.0
+          },
+          "special": {
+            "exports": 301191000.0,
+            "imports": 316008000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 1610312000.0,
+            "imports": 2034511000.0
+          },
+          "energy": {
+            "exports": 4155011000.0,
+            "imports": 2578402000.0
+          },
+          "minerals": {
+            "exports": 2949327000.0,
+            "imports": 2266388000.0
+          },
+          "other": {
+            "exports": 3372168000.0,
+            "imports": 5636711000.0
+          },
+          "forestry": {
+            "exports": 7284730000.0,
+            "imports": 2504164000.0
+          },
+          "manufacturing": {
+            "exports": 3294087000.0,
+            "imports": 7703300000.0
+          }
+        }
+      },
+      "2019": {
+        "total": {
+          "exports": 21875222000.0,
+          "imports": 21279683000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 1721138000.0,
+            "imports": 2086953000.0
+          },
+          "energy": {
+            "exports": 4794911000.0,
+            "imports": 2087849000.0
+          },
+          "ores": {
+            "exports": 190014000.0,
+            "imports": 740555000.0
+          },
+          "metals": {
+            "exports": 2239361000.0,
+            "imports": 1235817000.0
+          },
+          "chemical": {
+            "exports": 619588000.0,
+            "imports": 1228263000.0
+          },
+          "forestry": {
+            "exports": 5965160000.0,
+            "imports": 2473109000.0
+          },
+          "machinery": {
+            "exports": 1518634000.0,
+            "imports": 2616451000.0
+          },
+          "electronics": {
+            "exports": 1075889000.0,
+            "imports": 1272286000.0
+          },
+          "vehicles": {
+            "exports": 379420000.0,
+            "imports": 2400829000.0
+          },
+          "aircraft": {
+            "exports": 358528000.0,
+            "imports": 883152000.0
+          },
+          "consumer": {
+            "exports": 2706111000.0,
+            "imports": 3920906000.0
+          },
+          "special": {
+            "exports": 306468000.0,
+            "imports": 333519000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 1721138000.0,
+            "imports": 2086953000.0
+          },
+          "energy": {
+            "exports": 4794911000.0,
+            "imports": 2087849000.0
+          },
+          "minerals": {
+            "exports": 2429375000.0,
+            "imports": 1976372000.0
+          },
+          "other": {
+            "exports": 3632167000.0,
+            "imports": 5482688000.0
+          },
+          "forestry": {
+            "exports": 5965160000.0,
+            "imports": 2473109000.0
+          },
+          "manufacturing": {
+            "exports": 3332471000.0,
+            "imports": 7172718000.0
+          }
+        }
+      },
+      "2020": {
+        "total": {
+          "exports": 21719763000.0,
+          "imports": 18999579000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 1774393000.0,
+            "imports": 2119682000.0
+          },
+          "energy": {
+            "exports": 4111732000.0,
+            "imports": 1422873000.0
+          },
+          "ores": {
+            "exports": 126792000.0,
+            "imports": 666204000.0
+          },
+          "metals": {
+            "exports": 2025294000.0,
+            "imports": 1165300000.0
+          },
+          "chemical": {
+            "exports": 548905000.0,
+            "imports": 1118785000.0
+          },
+          "forestry": {
+            "exports": 6995661000.0,
+            "imports": 2474608000.0
+          },
+          "machinery": {
+            "exports": 1391753000.0,
+            "imports": 2137609000.0
+          },
+          "electronics": {
+            "exports": 1110415000.0,
+            "imports": 1167445000.0
+          },
+          "vehicles": {
+            "exports": 350534000.0,
+            "imports": 1864941000.0
+          },
+          "aircraft": {
+            "exports": 265482000.0,
+            "imports": 675670000.0
+          },
+          "consumer": {
+            "exports": 2734038000.0,
+            "imports": 3854797000.0
+          },
+          "special": {
+            "exports": 284765000.0,
+            "imports": 331657000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 1774393000.0,
+            "imports": 2119682000.0
+          },
+          "energy": {
+            "exports": 4111732000.0,
+            "imports": 1422873000.0
+          },
+          "minerals": {
+            "exports": 2152086000.0,
+            "imports": 1831504000.0
+          },
+          "other": {
+            "exports": 3567708000.0,
+            "imports": 5305239000.0
+          },
+          "forestry": {
+            "exports": 6995661000.0,
+            "imports": 2474608000.0
+          },
+          "manufacturing": {
+            "exports": 3118184000.0,
+            "imports": 5845665000.0
+          }
+        }
+      },
+      "2021": {
+        "total": {
+          "exports": 29878241000.0,
+          "imports": 22453325000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 1870769000.0,
+            "imports": 2262361000.0
+          },
+          "energy": {
+            "exports": 7193449000.0,
+            "imports": 2206751000.0
+          },
+          "ores": {
+            "exports": 135192000.0,
+            "imports": 1058834000.0
+          },
+          "metals": {
+            "exports": 2663332000.0,
+            "imports": 1373781000.0
+          },
+          "chemical": {
+            "exports": 715778000.0,
+            "imports": 1338630000.0
+          },
+          "forestry": {
+            "exports": 10538532000.0,
+            "imports": 2782072000.0
+          },
+          "machinery": {
+            "exports": 1511244000.0,
+            "imports": 2329109000.0
+          },
+          "electronics": {
+            "exports": 1152071000.0,
+            "imports": 1263908000.0
+          },
+          "vehicles": {
+            "exports": 439147000.0,
+            "imports": 2412985000.0
+          },
+          "aircraft": {
+            "exports": 297554000.0,
+            "imports": 975438000.0
+          },
+          "consumer": {
+            "exports": 3091101000.0,
+            "imports": 4071984000.0
+          },
+          "special": {
+            "exports": 270067000.0,
+            "imports": 377476000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 1870769000.0,
+            "imports": 2262361000.0
+          },
+          "energy": {
+            "exports": 7193449000.0,
+            "imports": 2206751000.0
+          },
+          "minerals": {
+            "exports": 2798524000.0,
+            "imports": 2432615000.0
+          },
+          "other": {
+            "exports": 4076946000.0,
+            "imports": 5788090000.0
+          },
+          "forestry": {
+            "exports": 10538532000.0,
+            "imports": 2782072000.0
+          },
+          "manufacturing": {
+            "exports": 3400016000.0,
+            "imports": 6981440000.0
+          }
+        }
+      },
+      "2022": {
+        "total": {
+          "exports": 37358226000.0,
+          "imports": 26578409000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 2262936000.0,
+            "imports": 2557085000.0
+          },
+          "energy": {
+            "exports": 12255393000.0,
+            "imports": 3414940000.0
+          },
+          "ores": {
+            "exports": 120452000.0,
+            "imports": 1100500000.0
+          },
+          "metals": {
+            "exports": 3444929000.0,
+            "imports": 1475764000.0
+          },
+          "chemical": {
+            "exports": 810268000.0,
+            "imports": 1537637000.0
+          },
+          "forestry": {
+            "exports": 10245201000.0,
+            "imports": 3181340000.0
+          },
+          "machinery": {
+            "exports": 1846588000.0,
+            "imports": 2806129000.0
+          },
+          "electronics": {
+            "exports": 1601804000.0,
+            "imports": 1413916000.0
+          },
+          "vehicles": {
+            "exports": 491773000.0,
+            "imports": 3342015000.0
+          },
+          "aircraft": {
+            "exports": 282447000.0,
+            "imports": 923655000.0
+          },
+          "consumer": {
+            "exports": 3702963000.0,
+            "imports": 4478111000.0
+          },
+          "special": {
+            "exports": 293469000.0,
+            "imports": 347318000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 2262936000.0,
+            "imports": 2557085000.0
+          },
+          "energy": {
+            "exports": 12255393000.0,
+            "imports": 3414940000.0
+          },
+          "minerals": {
+            "exports": 3565381000.0,
+            "imports": 2576264000.0
+          },
+          "other": {
+            "exports": 4806700000.0,
+            "imports": 6363066000.0
+          },
+          "forestry": {
+            "exports": 10245201000.0,
+            "imports": 3181340000.0
+          },
+          "manufacturing": {
+            "exports": 4222612000.0,
+            "imports": 8485715000.0
+          }
+        }
+      },
+      "2023": {
+        "total": {
+          "exports": 30416079000.0,
+          "imports": 26334793000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 2006656000.0,
+            "imports": 2414151000.0
+          },
+          "energy": {
+            "exports": 8196866000.0,
+            "imports": 4115072000.0
+          },
+          "ores": {
+            "exports": 115920000.0,
+            "imports": 767635000.0
+          },
+          "metals": {
+            "exports": 3219277000.0,
+            "imports": 1469663000.0
+          },
+          "chemical": {
+            "exports": 830504000.0,
+            "imports": 1691233000.0
+          },
+          "forestry": {
+            "exports": 7422058000.0,
+            "imports": 2971111000.0
+          },
+          "machinery": {
+            "exports": 2034297000.0,
+            "imports": 2868933000.0
+          },
+          "electronics": {
+            "exports": 2036732000.0,
+            "imports": 1540407000.0
+          },
+          "vehicles": {
+            "exports": 523706000.0,
+            "imports": 2580083000.0
+          },
+          "aircraft": {
+            "exports": 239076000.0,
+            "imports": 1000243000.0
+          },
+          "consumer": {
+            "exports": 3482088000.0,
+            "imports": 4526052000.0
+          },
+          "special": {
+            "exports": 308895000.0,
+            "imports": 390205000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 2006656000.0,
+            "imports": 2414151000.0
+          },
+          "energy": {
+            "exports": 8196866000.0,
+            "imports": 4115072000.0
+          },
+          "minerals": {
+            "exports": 3335197000.0,
+            "imports": 2237298000.0
+          },
+          "other": {
+            "exports": 4621487000.0,
+            "imports": 6607490000.0
+          },
+          "forestry": {
+            "exports": 7422058000.0,
+            "imports": 2971111000.0
+          },
+          "manufacturing": {
+            "exports": 4833811000.0,
+            "imports": 7989666000.0
+          }
+        }
+      },
+      "2024": {
+        "total": {
+          "exports": 28850487000.0,
+          "imports": 25843016000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 2231781000.0,
+            "imports": 2687824000.0
+          },
+          "energy": {
+            "exports": 5711450000.0,
+            "imports": 3063626000.0
+          },
+          "ores": {
+            "exports": 86237000.0,
+            "imports": 987299000.0
+          },
+          "metals": {
+            "exports": 3229041000.0,
+            "imports": 1402730000.0
+          },
+          "chemical": {
+            "exports": 955296000.0,
+            "imports": 1630690000.0
+          },
+          "forestry": {
+            "exports": 7543131000.0,
+            "imports": 3053751000.0
+          },
+          "machinery": {
+            "exports": 2040187000.0,
+            "imports": 2792331000.0
+          },
+          "electronics": {
+            "exports": 2372157000.0,
+            "imports": 1611132000.0
+          },
+          "vehicles": {
+            "exports": 594364000.0,
+            "imports": 2722323000.0
+          },
+          "aircraft": {
+            "exports": 331887000.0,
+            "imports": 1039478000.0
+          },
+          "consumer": {
+            "exports": 3392596000.0,
+            "imports": 4520837000.0
+          },
+          "special": {
+            "exports": 362360000.0,
+            "imports": 330989000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 2231781000.0,
+            "imports": 2687824000.0
+          },
+          "energy": {
+            "exports": 5711450000.0,
+            "imports": 3063626000.0
+          },
+          "minerals": {
+            "exports": 3315278000.0,
+            "imports": 2390029000.0
+          },
+          "other": {
+            "exports": 4710252000.0,
+            "imports": 6482516000.0
+          },
+          "forestry": {
+            "exports": 7543131000.0,
+            "imports": 3053751000.0
+          },
+          "manufacturing": {
+            "exports": 5338595000.0,
+            "imports": 8165264000.0
+          }
+        }
+      },
+      "2025": {
+        "total": {
+          "exports": 28121651000.0,
+          "imports": 23646180000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 2211386000.0,
+            "imports": 2633360000.0
+          },
+          "energy": {
+            "exports": 6207814000.0,
+            "imports": 1969268000.0
+          },
+          "ores": {
+            "exports": 115863000.0,
+            "imports": 1124984000.0
+          },
+          "metals": {
+            "exports": 2982268000.0,
+            "imports": 1234227000.0
+          },
+          "chemical": {
+            "exports": 919770000.0,
+            "imports": 1842072000.0
+          },
+          "forestry": {
+            "exports": 6488518000.0,
+            "imports": 2821887000.0
+          },
+          "machinery": {
+            "exports": 2024123000.0,
+            "imports": 2706076000.0
+          },
+          "electronics": {
+            "exports": 2491370000.0,
+            "imports": 1799480000.0
+          },
+          "vehicles": {
+            "exports": 636001000.0,
+            "imports": 1955844000.0
+          },
+          "aircraft": {
+            "exports": 473434000.0,
+            "imports": 1070243000.0
+          },
+          "consumer": {
+            "exports": 3128155000.0,
+            "imports": 4192113000.0
+          },
+          "special": {
+            "exports": 442950000.0,
+            "imports": 296627000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 2211386000.0,
+            "imports": 2633360000.0
+          },
+          "energy": {
+            "exports": 6207814000.0,
+            "imports": 1969268000.0
+          },
+          "minerals": {
+            "exports": 3098131000.0,
+            "imports": 2359211000.0
+          },
+          "other": {
+            "exports": 4490875000.0,
+            "imports": 6330812000.0
+          },
+          "forestry": {
+            "exports": 6488518000.0,
+            "imports": 2821887000.0
+          },
+          "manufacturing": {
+            "exports": 5624928000.0,
+            "imports": 7531643000.0
+          }
+        }
+      },
+      "2026": {
+        "total": {
+          "exports": 2601223000.0,
+          "imports": 1750288000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 102132000.0,
+            "imports": 228591000.0
+          },
+          "energy": {
+            "exports": 1112646000.0,
+            "imports": 85470000.0
+          },
+          "ores": {
+            "exports": 8902000.0,
+            "imports": 61771000.0
+          },
+          "metals": {
+            "exports": 260728000.0,
+            "imports": 105971000.0
+          },
+          "chemical": {
+            "exports": 80534000.0,
+            "imports": 95851000.0
+          },
+          "forestry": {
+            "exports": 395096000.0,
+            "imports": 199715000.0
+          },
+          "machinery": {
+            "exports": 121007000.0,
+            "imports": 198935000.0
+          },
+          "electronics": {
+            "exports": 153974000.0,
+            "imports": 131127000.0
+          },
+          "vehicles": {
+            "exports": 35837000.0,
+            "imports": 115060000.0
+          },
+          "aircraft": {
+            "exports": 22860000.0,
+            "imports": 201874000.0
+          },
+          "consumer": {
+            "exports": 274899000.0,
+            "imports": 311266000.0
+          },
+          "special": {
+            "exports": 32607000.0,
+            "imports": 14656000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 102132000.0,
+            "imports": 228591000.0
+          },
+          "energy": {
+            "exports": 1112646000.0,
+            "imports": 85470000.0
+          },
+          "minerals": {
+            "exports": 269630000.0,
+            "imports": 167742000.0
+          },
+          "other": {
+            "exports": 388040000.0,
+            "imports": 421773000.0
+          },
+          "forestry": {
+            "exports": 395096000.0,
+            "imports": 199715000.0
+          },
+          "manufacturing": {
+            "exports": 333678000.0,
+            "imports": 646996000.0
+          }
+        }
+      }
+    },
+    "YT": {
+      "2017": {
+        "total": {
+          "exports": 103155000.0,
+          "imports": 74698000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 25000.0,
+            "imports": 44396000.0
+          },
+          "energy": {
+            "exports": 554000.0,
+            "imports": 2447000.0
+          },
+          "ores": {
+            "exports": 96742000.0,
+            "imports": 3000.0
+          },
+          "metals": {
+            "exports": 933000.0,
+            "imports": 510000.0
+          },
+          "chemical": {
+            "exports": 16000.0,
+            "imports": 395000.0
+          },
+          "forestry": {
+            "exports": 1528000.0,
+            "imports": 135000.0
+          },
+          "machinery": {
+            "exports": 438000.0,
+            "imports": 19059000.0
+          },
+          "electronics": {
+            "exports": 1405000.0,
+            "imports": 3267000.0
+          },
+          "vehicles": {
+            "exports": 41000.0,
+            "imports": 400000.0
+          },
+          "aircraft": {
+            "exports": 169000.0,
+            "imports": 2323000.0
+          },
+          "consumer": {
+            "exports": 1146000.0,
+            "imports": 1765000.0
+          },
+          "special": {
+            "exports": 164000.0,
+            "imports": 0.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 25000.0,
+            "imports": 44396000.0
+          },
+          "energy": {
+            "exports": 554000.0,
+            "imports": 2447000.0
+          },
+          "minerals": {
+            "exports": 97675000.0,
+            "imports": 513000.0
+          },
+          "other": {
+            "exports": 1326000.0,
+            "imports": 2160000.0
+          },
+          "forestry": {
+            "exports": 1528000.0,
+            "imports": 135000.0
+          },
+          "manufacturing": {
+            "exports": 2053000.0,
+            "imports": 25049000.0
+          }
+        }
+      },
+      "2018": {
+        "total": {
+          "exports": 77532000.0,
+          "imports": 48445000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 4000.0,
+            "imports": 29507000.0
+          },
+          "energy": {
+            "exports": 231000.0,
+            "imports": 2791000.0
+          },
+          "ores": {
+            "exports": 69983000.0,
+            "imports": 5000.0
+          },
+          "metals": {
+            "exports": 3942000.0,
+            "imports": 288000.0
+          },
+          "chemical": {
+            "exports": 16000.0,
+            "imports": 180000.0
+          },
+          "forestry": {
+            "exports": 1721000.0,
+            "imports": 40000.0
+          },
+          "machinery": {
+            "exports": 42000.0,
+            "imports": 7151000.0
+          },
+          "electronics": {
+            "exports": 1125000.0,
+            "imports": 1462000.0
+          },
+          "vehicles": {
+            "exports": 12000.0,
+            "imports": 289000.0
+          },
+          "aircraft": {
+            "exports": 0.0,
+            "imports": 6036000.0
+          },
+          "consumer": {
+            "exports": 288000.0,
+            "imports": 670000.0
+          },
+          "special": {
+            "exports": 166000.0,
+            "imports": 26000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 4000.0,
+            "imports": 29507000.0
+          },
+          "energy": {
+            "exports": 231000.0,
+            "imports": 2791000.0
+          },
+          "minerals": {
+            "exports": 73925000.0,
+            "imports": 293000.0
+          },
+          "other": {
+            "exports": 470000.0,
+            "imports": 876000.0
+          },
+          "forestry": {
+            "exports": 1721000.0,
+            "imports": 40000.0
+          },
+          "manufacturing": {
+            "exports": 1179000.0,
+            "imports": 14938000.0
+          }
+        }
+      },
+      "2019": {
+        "total": {
+          "exports": 13232000.0,
+          "imports": 53666000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 185000.0,
+            "imports": 36152000.0
+          },
+          "energy": {
+            "exports": 77000.0,
+            "imports": 1692000.0
+          },
+          "ores": {
+            "exports": 6417000.0,
+            "imports": 3000.0
+          },
+          "metals": {
+            "exports": 2366000.0,
+            "imports": 278000.0
+          },
+          "chemical": {
+            "exports": 155000.0,
+            "imports": 373000.0
+          },
+          "forestry": {
+            "exports": 1505000.0,
+            "imports": 658000.0
+          },
+          "machinery": {
+            "exports": 1161000.0,
+            "imports": 4093000.0
+          },
+          "electronics": {
+            "exports": 790000.0,
+            "imports": 1410000.0
+          },
+          "vehicles": {
+            "exports": 11000.0,
+            "imports": 780000.0
+          },
+          "aircraft": {
+            "exports": 53000.0,
+            "imports": 3017000.0
+          },
+          "consumer": {
+            "exports": 349000.0,
+            "imports": 1229000.0
+          },
+          "special": {
+            "exports": 162000.0,
+            "imports": 3982000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 185000.0,
+            "imports": 36152000.0
+          },
+          "energy": {
+            "exports": 77000.0,
+            "imports": 1692000.0
+          },
+          "minerals": {
+            "exports": 8783000.0,
+            "imports": 281000.0
+          },
+          "other": {
+            "exports": 666000.0,
+            "imports": 5584000.0
+          },
+          "forestry": {
+            "exports": 1505000.0,
+            "imports": 658000.0
+          },
+          "manufacturing": {
+            "exports": 2015000.0,
+            "imports": 9300000.0
+          }
+        }
+      },
+      "2020": {
+        "total": {
+          "exports": 70057000.0,
+          "imports": 43514000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 3000.0,
+            "imports": 23080000.0
+          },
+          "energy": {
+            "exports": 34000.0,
+            "imports": 460000.0
+          },
+          "ores": {
+            "exports": 61199000.0,
+            "imports": 2000.0
+          },
+          "metals": {
+            "exports": 6398000.0,
+            "imports": 351000.0
+          },
+          "chemical": {
+            "exports": 2000.0,
+            "imports": 258000.0
+          },
+          "forestry": {
+            "exports": 1275000.0,
+            "imports": 70000.0
+          },
+          "machinery": {
+            "exports": 386000.0,
+            "imports": 12290000.0
+          },
+          "electronics": {
+            "exports": 408000.0,
+            "imports": 3157000.0
+          },
+          "vehicles": {
+            "exports": 5000.0,
+            "imports": 1492000.0
+          },
+          "aircraft": {
+            "exports": 101000.0,
+            "imports": 338000.0
+          },
+          "consumer": {
+            "exports": 109000.0,
+            "imports": 1939000.0
+          },
+          "special": {
+            "exports": 138000.0,
+            "imports": 73000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 3000.0,
+            "imports": 23080000.0
+          },
+          "energy": {
+            "exports": 34000.0,
+            "imports": 460000.0
+          },
+          "minerals": {
+            "exports": 67597000.0,
+            "imports": 353000.0
+          },
+          "other": {
+            "exports": 249000.0,
+            "imports": 2270000.0
+          },
+          "forestry": {
+            "exports": 1275000.0,
+            "imports": 70000.0
+          },
+          "manufacturing": {
+            "exports": 900000.0,
+            "imports": 17277000.0
+          }
+        }
+      },
+      "2021": {
+        "total": {
+          "exports": 159776000.0,
+          "imports": 52632000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 12000.0,
+            "imports": 33724000.0
+          },
+          "energy": {
+            "exports": 97000.0,
+            "imports": 942000.0
+          },
+          "ores": {
+            "exports": 148412000.0,
+            "imports": 26000.0
+          },
+          "metals": {
+            "exports": 7497000.0,
+            "imports": 31000.0
+          },
+          "chemical": {
+            "exports": 66000.0,
+            "imports": 138000.0
+          },
+          "forestry": {
+            "exports": 1801000.0,
+            "imports": 49000.0
+          },
+          "machinery": {
+            "exports": 1177000.0,
+            "imports": 7556000.0
+          },
+          "electronics": {
+            "exports": 163000.0,
+            "imports": 2806000.0
+          },
+          "vehicles": {
+            "exports": 10000.0,
+            "imports": 4182000.0
+          },
+          "aircraft": {
+            "exports": 94000.0,
+            "imports": 2212000.0
+          },
+          "consumer": {
+            "exports": 297000.0,
+            "imports": 966000.0
+          },
+          "special": {
+            "exports": 145000.0,
+            "imports": 0.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 12000.0,
+            "imports": 33724000.0
+          },
+          "energy": {
+            "exports": 97000.0,
+            "imports": 942000.0
+          },
+          "minerals": {
+            "exports": 155909000.0,
+            "imports": 57000.0
+          },
+          "other": {
+            "exports": 508000.0,
+            "imports": 1104000.0
+          },
+          "forestry": {
+            "exports": 1801000.0,
+            "imports": 49000.0
+          },
+          "manufacturing": {
+            "exports": 1444000.0,
+            "imports": 16756000.0
+          }
+        }
+      },
+      "2022": {
+        "total": {
+          "exports": 191529000.0,
+          "imports": 49026000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 399000.0,
+            "imports": 22073000.0
+          },
+          "energy": {
+            "exports": 163000.0,
+            "imports": 1270000.0
+          },
+          "ores": {
+            "exports": 177318000.0,
+            "imports": 4000.0
+          },
+          "metals": {
+            "exports": 10281000.0,
+            "imports": 329000.0
+          },
+          "chemical": {
+            "exports": 55000.0,
+            "imports": 529000.0
+          },
+          "forestry": {
+            "exports": 1475000.0,
+            "imports": 140000.0
+          },
+          "machinery": {
+            "exports": 951000.0,
+            "imports": 7689000.0
+          },
+          "electronics": {
+            "exports": 378000.0,
+            "imports": 5388000.0
+          },
+          "vehicles": {
+            "exports": 23000.0,
+            "imports": 7127000.0
+          },
+          "aircraft": {
+            "exports": 64000.0,
+            "imports": 3112000.0
+          },
+          "consumer": {
+            "exports": 272000.0,
+            "imports": 652000.0
+          },
+          "special": {
+            "exports": 150000.0,
+            "imports": 712000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 399000.0,
+            "imports": 22073000.0
+          },
+          "energy": {
+            "exports": 163000.0,
+            "imports": 1270000.0
+          },
+          "minerals": {
+            "exports": 187599000.0,
+            "imports": 333000.0
+          },
+          "other": {
+            "exports": 477000.0,
+            "imports": 1893000.0
+          },
+          "forestry": {
+            "exports": 1475000.0,
+            "imports": 140000.0
+          },
+          "manufacturing": {
+            "exports": 1416000.0,
+            "imports": 23316000.0
+          }
+        }
+      },
+      "2023": {
+        "total": {
+          "exports": 104123000.0,
+          "imports": 46003000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 387000.0,
+            "imports": 24155000.0
+          },
+          "energy": {
+            "exports": 67000.0,
+            "imports": 845000.0
+          },
+          "ores": {
+            "exports": 95313000.0,
+            "imports": 11000.0
+          },
+          "metals": {
+            "exports": 4969000.0,
+            "imports": 94000.0
+          },
+          "chemical": {
+            "exports": 115000.0,
+            "imports": 31000.0
+          },
+          "forestry": {
+            "exports": 1421000.0,
+            "imports": 1544000.0
+          },
+          "machinery": {
+            "exports": 51000.0,
+            "imports": 13335000.0
+          },
+          "electronics": {
+            "exports": 1304000.0,
+            "imports": 1499000.0
+          },
+          "vehicles": {
+            "exports": 0.0,
+            "imports": 713000.0
+          },
+          "aircraft": {
+            "exports": 71000.0,
+            "imports": 2490000.0
+          },
+          "consumer": {
+            "exports": 259000.0,
+            "imports": 1280000.0
+          },
+          "special": {
+            "exports": 169000.0,
+            "imports": 6000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 387000.0,
+            "imports": 24155000.0
+          },
+          "energy": {
+            "exports": 67000.0,
+            "imports": 845000.0
+          },
+          "minerals": {
+            "exports": 100282000.0,
+            "imports": 105000.0
+          },
+          "other": {
+            "exports": 543000.0,
+            "imports": 1317000.0
+          },
+          "forestry": {
+            "exports": 1421000.0,
+            "imports": 1544000.0
+          },
+          "manufacturing": {
+            "exports": 1426000.0,
+            "imports": 18037000.0
+          }
+        }
+      },
+      "2024": {
+        "total": {
+          "exports": 144698000.0,
+          "imports": 61573000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 181000.0,
+            "imports": 36606000.0
+          },
+          "energy": {
+            "exports": 199000.0,
+            "imports": 95000.0
+          },
+          "ores": {
+            "exports": 130991000.0,
+            "imports": 19000.0
+          },
+          "metals": {
+            "exports": 5007000.0,
+            "imports": 516000.0
+          },
+          "chemical": {
+            "exports": 100000.0,
+            "imports": 68000.0
+          },
+          "forestry": {
+            "exports": 1505000.0,
+            "imports": 30000.0
+          },
+          "machinery": {
+            "exports": 302000.0,
+            "imports": 16774000.0
+          },
+          "electronics": {
+            "exports": 160000.0,
+            "imports": 3303000.0
+          },
+          "vehicles": {
+            "exports": 2925000.0,
+            "imports": 1086000.0
+          },
+          "aircraft": {
+            "exports": 597000.0,
+            "imports": 2051000.0
+          },
+          "consumer": {
+            "exports": 2563000.0,
+            "imports": 1023000.0
+          },
+          "special": {
+            "exports": 170000.0,
+            "imports": 0.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 181000.0,
+            "imports": 36606000.0
+          },
+          "energy": {
+            "exports": 199000.0,
+            "imports": 95000.0
+          },
+          "minerals": {
+            "exports": 135998000.0,
+            "imports": 535000.0
+          },
+          "other": {
+            "exports": 2833000.0,
+            "imports": 1091000.0
+          },
+          "forestry": {
+            "exports": 1505000.0,
+            "imports": 30000.0
+          },
+          "manufacturing": {
+            "exports": 3984000.0,
+            "imports": 23214000.0
+          }
+        }
+      },
+      "2025": {
+        "total": {
+          "exports": 185877000.0,
+          "imports": 60900000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 77000.0,
+            "imports": 42402000.0
+          },
+          "energy": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "ores": {
+            "exports": 179467000.0,
+            "imports": 24000.0
+          },
+          "metals": {
+            "exports": 3976000.0,
+            "imports": 168000.0
+          },
+          "chemical": {
+            "exports": 0.0,
+            "imports": 591000.0
+          },
+          "forestry": {
+            "exports": 1287000.0,
+            "imports": 13000.0
+          },
+          "machinery": {
+            "exports": 433000.0,
+            "imports": 9079000.0
+          },
+          "electronics": {
+            "exports": 232000.0,
+            "imports": 2247000.0
+          },
+          "vehicles": {
+            "exports": 18000.0,
+            "imports": 1843000.0
+          },
+          "aircraft": {
+            "exports": 3000.0,
+            "imports": 1999000.0
+          },
+          "consumer": {
+            "exports": 205000.0,
+            "imports": 2526000.0
+          },
+          "special": {
+            "exports": 176000.0,
+            "imports": 6000.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 77000.0,
+            "imports": 42402000.0
+          },
+          "energy": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "minerals": {
+            "exports": 183443000.0,
+            "imports": 192000.0
+          },
+          "other": {
+            "exports": 381000.0,
+            "imports": 3123000.0
+          },
+          "forestry": {
+            "exports": 1287000.0,
+            "imports": 13000.0
+          },
+          "manufacturing": {
+            "exports": 686000.0,
+            "imports": 15168000.0
+          }
+        }
+      },
+      "2026": {
+        "total": {
+          "exports": 15968000.0,
+          "imports": 4983000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "energy": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "ores": {
+            "exports": 15865000.0,
+            "imports": 1000.0
+          },
+          "metals": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "chemical": {
+            "exports": 0.0,
+            "imports": 4000.0
+          },
+          "forestry": {
+            "exports": 0.0,
+            "imports": 17000.0
+          },
+          "machinery": {
+            "exports": 0.0,
+            "imports": 315000.0
+          },
+          "electronics": {
+            "exports": 0.0,
+            "imports": 4466000.0
+          },
+          "vehicles": {
+            "exports": 0.0,
+            "imports": 73000.0
+          },
+          "aircraft": {
+            "exports": 0.0,
+            "imports": 107000.0
+          },
+          "consumer": {
+            "exports": 101000.0,
+            "imports": 0.0
+          },
+          "special": {
+            "exports": 2000.0,
+            "imports": 0.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "energy": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "minerals": {
+            "exports": 15865000.0,
+            "imports": 1000.0
+          },
+          "other": {
+            "exports": 103000.0,
+            "imports": 4000.0
+          },
+          "forestry": {
+            "exports": 0.0,
+            "imports": 17000.0
+          },
+          "manufacturing": {
+            "exports": 0.0,
+            "imports": 4961000.0
+          }
+        }
+      }
+    },
+    "NT": {
+      "2017": {
+        "total": {
+          "exports": 5722000.0,
+          "imports": 8000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "energy": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "ores": {
+            "exports": 5058000.0,
+            "imports": 0.0
+          },
+          "metals": {
+            "exports": 181000.0,
+            "imports": 0.0
+          },
+          "chemical": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "forestry": {
+            "exports": 8000.0,
+            "imports": 0.0
+          },
+          "machinery": {
+            "exports": 34000.0,
+            "imports": 3000.0
+          },
+          "electronics": {
+            "exports": 36000.0,
+            "imports": 0.0
+          },
+          "vehicles": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "aircraft": {
+            "exports": 58000.0,
+            "imports": 5000.0
+          },
+          "consumer": {
+            "exports": 114000.0,
+            "imports": 0.0
+          },
+          "special": {
+            "exports": 231000.0,
+            "imports": 0.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "energy": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "minerals": {
+            "exports": 5239000.0,
+            "imports": 0.0
+          },
+          "other": {
+            "exports": 345000.0,
+            "imports": 0.0
+          },
+          "forestry": {
+            "exports": 8000.0,
+            "imports": 0.0
+          },
+          "manufacturing": {
+            "exports": 128000.0,
+            "imports": 8000.0
+          }
+        }
+      },
+      "2018": {
+        "total": {
+          "exports": 892000.0,
+          "imports": 365000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "energy": {
+            "exports": 0.0,
+            "imports": 4000.0
+          },
+          "ores": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "metals": {
+            "exports": 270000.0,
+            "imports": 0.0
+          },
+          "chemical": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "forestry": {
+            "exports": 21000.0,
+            "imports": 0.0
+          },
+          "machinery": {
+            "exports": 72000.0,
+            "imports": 0.0
+          },
+          "electronics": {
+            "exports": 63000.0,
+            "imports": 0.0
+          },
+          "vehicles": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "aircraft": {
+            "exports": 18000.0,
+            "imports": 361000.0
+          },
+          "consumer": {
+            "exports": 213000.0,
+            "imports": 0.0
+          },
+          "special": {
+            "exports": 236000.0,
+            "imports": 0.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "energy": {
+            "exports": 0.0,
+            "imports": 4000.0
+          },
+          "minerals": {
+            "exports": 270000.0,
+            "imports": 0.0
+          },
+          "other": {
+            "exports": 449000.0,
+            "imports": 0.0
+          },
+          "forestry": {
+            "exports": 21000.0,
+            "imports": 0.0
+          },
+          "manufacturing": {
+            "exports": 153000.0,
+            "imports": 361000.0
+          }
+        }
+      },
+      "2019": {
+        "total": {
+          "exports": 1857000.0,
+          "imports": 167000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "energy": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "ores": {
+            "exports": 32000.0,
+            "imports": 0.0
+          },
+          "metals": {
+            "exports": 771000.0,
+            "imports": 62000.0
+          },
+          "chemical": {
+            "exports": 6000.0,
+            "imports": 1000.0
+          },
+          "forestry": {
+            "exports": 29000.0,
+            "imports": 1000.0
+          },
+          "machinery": {
+            "exports": 56000.0,
+            "imports": 24000.0
+          },
+          "electronics": {
+            "exports": 30000.0,
+            "imports": 0.0
+          },
+          "vehicles": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "aircraft": {
+            "exports": 0.0,
+            "imports": 58000.0
+          },
+          "consumer": {
+            "exports": 688000.0,
+            "imports": 22000.0
+          },
+          "special": {
+            "exports": 242000.0,
+            "imports": 0.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "energy": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "minerals": {
+            "exports": 803000.0,
+            "imports": 62000.0
+          },
+          "other": {
+            "exports": 936000.0,
+            "imports": 23000.0
+          },
+          "forestry": {
+            "exports": 29000.0,
+            "imports": 1000.0
+          },
+          "manufacturing": {
+            "exports": 86000.0,
+            "imports": 82000.0
+          }
+        }
+      },
+      "2020": {
+        "total": {
+          "exports": 765000.0,
+          "imports": 10378000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "energy": {
+            "exports": 0.0,
+            "imports": 10377000.0
+          },
+          "ores": {
+            "exports": 79000.0,
+            "imports": 0.0
+          },
+          "metals": {
+            "exports": 257000.0,
+            "imports": 1000.0
+          },
+          "chemical": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "forestry": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "machinery": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "electronics": {
+            "exports": 49000.0,
+            "imports": 0.0
+          },
+          "vehicles": {
+            "exports": 11000.0,
+            "imports": 0.0
+          },
+          "aircraft": {
+            "exports": 41000.0,
+            "imports": 0.0
+          },
+          "consumer": {
+            "exports": 86000.0,
+            "imports": 1000.0
+          },
+          "special": {
+            "exports": 242000.0,
+            "imports": 0.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "energy": {
+            "exports": 0.0,
+            "imports": 10377000.0
+          },
+          "minerals": {
+            "exports": 336000.0,
+            "imports": 1000.0
+          },
+          "other": {
+            "exports": 328000.0,
+            "imports": 1000.0
+          },
+          "forestry": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "manufacturing": {
+            "exports": 101000.0,
+            "imports": 0.0
+          }
+        }
+      },
+      "2021": {
+        "total": {
+          "exports": 1450000.0,
+          "imports": 47000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 4000.0,
+            "imports": 0.0
+          },
+          "energy": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "ores": {
+            "exports": 64000.0,
+            "imports": 0.0
+          },
+          "metals": {
+            "exports": 201000.0,
+            "imports": 0.0
+          },
+          "chemical": {
+            "exports": 0.0,
+            "imports": 1000.0
+          },
+          "forestry": {
+            "exports": 9000.0,
+            "imports": 1000.0
+          },
+          "machinery": {
+            "exports": 5000.0,
+            "imports": 0.0
+          },
+          "electronics": {
+            "exports": 14000.0,
+            "imports": 0.0
+          },
+          "vehicles": {
+            "exports": 611000.0,
+            "imports": 0.0
+          },
+          "aircraft": {
+            "exports": 0.0,
+            "imports": 45000.0
+          },
+          "consumer": {
+            "exports": 320000.0,
+            "imports": 0.0
+          },
+          "special": {
+            "exports": 221000.0,
+            "imports": 0.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 4000.0,
+            "imports": 0.0
+          },
+          "energy": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "minerals": {
+            "exports": 265000.0,
+            "imports": 0.0
+          },
+          "other": {
+            "exports": 541000.0,
+            "imports": 1000.0
+          },
+          "forestry": {
+            "exports": 9000.0,
+            "imports": 1000.0
+          },
+          "manufacturing": {
+            "exports": 630000.0,
+            "imports": 45000.0
+          }
+        }
+      },
+      "2022": {
+        "total": {
+          "exports": 2551000.0,
+          "imports": 41893000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "energy": {
+            "exports": 0.0,
+            "imports": 41821000.0
+          },
+          "ores": {
+            "exports": 1373000.0,
+            "imports": 0.0
+          },
+          "metals": {
+            "exports": 228000.0,
+            "imports": 72000.0
+          },
+          "chemical": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "forestry": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "machinery": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "electronics": {
+            "exports": 4000.0,
+            "imports": 0.0
+          },
+          "vehicles": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "aircraft": {
+            "exports": 16000.0,
+            "imports": 0.0
+          },
+          "consumer": {
+            "exports": 680000.0,
+            "imports": 0.0
+          },
+          "special": {
+            "exports": 251000.0,
+            "imports": 0.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "energy": {
+            "exports": 0.0,
+            "imports": 41821000.0
+          },
+          "minerals": {
+            "exports": 1601000.0,
+            "imports": 72000.0
+          },
+          "other": {
+            "exports": 931000.0,
+            "imports": 0.0
+          },
+          "forestry": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "manufacturing": {
+            "exports": 20000.0,
+            "imports": 0.0
+          }
+        }
+      },
+      "2023": {
+        "total": {
+          "exports": 5600000.0,
+          "imports": 26498000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "energy": {
+            "exports": 0.0,
+            "imports": 26498000.0
+          },
+          "ores": {
+            "exports": 947000.0,
+            "imports": 0.0
+          },
+          "metals": {
+            "exports": 242000.0,
+            "imports": 0.0
+          },
+          "chemical": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "forestry": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "machinery": {
+            "exports": 165000.0,
+            "imports": 0.0
+          },
+          "electronics": {
+            "exports": 40000.0,
+            "imports": 0.0
+          },
+          "vehicles": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "aircraft": {
+            "exports": 2760000.0,
+            "imports": 0.0
+          },
+          "consumer": {
+            "exports": 1191000.0,
+            "imports": 0.0
+          },
+          "special": {
+            "exports": 255000.0,
+            "imports": 0.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "energy": {
+            "exports": 0.0,
+            "imports": 26498000.0
+          },
+          "minerals": {
+            "exports": 1189000.0,
+            "imports": 0.0
+          },
+          "other": {
+            "exports": 1446000.0,
+            "imports": 0.0
+          },
+          "forestry": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "manufacturing": {
+            "exports": 2965000.0,
+            "imports": 0.0
+          }
+        }
+      },
+      "2024": {
+        "total": {
+          "exports": 933000.0,
+          "imports": 79267000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "energy": {
+            "exports": 0.0,
+            "imports": 79231000.0
+          },
+          "ores": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "metals": {
+            "exports": 369000.0,
+            "imports": 0.0
+          },
+          "chemical": {
+            "exports": 0.0,
+            "imports": 3000.0
+          },
+          "forestry": {
+            "exports": 0.0,
+            "imports": 1000.0
+          },
+          "machinery": {
+            "exports": 29000.0,
+            "imports": 9000.0
+          },
+          "electronics": {
+            "exports": 101000.0,
+            "imports": 8000.0
+          },
+          "vehicles": {
+            "exports": 0.0,
+            "imports": 2000.0
+          },
+          "aircraft": {
+            "exports": 5000.0,
+            "imports": 13000.0
+          },
+          "consumer": {
+            "exports": 173000.0,
+            "imports": 0.0
+          },
+          "special": {
+            "exports": 254000.0,
+            "imports": 0.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "energy": {
+            "exports": 0.0,
+            "imports": 79231000.0
+          },
+          "minerals": {
+            "exports": 369000.0,
+            "imports": 0.0
+          },
+          "other": {
+            "exports": 427000.0,
+            "imports": 3000.0
+          },
+          "forestry": {
+            "exports": 0.0,
+            "imports": 1000.0
+          },
+          "manufacturing": {
+            "exports": 135000.0,
+            "imports": 32000.0
+          }
+        }
+      },
+      "2025": {
+        "total": {
+          "exports": 2603000.0,
+          "imports": 44546000.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "energy": {
+            "exports": 0.0,
+            "imports": 44540000.0
+          },
+          "ores": {
+            "exports": 8000.0,
+            "imports": 0.0
+          },
+          "metals": {
+            "exports": 563000.0,
+            "imports": 0.0
+          },
+          "chemical": {
+            "exports": 6000.0,
+            "imports": 0.0
+          },
+          "forestry": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "machinery": {
+            "exports": 0.0,
+            "imports": 3000.0
+          },
+          "electronics": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "vehicles": {
+            "exports": 0.0,
+            "imports": 3000.0
+          },
+          "aircraft": {
+            "exports": 158000.0,
+            "imports": 0.0
+          },
+          "consumer": {
+            "exports": 1560000.0,
+            "imports": 0.0
+          },
+          "special": {
+            "exports": 303000.0,
+            "imports": 0.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "energy": {
+            "exports": 0.0,
+            "imports": 44540000.0
+          },
+          "minerals": {
+            "exports": 571000.0,
+            "imports": 0.0
+          },
+          "other": {
+            "exports": 1869000.0,
+            "imports": 0.0
+          },
+          "forestry": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "manufacturing": {
+            "exports": 158000.0,
+            "imports": 6000.0
+          }
+        }
+      },
+      "2026": {
+        "total": {
+          "exports": 8000.0,
+          "imports": 0.0
+        },
+        "by_napcs": {
+          "farm_fish": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "energy": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "ores": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "metals": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "chemical": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "forestry": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "machinery": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "electronics": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "vehicles": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "aircraft": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "consumer": {
+            "exports": 4000.0,
+            "imports": 0.0
+          },
+          "special": {
+            "exports": 4000.0,
+            "imports": 0.0
+          }
+        },
+        "by_industry": {
+          "agriculture": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "energy": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "minerals": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "other": {
+            "exports": 8000.0,
+            "imports": 0.0
+          },
+          "forestry": {
+            "exports": 0.0,
+            "imports": 0.0
+          },
+          "manufacturing": {
+            "exports": 0.0,
+            "imports": 0.0
+          }
+        }
+      }
+    }
+  }
+}

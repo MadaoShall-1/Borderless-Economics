@@ -162,3 +162,67 @@ def forecast(
         return result
     except Exception as e:
         return {"error": str(e)}
+
+
+# ═══════════════════════════════════════════════════
+# REPORT — Proxy to Anthropic API (avoids CORS)
+# ═══════════════════════════════════════════════════
+from fastapi import Request
+
+@app.post("/api/report")
+async def generate_report(request: Request):
+    try:
+        import httpx
+        body = await request.json()
+
+        # Try Groq first (free), then Anthropic as fallback
+        groq_key = os.environ.get("GROQ_API_KEY", "")
+        anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
+
+        async with httpx.AsyncClient(timeout=120) as client:
+            if groq_key:
+                # Convert Anthropic format → Groq/OpenAI format
+                messages = []
+                if body.get("system"):
+                    messages.append({"role": "system", "content": body["system"]})
+                messages.extend(body.get("messages", []))
+
+                resp = await client.post(
+                    "https://api.groq.com/openai/v1/chat/completions",
+                    headers={
+                        "Content-Type": "application/json",
+                        "Authorization": f"Bearer {groq_key}",
+                    },
+                    json={
+                        "model": "llama-3.3-70b-versatile",
+                        "messages": messages,
+                        "max_tokens": body.get("max_tokens", 4000),
+                        "temperature": 0.3,
+                    },
+                )
+                data = resp.json()
+                # Convert Groq response → Anthropic format (so frontend works)
+                if "choices" in data and data["choices"]:
+                    text = data["choices"][0]["message"]["content"]
+                    return {"content": [{"type": "text", "text": text}]}
+                elif "error" in data:
+                    return {"error": data["error"]}
+                return data
+
+            elif anthropic_key:
+                resp = await client.post(
+                    "https://api.anthropic.com/v1/messages",
+                    headers={
+                        "Content-Type": "application/json",
+                        "x-api-key": anthropic_key,
+                        "anthropic-version": "2023-06-01",
+                    },
+                    json=body,
+                )
+                return resp.json()
+
+            else:
+                return {"error": "No API key set. Run: $env:GROQ_API_KEY='gsk_...' or $env:ANTHROPIC_API_KEY='sk-ant-...'"}
+
+    except Exception as e:
+        return {"error": str(e)}

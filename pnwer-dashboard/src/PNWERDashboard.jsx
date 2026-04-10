@@ -87,6 +87,7 @@ export default function PNWERDashboard() {
   const [fView,setFView] = useState("industry");
   const [forecast,setForecast] = useState(null);
   const [fcLoading,setFcLoading] = useState(false);
+  const [savedReports,setSavedReports] = useState({});  // {impact: ..., forecast: ...}
   const debounceRef = useRef(null);
 
   // Load initial forecast from backend on mount
@@ -598,15 +599,159 @@ export default function PNWERDashboard() {
         </div>)}
 
         {tab==="reports"&&(<div>
-          <div style={{fontSize:24,fontWeight:700,color:"#0A2540",marginBottom:4}}>Policy Reports</div>
-          <div style={{fontSize:14,color:"#5A6B7C",marginBottom:24}}>Deliverables for PNWER stakeholders.</div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16}}>
-            {[["📋","Validation Report","Model vs actual, parameter reliability","pnwer_validation_report.docx"],["📊","Elasticity Comparison","Back-calibrated ε vs B&W σ","elasticity_comparison.xlsx"],["🔮","Monthly Forecast","Next-month rolling prediction","monthly_forecast.json"]].map(([icon,title,desc,file])=>(
-              <div key={title} style={{background:"white",borderRadius:14,border:"1px solid #E4EAF0",padding:24}}><div style={{fontSize:32,marginBottom:10}}>{icon}</div><div style={{fontSize:15,fontWeight:700,color:"#0A2540",marginBottom:6}}>{title}</div><div style={{fontSize:12,color:"#5A6B7C",lineHeight:1.6,marginBottom:14}}>{desc}</div><div style={{fontSize:11,color:"#01BAEF",fontWeight:600}}>{file}</div></div>))}
-          </div>
+          <div style={{fontSize:24,fontWeight:700,color:"#0A2540",marginBottom:4}}>AI-Powered Policy Reports</div>
+          <div style={{fontSize:14,color:"#5A6B7C",marginBottom:24}}>Claude generates tailored reports using real model data and analysis results.</div>
+          <ReportBuilder forecast={forecast} integrated={integrated} srcData={srcData} usCurrent={usCurrent} usAnnual={usAnnual} DECOMP={DECOMP} US={US} CA={CA} ALL={ALL} SC={SC} MONTHLY={MONTHLY} savedReports={savedReports} onSaveReport={(type,data)=>setSavedReports(prev=>({...prev,[type]:data}))} />
         </div>)}
       </div>
-      <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
+      <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}@keyframes pulse{0%,100%{opacity:0.4}50%{opacity:1}}`}</style>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════
+// REPORT BUILDER — LLM-powered report generation via Anthropic API
+// ══════════════════════════════════════════════════════════════
+
+function ReportBuilder({ forecast, integrated, srcData, usCurrent, usAnnual, DECOMP, US, CA, ALL, SC, MONTHLY, savedReports, onSaveReport }) {
+  const [rType, setRType] = useState("impact");
+  const [generating, setGenerating] = useState(false);
+  const [error, setError] = useState(null);
+  const report = savedReports[rType] || null;
+  const setReport = (r) => onSaveReport(rType, r);
+
+  const fc = forecast || {};
+  const fcMeta = fc.metadata || {};
+  const fcTot = fc.totals || {current:0,predicted:0,delta:0,gdp:0,jobs:0};
+  const fcInd = fc.by_industry || {};
+  const fcProd = fc.by_product || {};
+  const intSum = integrated.summary || {};
+  const intDec = integrated.decomposition || {};
+  const intInd = integrated.by_industry || {};
+
+  const buildImpactContext = () => {
+    const stateLines = US.map(j => `${j.name}: $${j.t24}B→$${j.t25}B (${((j.t25-j.t24)/j.t24*100).toFixed(1)}%), GDP risk $${j.gdp}M, ${j.jobs.toLocaleString()} jobs`).join("\n");
+    const indLines = INDS.map(ind => {
+      const d = intInd[ind] || {};
+      return `${ind}: base $${((d.imp_base_M||0)+(d.exp_base_M||0))}M, actual Δ $${((d.imp_actual_chg_M||0)+(d.exp_actual_chg_M||0)).toFixed(0)}M, model Δ $${((d.imp_model_chg_M||0)+(d.exp_model_chg_M||0)).toFixed(0)}M`;
+    }).join("\n");
+    const monthLines = MONTHLY.slice(-6).map(m => `${m.key}: $${m.t25}M (YoY ${m.yoy}%)`).join("\n");
+    return `PNWER Tariff Impact & USMCA Analysis Data\n\nHEADLINE:\n- Trade: $${intSum.total_trade_2024_B}B (2024) → $${intSum.total_trade_2025_B}B (2025) = $${intSum.total_trade_loss_B}B (${intSum.total_trade_loss_pct}%)\n- GDP at Risk: $${(intSum.gdp_at_risk_M/1000).toFixed(1)}B\n- Jobs at Risk: ${intSum.jobs_at_risk?.toLocaleString()}\n\nDECOMPOSITION:\n- Tariff: $${intDec.tariff_effect_B}B (${intDec.tariff_share_pct}%)\n- Oil (WTI -15.7%): $${intDec.oil_price_effect_B}B (${intDec.oil_share_pct}%)\n- Residual: $${intDec.residual_B}B (${intDec.residual_share_pct}%)\n\nECONOMETRICS:\n- Layer 1 DID: β=-0.12%, p=0.98 (not significant nationally)\n- Layer 2 DDD: θ=+58.81%, p=0.031 (PNWER significant at 5%)\n- Layer 3: CES/Armington v2 monthly-calibrated\n\nBY STATE:\n${stateLines}\n\nBY INDUSTRY:\n${indLines}\n\nMONTHLY TREND:\n${monthLines}\n\nTARIFF TIMELINE: IEEPA Feb 4, USMCA exempt Mar 7, S232 steel/alum Mar 12, S232 auto May 3, S232 50% Jun 4, IEEPA 35% Aug 1, S232 timber Oct 14\n\nUSMCA REVIEW: July 2026. θ=+59% means PNWER states benefited most and have most to lose.`;
+  };
+
+  const buildForecastContext = () => {
+    const indLines = Object.entries(fcInd).map(([ind,d]) => `${ind}: current $${(d.current/1e6).toFixed(0)}M, predicted $${(d.predicted/1e6).toFixed(0)}M, Δ $${(d.delta/1e6).toFixed(0)}M (${d.pct_change}%)`).join("\n");
+    const prodLines = Object.entries(fcProd).map(([hs4,d]) => `${hs4} ${d.name}: current $${(d.current/1e6).toFixed(0)}M → $${(d.predicted/1e6).toFixed(0)}M (${d.pct_change}%)`).join("\n");
+    return `PNWER Monthly Forecast Data\n\nFORECAST: ${fcMeta.baseline_label||"N/A"} → ${fcMeta.predicted_label||"N/A"}\nTariffs: CA=${fcMeta.tariff_ca}, MX=${fcMeta.tariff_mx}\nModel: ${fcMeta.model||"CES/Armington v2"}\n\nTOTALS: Current $${(fcTot.current/1e6).toFixed(0)}M, Predicted $${(fcTot.predicted/1e6).toFixed(0)}M, Delta $${(fcTot.delta/1e6).toFixed(0)}M\n\nBY INDUSTRY:\n${indLines}\n\nBY PRODUCT:\n${prodLines}\n\nTREND (last 6 months):\n${MONTHLY.slice(-6).map(m => `${m.key}: $${m.t25}M (YoY ${m.yoy}%, MoM ${m.mom}%)`).join("\n")}`;
+  };
+
+  const handleGenerate = async () => {
+    setGenerating(true); setReport(null); setError(null);
+    const isImpact = rType === "impact";
+    const context = isImpact ? buildImpactContext() : buildForecastContext();
+    const sysPrompt = isImpact
+      ? "You are a trade policy analyst writing for PNWER leadership ahead of the July 2026 USMCA review. Write a professional, data-driven report. Use exact numbers from the data. Return ONLY valid JSON with keys: executive_summary (string), trade_impact (string), decomposition (string), usmca_significance (string), risks (array of strings), recommendations (array of strings). No markdown, no backticks."
+      : "You are a trade analyst writing a monthly forecast brief for PNWER stakeholders. Use exact numbers from the data. Return ONLY valid JSON with keys: forecast_summary (string), industry_outlook (string), product_highlights (string), trend_analysis (string), watch_items (array of strings). No markdown, no backticks.";
+    try {
+      const res = await fetch(`${API}/api/report`, {
+        method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 4000, system: sysPrompt, messages: [{role:"user",content:context}] }),
+      });
+      const data = await res.json();
+      // Check for API-level errors
+      if (data.error) throw new Error(typeof data.error === "string" ? data.error : JSON.stringify(data.error));
+      if (data.type === "error") throw new Error(data.error?.message || JSON.stringify(data));
+      const text = (data.content||[]).map(b=>b.text||"").join("");
+      if (!text) throw new Error("Empty response from Claude. Check API key and model access.");
+      const clean = text.replace(/```json|```/g,"").trim();
+      try {
+        setReport({ type: rType, narrative: JSON.parse(clean), generated_at: new Date().toISOString() });
+      } catch(parseErr) {
+        throw new Error("Failed to parse report JSON. Raw response: " + clean.slice(0, 200));
+      }
+    } catch(e) { setError(e.message); }
+    finally { setGenerating(false); }
+  };
+
+  const Bullet = ({index,text}) => (
+    <div style={{display:"flex",alignItems:"flex-start",gap:10,background:"#F7F9FC",borderRadius:8,padding:"10px 14px",border:"1px solid #EDF1F7",marginBottom:8}}>
+      <div style={{width:22,height:22,borderRadius:"50%",flexShrink:0,background:"linear-gradient(135deg,#01BAEF,#20BF55)",display:"flex",alignItems:"center",justifyContent:"center",color:"white",fontSize:10,fontWeight:700}}>{index+1}</div>
+      <span style={{fontSize:13,color:"#3A4A5C",lineHeight:1.65}}>{text}</span>
+    </div>);
+  const ST = ({children}) => (<div style={{fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:2.5,color:"#0B4F6C",marginBottom:12,paddingBottom:6,borderBottom:"2px solid #EDF1F7"}}>{children}</div>);
+  const Prose = ({children}) => (<p style={{fontSize:13.5,lineHeight:1.85,color:"#3A4A5C",whiteSpace:"pre-wrap"}}>{children}</p>);
+  const Sec = ({children}) => (<div style={{marginBottom:28,paddingBottom:24,borderBottom:"1px solid #F0F4F8"}}>{children}</div>);
+
+  return (
+    <div style={{display:"grid",gridTemplateColumns:"280px 1fr",gap:24}}>
+      <div>
+        <div style={{fontSize:12,fontWeight:600,color:"#0A2540",marginBottom:10}}>Report Type</div>
+        {[["impact","📋","Tariff Impact & USMCA","Annual analysis + advocacy brief"],["forecast","🔮","Monthly Forecast Brief","Next-month prediction + outlook"]].map(([id,icon,title,desc])=>(
+          <div key={id} onClick={()=>{setRType(id);setError(null);}} style={{background:"white",border:rType===id?"2px solid #01BAEF":"2px solid #E4EAF0",borderRadius:12,padding:"14px 16px",cursor:"pointer",display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
+            <span style={{fontSize:22}}>{icon}</span><div><div style={{fontWeight:600,fontSize:13}}>{title}</div><div style={{fontSize:11,color:"#5A6B7C",marginTop:1}}>{desc}</div></div>
+          </div>))}
+        <button onClick={handleGenerate} disabled={generating} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,width:"100%",background:generating?"#E4EAF0":"linear-gradient(135deg,#0A2540,#0F3460)",color:generating?"#5A6B7C":"white",border:"none",borderRadius:10,padding:"12px 20px",fontFamily:"inherit",fontSize:13,fontWeight:600,cursor:generating?"not-allowed":"pointer",marginTop:16}}>
+          {generating?<><span style={{display:"inline-block",animation:"spin 1s linear infinite"}}>⏳</span>Generating...</>:"✨ Generate Report"}</button>
+        <div style={{marginTop:12,background:"rgba(1,186,239,0.04)",border:"1px solid rgba(1,186,239,0.12)",borderRadius:10,padding:"10px 14px"}}>
+          <div style={{fontSize:11,fontWeight:600,color:"#0B4F6C",marginBottom:3}}>How it works</div>
+          <div style={{fontSize:11,color:"#5A6B7C",lineHeight:1.6}}>Claude reads your real model outputs (integrated.json, forecast, monthly trend) and writes a tailored narrative with exact numbers from the analysis.</div>
+        </div>
+      </div>
+
+      <div style={{background:"white",border:"1px solid #E4EAF0",borderRadius:14,padding:28,minHeight:500}}>
+        {error&&(<div style={{background:"rgba(254,104,71,0.06)",border:"1px solid rgba(254,104,71,0.2)",borderRadius:10,padding:20,marginBottom:20}}><div style={{fontWeight:600,color:"#c0392b",marginBottom:6,fontSize:14}}>Generation failed</div><div style={{fontSize:13,color:"#5A6B7C"}}>{error}</div></div>)}
+
+        {!report&&!error&&!generating&&(<div style={{textAlign:"center",padding:"60px 40px",color:"#5A6B7C"}}>
+          <div style={{fontSize:52,marginBottom:16}}>{rType==="impact"?"📋":"🔮"}</div>
+          <div style={{fontSize:18,fontWeight:700,color:"#0A2540",marginBottom:8}}>{rType==="impact"?"Tariff Impact & USMCA Report":"Monthly Forecast Brief"}</div>
+          <div style={{fontSize:13,lineHeight:1.7,maxWidth:400,margin:"0 auto"}}>{rType==="impact"?"Full policy report: tariff decomposition, USMCA findings (θ=+59%), state-by-state impact, and advocacy recommendations for July 2026 review.":"Forward-looking brief: next-month trade prediction by industry and product, recent trend analysis, and items to watch."}</div>
+        </div>)}
+
+        {generating&&(<div style={{padding:"20px 0"}}>
+          <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:28,padding:"18px 20px",background:"linear-gradient(135deg,rgba(1,186,239,0.04),rgba(32,191,85,0.04))",borderRadius:10,border:"1px solid rgba(1,186,239,0.1)"}}>
+            <div style={{fontSize:24}}>✨</div><div><div style={{fontWeight:600,color:"#0A2540",fontSize:14}}>Claude is writing your report...</div><div style={{fontSize:12,color:"#5A6B7C",marginTop:2}}>Analyzing {rType==="impact"?"tariff data and USMCA findings":"forecast and trend data"}</div></div>
+          </div>
+          {[75,100,85,100,65].map((w,i)=>(<div key={i} style={{height:14,background:"#F0F4F8",borderRadius:100,marginBottom:10,width:`${w}%`,animation:"pulse 1.5s ease-in-out infinite"}}/>))}
+        </div>)}
+
+        {report&&!generating&&report.type==="impact"&&(()=>{const n=report.narrative;const date=new Date(report.generated_at).toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});return(<div>
+          <div style={{background:"linear-gradient(135deg,#0A2540,#0F3460,#0B4F6C)",borderRadius:14,padding:"26px 28px",marginBottom:28,color:"white"}}>
+            <div style={{fontSize:10,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:2,marginBottom:3}}>PNWER Trade Intelligence · Tariff Impact Report</div>
+            <div style={{fontSize:22,fontWeight:700}}>2025 Tariff Impact &amp; USMCA Analysis</div>
+            <div style={{fontSize:12,color:"rgba(255,255,255,0.45)",marginTop:2}}>Generated {date}</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginTop:16}}>
+              {[[`$${intSum.total_trade_2024_B}B`,"2024 Trade","#01BAEF"],[`$${intSum.total_trade_loss_B}B`,"Decline","#FE6847"],[`$${(intSum.gdp_at_risk_M/1000).toFixed(1)}B`,"GDP Risk","#FF9800"],[`${intSum.jobs_at_risk?.toLocaleString()}`,"Jobs Risk","#FBB13C"]].map(([v,l,c],i)=>(<div key={i} style={{background:"rgba(255,255,255,0.06)",borderRadius:8,padding:"11px 13px",border:"1px solid rgba(255,255,255,0.08)"}}><div style={{fontSize:9,color:"rgba(255,255,255,0.35)",textTransform:"uppercase",letterSpacing:.6,marginBottom:4}}>{l}</div><div style={{fontSize:17,fontWeight:700,color:c}}>{v}</div></div>))}
+            </div>
+          </div>
+          <Sec><ST>Executive Summary</ST><Prose>{n.executive_summary}</Prose></Sec>
+          <Sec><ST>Trade Impact Analysis</ST><Prose>{n.trade_impact}</Prose></Sec>
+          <Sec><ST>Three-Factor Decomposition</ST><Prose>{n.decomposition}</Prose></Sec>
+          <Sec><ST>USMCA Significance for PNWER</ST><Prose>{n.usmca_significance}</Prose></Sec>
+          <Sec><ST>Key Risks</ST>{(n.risks||[]).map((r,i)=><Bullet key={i} index={i} text={r}/>)}</Sec>
+          <div><ST>Policy Recommendations</ST>{(n.recommendations||[]).map((r,i)=><Bullet key={i} index={i} text={r}/>)}</div>
+        </div>);})()}
+
+        {report&&!generating&&report.type==="forecast"&&(()=>{const n=report.narrative;const date=new Date(report.generated_at).toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});return(<div>
+          <div style={{background:"linear-gradient(135deg,#0A2540,#0F3460,#0B4F6C)",borderRadius:14,padding:"26px 28px",marginBottom:28,color:"white"}}>
+            <div style={{fontSize:10,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:2,marginBottom:3}}>PNWER Trade Intelligence · Monthly Forecast Brief</div>
+            <div style={{fontSize:22,fontWeight:700}}>{fcMeta.baseline_label||"Current"} → {fcMeta.predicted_label||"Next Month"}</div>
+            <div style={{fontSize:12,color:"rgba(255,255,255,0.45)",marginTop:2}}>Generated {date}</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginTop:16}}>
+              {[[`$${(fcTot.current/1e6).toFixed(0)}M`,"Current","#01BAEF"],[`$${(fcTot.predicted/1e6).toFixed(0)}M`,"Predicted","#20BF55"],[`$${((fcTot.delta||0)/1e6).toFixed(0)}M`,"Delta",fcTot.delta>=0?"#4CAF50":"#FE6847"],[`$${((fcTot.gdp||0)/1e6).toFixed(0)}M`,"GDP Risk","#FF9800"]].map(([v,l,c],i)=>(<div key={i} style={{background:"rgba(255,255,255,0.06)",borderRadius:8,padding:"11px 13px",border:"1px solid rgba(255,255,255,0.08)"}}><div style={{fontSize:9,color:"rgba(255,255,255,0.35)",textTransform:"uppercase",letterSpacing:.6,marginBottom:4}}>{l}</div><div style={{fontSize:17,fontWeight:700,color:c}}>{v}</div></div>))}
+            </div>
+          </div>
+          <Sec><ST>Forecast Summary</ST><Prose>{n.forecast_summary}</Prose></Sec>
+          <Sec><ST>Industry Outlook</ST><Prose>{n.industry_outlook}</Prose></Sec>
+          <Sec><ST>Product Highlights</ST><Prose>{n.product_highlights}</Prose></Sec>
+          <Sec><ST>Trend Analysis</ST><Prose>{n.trend_analysis}</Prose></Sec>
+          <div><ST>Watch Items</ST>{(n.watch_items||[]).map((r,i)=><Bullet key={i} index={i} text={r}/>)}</div>
+        </div>);})()}
+
+        {report&&!generating&&(<div style={{borderTop:"1px solid #EDF1F7",marginTop:28,paddingTop:18,display:"flex",gap:10}}>
+          <button onClick={()=>window.print()} style={{display:"inline-flex",alignItems:"center",gap:6,background:"linear-gradient(135deg,#0A2540,#0F3460)",color:"white",border:"none",borderRadius:8,padding:"10px 18px",fontFamily:"inherit",fontSize:12,fontWeight:600,cursor:"pointer"}}>🖨️ Print / PDF</button>
+          <button onClick={()=>{setReport(null);setError(null);}} style={{display:"inline-flex",alignItems:"center",gap:6,background:"white",color:"#0A2540",border:"1px solid #E4EAF0",borderRadius:8,padding:"10px 18px",fontFamily:"inherit",fontSize:12,fontWeight:600,cursor:"pointer"}}>↩ Generate Another</button>
+        </div>)}
+      </div>
     </div>
   );
 }

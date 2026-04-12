@@ -297,16 +297,16 @@ export default function PNWERDashboard() {
         <span>{refreshMsg}</span><button onClick={()=>setRefreshMsg(null)} style={{background:"none",border:"none",cursor:"pointer",fontSize:14}}>✕</button>
       </div>)}
 
-      {tab==="overview"&&!sel&&(<div style={{background:"linear-gradient(160deg,#0A2540,#0F3460 40%,#0B4F6C 70%,#0A2540)",padding:"44px 40px 36px"}}><div style={{maxWidth:1280,margin:"0 auto"}}>
+      {tab==="overview"&&!sel&&(<div style={{background:"linear-gradient(160deg,#0A2540,#0F3460 40%,#0B4F6C 70%,#0A2540)",padding:"44px 40px 36px"}}><div>
         <h1 style={{fontSize:38,fontWeight:700,color:"white",lineHeight:1.15,maxWidth:700,marginBottom:14}}>Understanding <span style={{background:"linear-gradient(90deg,#01BAEF,#20BF55)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Tariff Impacts</span> Across the Pacific Northwest</h1>
         <p style={{fontSize:14,color:"rgba(255,255,255,0.5)",lineHeight:1.7,maxWidth:580,marginBottom:28}}>Real-time analysis across {ALL.length} jurisdictions. Census data + CES/Armington model.</p>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,maxWidth:860}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
           {[[`$${US_T24.toFixed(1)}B → $${US_T25.toFixed(1)}B`,"US Trade 2024→2025","#01BAEF"],[`-$${(US_T24-US_T25).toFixed(1)}B`,"YoY Decline","#FE6847"],[`$${(US_GDP/1000).toFixed(1)}B`,"GDP at Risk","#FF9800"],[US_JOBS.toLocaleString(),"Jobs at Risk","#FBB13C"]].map(([v,l,c],i)=>(
             <div key={i} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:14,padding:"14px 16px"}}><div style={{fontSize:22,fontWeight:700,color:c}}>{v}</div><div style={{fontSize:10,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:.6}}>{l}</div></div>))}
         </div>
       </div></div>)}
 
-      <div style={{maxWidth:1300,margin:"0 auto",padding:"24px 28px 56px"}}>
+      <div style={{padding:"24px 28px 56px"}}>
         {tab==="overview"&&(<div>{!sel?(<>
           <div style={{fontSize:11,textTransform:"uppercase",letterSpacing:2,fontWeight:700,marginBottom:8,color:"#3A7CA5"}}>United States</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:10,marginBottom:18}}>{US.map(j=><JurCard key={j.id} j={j}/>)}</div>
@@ -698,7 +698,7 @@ export default function PNWERDashboard() {
 
         {tab==="reports"&&(<div>
           <div style={{fontSize:24,fontWeight:700,color:"#0A2540",marginBottom:4}}>AI-Powered Policy Reports</div>
-          <div style={{fontSize:14,color:"#5A6B7C",marginBottom:24}}>Claude generates tailored reports using real model data and analysis results.</div>
+          <div style={{fontSize:14,color:"#5A6B7C",marginBottom:24}}>Groq AI generates tailored reports using real model data and analysis results.</div>
           <ReportBuilder forecast={forecast} integrated={integrated} srcData={srcData} usCurrent={usCurrent} usAnnual={usAnnual} DECOMP={DECOMP} US={US} CA={CA} ALL={ALL} SC={SC} MONTHLY={MONTHLY} savedReports={savedReports} onSaveReport={(type,data)=>setSavedReports(prev=>({...prev,[type]:data}))} />
         </div>)}
       </div>
@@ -780,7 +780,7 @@ function ReportBuilder({ forecast, integrated, srcData, usCurrent, usAnnual, DEC
       if (data.error) throw new Error(typeof data.error === "string" ? data.error : JSON.stringify(data.error));
       if (data.type === "error") throw new Error(data.error?.message || JSON.stringify(data));
       const text = (data.content||[]).map(b=>b.text||"").join("");
-      if (!text) throw new Error("Empty response from Claude. Check API key and model access.");
+      if (!text) throw new Error("Empty response from AI. Check API key and model access.");
       const clean = text.replace(/```json|```/g,"").trim();
       try {
         setReport({ type: rType, narrative: JSON.parse(clean), generated_at: new Date().toISOString() });
@@ -837,7 +837,7 @@ function ReportBuilder({ forecast, integrated, srcData, usCurrent, usAnnual, DEC
       {/* Loading */}
       {generating&&(<div style={{background:"white",border:"1px solid #E4EAF0",borderRadius:14,padding:28}}>
         <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:28,padding:"18px 20px",background:"linear-gradient(135deg,rgba(1,186,239,0.04),rgba(32,191,85,0.04))",borderRadius:10,border:"1px solid rgba(1,186,239,0.1)"}}>
-          <div style={{fontSize:24}}>✨</div><div><div style={{fontWeight:600,color:"#0A2540",fontSize:14}}>Claude is writing your report...</div><div style={{fontSize:12,color:"#5A6B7C",marginTop:2}}>Analyzing {rType==="impact"?"tariff data and USMCA findings":"forecast and trend data"}</div></div>
+          <div style={{fontSize:24}}>✨</div><div><div style={{fontWeight:600,color:"#0A2540",fontSize:14}}>AI is generating your report...</div><div style={{fontSize:12,color:"#5A6B7C",marginTop:2}}>Analyzing {rType==="impact"?"tariff data and USMCA findings":"forecast and trend data"}</div></div>
         </div>
         {[75,100,85,100,65].map((w,i)=>(<div key={i} style={{height:14,background:"#F0F4F8",borderRadius:100,marginBottom:10,width:`${w}%`,animation:"pulse 1.5s ease-in-out infinite"}}/>))}
       </div>)}

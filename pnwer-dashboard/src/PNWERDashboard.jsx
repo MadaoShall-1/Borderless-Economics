@@ -299,31 +299,33 @@ export default function PNWERDashboard() {
 
       {tab==="overview"&&!sel&&(<div style={{background:"linear-gradient(160deg,#0A2540,#0F3460 40%,#0B4F6C 70%,#0A2540)",padding:"44px 40px 36px"}}><div>
         <h1 style={{fontSize:38,fontWeight:700,color:"white",lineHeight:1.15,maxWidth:700,marginBottom:14}}>Understanding <span style={{background:"linear-gradient(90deg,#01BAEF,#20BF55)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Tariff Impacts</span> Across the Pacific Northwest</h1>
-        <p style={{fontSize:14,color:"rgba(255,255,255,0.5)",lineHeight:1.7,maxWidth:580,marginBottom:28}}>Real-time analysis across {ALL.length} jurisdictions. Census data + CES/Armington model.</p>
+        <p style={{fontSize:14,color:"rgba(255,255,255,0.5)",lineHeight:1.7,maxWidth:680,marginBottom:28}}>Analyzing trade between {ALL.length} PNWER jurisdictions (5 US states ↔ Canada &amp; Mexico, 5 Canadian provinces ↔ United States). Data: U.S. Census Bureau + Statistics Canada. Model: CES/Armington with monthly-calibrated elasticities.</p>
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
-          {[[`$${US_T24.toFixed(1)}B → $${US_T25.toFixed(1)}B`,"US Trade 2024→2025","#01BAEF"],[`-$${(US_T24-US_T25).toFixed(1)}B`,"YoY Decline","#FE6847"],[`$${(US_GDP/1000).toFixed(1)}B`,"GDP at Risk","#FF9800"],[US_JOBS.toLocaleString(),"Jobs at Risk","#FBB13C"]].map(([v,l,c],i)=>(
+          {[[`$${US_T24.toFixed(1)}B → $${US_T25.toFixed(1)}B`,"US 5 States ↔ CA+MX","#01BAEF"],[`-$${(US_T24-US_T25).toFixed(1)}B`,"YoY Trade Decline (USD)","#FE6847"],[`$${(US_GDP/1000).toFixed(1)}B`,"GDP at Risk (USD)","#FF9800"],[US_JOBS.toLocaleString(),"Jobs at Risk (US)","#FBB13C"]].map(([v,l,c],i)=>(
             <div key={i} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:14,padding:"14px 16px"}}><div style={{fontSize:22,fontWeight:700,color:c}}>{v}</div><div style={{fontSize:10,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:.6}}>{l}</div></div>))}
         </div>
       </div></div>)}
 
       <div style={{padding:"24px 28px 56px"}}>
         {tab==="overview"&&(<div>{!sel?(<>
-          <div style={{fontSize:11,textTransform:"uppercase",letterSpacing:2,fontWeight:700,marginBottom:8,color:"#3A7CA5"}}>United States</div>
+          <div style={{fontSize:11,textTransform:"uppercase",letterSpacing:2,fontWeight:700,marginBottom:4,color:"#3A7CA5"}}>United States</div>
+          <div style={{fontSize:11,color:"#5A6B7C",marginBottom:10}}>Each state's bilateral trade with Canada + Mexico combined (USD). Source: U.S. Census Bureau.</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:10,marginBottom:18}}>{US.map(j=><JurCard key={j.id} j={j}/>)}</div>
-          <div style={{fontSize:11,textTransform:"uppercase",letterSpacing:2,fontWeight:700,marginBottom:8,color:"#FE6847"}}>Canada</div>
+          <div style={{fontSize:11,textTransform:"uppercase",letterSpacing:2,fontWeight:700,marginBottom:4,color:"#FE6847"}}>Canada</div>
+          <div style={{fontSize:11,color:"#5A6B7C",marginBottom:10}}>Each province's bilateral trade with all 50 US states combined (CAD). Source: Statistics Canada.</div>
           <div style={{display:"grid",gridTemplateColumns:`repeat(${CA.length},1fr)`,gap:10,marginBottom:18}}>{CA.map(j=><JurCard key={j.id} j={j}/>)}</div>
-          <div style={{background:"white",borderRadius:14,border:"1px solid #E4EAF0",textAlign:"center",padding:40,color:"#5A6B7C"}}><div style={{fontSize:40,marginBottom:10}}>🗺️</div><div style={{fontSize:18,fontWeight:700,color:"#0A2540"}}>Select a Jurisdiction</div></div>
+          <div style={{background:"white",borderRadius:14,border:"1px solid #E4EAF0",textAlign:"center",padding:40,color:"#5A6B7C"}}><div style={{fontSize:40,marginBottom:10}}>🗺️</div><div style={{fontSize:18,fontWeight:700,color:"#0A2540"}}>Select a Jurisdiction</div><div style={{fontSize:12,marginTop:6}}>Click a state or province above to view detailed industry breakdown and forecast. US states show trade with CA+MX; Canadian provinces show trade with all US states.</div></div>
         </>):(<div>
           <button onClick={()=>setSel(null)} style={{background:"none",border:"none",color:"#01BAEF",cursor:"pointer",fontFamily:"inherit",fontSize:13,fontWeight:600,marginBottom:12,padding:0}}>← Back</button>
           <div style={{background:"linear-gradient(135deg,#0A2540,#0F3460)",borderRadius:16,padding:24,color:"white",marginBottom:16}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-              <div style={{display:"flex",alignItems:"center",gap:14}}><span style={{fontSize:34}}>{FL[sel.flag]}</span><div><div style={{fontSize:26,fontWeight:700}}>{sel.name}</div><div style={{fontSize:12,color:"rgba(255,255,255,0.45)"}}>Top: {sel.topExport} | {sel.currency}</div></div></div>
+              <div style={{display:"flex",alignItems:"center",gap:14}}><span style={{fontSize:34}}>{FL[sel.flag]}</span><div><div style={{fontSize:26,fontWeight:700}}>{sel.name}</div><div style={{fontSize:12,color:"rgba(255,255,255,0.45)"}}>Top: {sel.topExport} | {sel.currency} | {sel.flag==="us"?"Trade with Canada + Mexico":"Trade with all US states"}</div></div></div>
               <div style={{display:"flex",gap:2,background:"rgba(255,255,255,0.08)",borderRadius:10,padding:3}}>
                 {[["current","📊 Current"],["forecast","🔮 Forecast"]].map(([id,label])=>(<button key={id} onClick={()=>setDetailView(id)} style={{padding:"8px 18px",borderRadius:8,border:"none",background:detailView===id?"rgba(1,186,239,0.2)":"transparent",color:detailView===id?"#01BAEF":"rgba(255,255,255,0.5)",fontFamily:"inherit",fontSize:13,fontWeight:600,cursor:"pointer"}}>{label}</button>))}
               </div>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginTop:16}}>
-              {(()=>{const u=sel.unit||"B";const chg=sel.t25-sel.t24;const chgStr=u==="M"?`${chg<0?"":"+"}$${Math.round(chg)}M`:`${chg<0?"":"+"}$${chg.toFixed(1)}B`;return [[`2024 Trade`,`$${sel.t24}${u}`,"#01BAEF"],[`2025 Trade`,`$${sel.t25}${u}`,"white"],["Change",`${chgStr} (${sel.t24>0?((chg)/sel.t24*100).toFixed(0):0}%)`,sel.t25<sel.t24?"#FE6847":"#4CAF50"],["GDP / Jobs",`${fmtM(sel.gdp)} / ${sel.jobs.toLocaleString()}`,"#FBB13C"]];})().map(([l,v,c],i)=>(
+              {(()=>{const u=sel.unit||"B";const chg=sel.t25-sel.t24;const chgStr=u==="M"?`${chg<0?"":"+"}$${Math.round(chg)}M`:`${chg<0?"":"+"}$${chg.toFixed(1)}B`;const scope=sel.flag==="us"?"↔ CA+MX":"↔ US";return [[`2024 Bilateral ${scope}`,`$${sel.t24}${u}`,"#01BAEF"],[`2025 Bilateral ${scope}`,`$${sel.t25}${u}`,"white"],["YoY Change",`${chgStr} (${sel.t24>0?((chg)/sel.t24*100).toFixed(0):0}%)`,sel.t25<sel.t24?"#FE6847":"#4CAF50"],["GDP Risk / Jobs at Risk",`${fmtM(sel.gdp)} / ${sel.jobs.toLocaleString()}`,"#FBB13C"]];})().map(([l,v,c],i)=>(
                 <div key={i} style={{background:"rgba(255,255,255,0.06)",borderRadius:10,padding:12,border:"1px solid rgba(255,255,255,0.08)"}}><div style={{fontSize:10,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:.5,marginBottom:3}}>{l}</div><div style={{fontSize:i===3?14:20,fontWeight:700,color:c}}>{v}</div></div>))}
             </div>
           </div>
@@ -348,16 +350,16 @@ export default function PNWERDashboard() {
 
         {tab==="total"&&(<div>
           <div style={{fontSize:24,fontWeight:700,color:"#0A2540",marginBottom:4}}>Total PNWER Tariff Impact — 2025</div>
-          <div style={{fontSize:14,color:"#5A6B7C",marginBottom:24}}>Annual tariff impact across 5 US states × CA/MX. Source: Census bilateral data + CES/Armington model.</div>
+          <div style={{fontSize:14,color:"#5A6B7C",marginBottom:24}}>Annual impact of 2025 U.S. tariffs on 5 PNWER states' bilateral trade with Canada and Mexico. Values in USD. Source: U.S. Census Bureau bilateral data + CES/Armington tariff model (v2, monthly-calibrated).</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:14,marginBottom:24}}>
-            {[[`$${US_T24.toFixed(1)}B`,"2024 Baseline","#01BAEF"],[`-$${(US_T24-US_T25).toFixed(1)}B`,"Trade Decline","#F44336"],[`$${(US_GDP/1000).toFixed(1)}B`,"GDP at Risk","#FF9800"],[US_JOBS.toLocaleString(),"Jobs at Risk","#FE6847"]].map(([v,l,c],i)=>(
+            {[[`$${US_T24.toFixed(1)}B`,"2024 Baseline (5 States ↔ CA+MX)","#01BAEF"],[`-$${(US_T24-US_T25).toFixed(1)}B`,"Total Trade Decline (USD)","#F44336"],[`$${(US_GDP/1000).toFixed(1)}B`,"GDP at Risk (IO Multiplier)","#FF9800"],[US_JOBS.toLocaleString(),"Jobs at Risk (Direct + Indirect)","#FE6847"]].map(([v,l,c],i)=>(
               <div key={i} style={{background:"white",borderRadius:14,border:"1px solid #E4EAF0",padding:"18px 20px"}}><div style={{fontSize:10,color:"#5A6B7C",textTransform:"uppercase",letterSpacing:.5,marginBottom:4}}>{l}</div><div style={{fontSize:26,fontWeight:700,color:c}}>{v}</div></div>))}
           </div>
 
           {/* Monthly trend charts */}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,marginBottom:24}}>
             <div style={{background:"white",borderRadius:14,border:"1px solid #E4EAF0",padding:24}}>
-              <div style={{fontWeight:600,fontSize:14,color:"#0A2540",marginBottom:14}}>Monthly Trade — 2025 vs 2024 ($M)</div>
+              <div style={{fontWeight:600,fontSize:14,color:"#0A2540",marginBottom:14}}>Monthly Bilateral Trade — 5 States ↔ CA+MX ($M, USD)</div>
               <ResponsiveContainer width="100%" height={280}><AreaChart data={MONTHLY}><defs><linearGradient id="g24" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#01BAEF" stopOpacity={.15}/><stop offset="100%" stopColor="#01BAEF" stopOpacity={0}/></linearGradient><linearGradient id="g25" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#FE6847" stopOpacity={.15}/><stop offset="100%" stopColor="#FE6847" stopOpacity={0}/></linearGradient></defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#EDF1F7"/><XAxis dataKey="m" tick={{fontSize:10}}/><YAxis tick={{fontSize:11}} domain={["auto","auto"]}/><Tooltip formatter={v=>`$${v?.toLocaleString()}M`} labelFormatter={(_,payload)=>payload?.[0]?.payload?.key||_}/>
                 <Area type="monotone" dataKey="t24" name="Prev Year" stroke="#01BAEF" fill="url(#g24)" strokeWidth={2.5}/><Area type="monotone" dataKey="t25" name="Current" stroke="#FE6847" fill="url(#g25)" strokeWidth={2.5}/><Legend/></AreaChart></ResponsiveContainer>
@@ -371,7 +373,8 @@ export default function PNWERDashboard() {
           </div>
 
           {/* ── Industry Impact Table ── */}
-          <div style={{fontSize:18,fontWeight:700,color:"#0A2540",marginBottom:12}}>Impact by Industry</div>
+          <div style={{fontSize:18,fontWeight:700,color:"#0A2540",marginBottom:4}}>Impact by Industry</div>
+          <div style={{fontSize:11,color:"#5A6B7C",marginBottom:12}}>Model prediction vs Census actual for 5 US states ↔ CA+MX. Import side: ΔM = base × ε × τ. Export side: ΔX = base × ε × τ_ret. Values in USD millions.</div>
           <div style={{background:"white",borderRadius:14,border:"1px solid #E4EAF0",padding:20,marginBottom:24}}>
             <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
               <thead><tr style={{borderBottom:"2px solid #EDF1F7"}}>
@@ -413,7 +416,8 @@ export default function PNWERDashboard() {
           </div>
 
           {/* ── Product Impact Table ── */}
-          <div style={{fontSize:18,fontWeight:700,color:"#0A2540",marginBottom:12}}>Impact by Product (HS4)</div>
+          <div style={{fontSize:18,fontWeight:700,color:"#0A2540",marginBottom:4}}>Impact by Product (HS4)</div>
+          <div style={{fontSize:11,color:"#5A6B7C",marginBottom:12}}>Top traded products across 5 US states ↔ CA+MX. Aggregated from Census Bureau HS4-level bilateral data. Values in USD millions.</div>
           <div style={{background:"white",borderRadius:14,border:"1px solid #E4EAF0",padding:20,marginBottom:24}}>
             <div style={{overflowX:"auto"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
               <thead><tr style={{borderBottom:"2px solid #EDF1F7"}}>

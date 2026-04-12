@@ -1,196 +1,179 @@
 """
-PNWER Tariff Impact — Canadian Province Product-Level Analysis
-Uses StatCan NAPCS data as "products" within each industry.
-No HS4 for CA (StatCan doesn't provide HS4 by province in this table),
-so we use NAPCS sub-categories as the product breakdown.
+PNWER Tariff Impact — Canadian Province Product-Level (NAPCS) Analysis
+All 5 provinces: BC, AB, SK, YT, NT
+Uses StatCan NAPCS categories (12 product groups).
+Outputs: ca_product_results.json → dashboard data dir
 """
 
+import json
 import os
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 from tariff_model import *
 from tariff_model import CA_CONFIG
 
-COLORS = {
-    "agriculture": ["#97C459", "#639922"],
-    "energy": ["#FAC775", "#BA7517", "#854F0B"],
-    "forestry": ["#5DCAA5", "#1D9E75"],
-    "minerals": ["#B4B2A9", "#5F5E5A", "#2C2C2A"],
-    "manufacturing": ["#85B7EB", "#378ADD", "#185FA5", "#0D3F7A"],
-    "other": ["#E8A0BF", "#C56C9B"],
-}
-OTHERS_COLOR = "#D3D1C7"
-
-# NAPCS sub-categories → which industry they map to
 NAPCS_TO_INDUSTRY = {
-    "farm_fish": "agriculture",
-    "energy": "energy",
-    "ores": "minerals",
-    "metals": "minerals",
-    "chemical": "other",
-    "forestry": "forestry",
-    "machinery": "manufacturing",
-    "electronics": "manufacturing",
-    "vehicles": "manufacturing",
-    "aircraft": "manufacturing",
-    "consumer": "other",
-    "special": "other",
+    "farm_fish": "agriculture", "energy": "energy", "ores": "minerals",
+    "metals": "minerals", "chemical": "other", "forestry": "forestry",
+    "machinery": "manufacturing", "electronics": "manufacturing",
+    "vehicles": "manufacturing", "aircraft": "manufacturing",
+    "consumer": "other", "special": "other",
 }
 
 NAPCS_NAMES = {
-    "farm_fish": "Farm & fishing",
-    "energy": "Energy products",
-    "ores": "Metal ores",
-    "metals": "Metal products",
-    "chemical": "Chemicals & plastics",
-    "forestry": "Forestry & building",
-    "machinery": "Machinery & equipment",
+    "farm_fish": "Farm & Fish Products",
+    "energy": "Energy Products",
+    "ores": "Metal Ores & Minerals",
+    "metals": "Metal & Alloy Products",
+    "chemical": "Chemicals & Plastics",
+    "forestry": "Forestry Products",
+    "machinery": "Machinery & Equipment",
     "electronics": "Electronics",
-    "vehicles": "Motor vehicles & parts",
-    "aircraft": "Aircraft & transport equip.",
-    "consumer": "Consumer goods",
-    "special": "Special transactions",
+    "vehicles": "Motor Vehicles & Parts",
+    "aircraft": "Aircraft & Parts",
+    "consumer": "Consumer Goods",
+    "special": "Special Transactions",
 }
+
+# NAPCS-level tariff rates (effective annualized 2025, US tariffs on CA + CA retaliation)
+NAPCS_TAU_EXP = {  # What CA faces exporting to US
+    "farm_fish": 0.10, "energy": 0.02, "ores": 0.05, "metals": 0.34,
+    "chemical": 0.08, "forestry": 0.25, "machinery": 0.12, "electronics": 0.00,
+    "vehicles": 0.20, "aircraft": 0.00, "consumer": 0.10, "special": 0.00,
+}
+NAPCS_TAU_IMP = {  # CA retaliatory tariffs on US imports
+    "farm_fish": 0.08, "energy": 0.02, "ores": 0.03, "metals": 0.15,
+    "chemical": 0.10, "forestry": 0.10, "machinery": 0.15, "electronics": 0.05,
+    "vehicles": 0.20, "aircraft": 0.00, "consumer": 0.12, "special": 0.00,
+}
+
+# NAPCS-level elasticities (from CA config industry ε, refined per-product)
+NAPCS_ELAST_EXP = {
+    "farm_fish": -1.19, "energy": -0.05, "ores": -0.13, "metals": -0.50,
+    "chemical": -0.34, "forestry": -0.50, "machinery": -0.30, "electronics": -0.05,
+    "vehicles": -2.00, "aircraft": -0.10, "consumer": -0.34, "special": -0.05,
+}
+NAPCS_ELAST_IMP = {
+    "farm_fish": -0.05, "energy": -3.52, "ores": -0.55, "metals": -0.55,
+    "chemical": -0.75, "forestry": -0.76, "machinery": -0.25, "electronics": -0.25,
+    "vehicles": -1.50, "aircraft": -0.10, "consumer": -0.75, "special": -0.05,
+}
+
 
 def run():
     ca_data = load_ca_data()
     pt = ca_data["province_trade"]
     cfg = CA_CONFIG
+    cad_usd = cfg["cad_usd"]
+    provinces = cfg["regions"]
 
-    out_dir = os.path.join(SCRIPT_DIR, "charts", "ca_products")
-    os.makedirs(out_dir, exist_ok=True)
+    by_napcs = {}
 
-    print("\n" + "=" * 80)
-    print("  PNWER CANADIAN PROVINCES — PRODUCT LEVEL (NAPCS)")
-    print("=" * 80)
+    for napcs in NAPCS_NAMES:
+        e24 = e25 = i24 = i25 = 0
+        for p in provinces:
+            e24 += pt.get(p, {}).get("2024", {}).get("by_napcs", {}).get(napcs, {}).get("exports", 0)
+            i24 += pt.get(p, {}).get("2024", {}).get("by_napcs", {}).get(napcs, {}).get("imports", 0)
+            e25 += pt.get(p, {}).get("2025", {}).get("by_napcs", {}).get(napcs, {}).get("exports", 0)
+            i25 += pt.get(p, {}).get("2025", {}).get("by_napcs", {}).get(napcs, {}).get("imports", 0)
 
-    for p in ["BC", "AB", "SK"]:
-        d24 = pt.get(p, {}).get("2024", {})
-        d25 = pt.get(p, {}).get("2025", {})
-        bn24 = d24.get("by_napcs", {})
-        bn25 = d25.get("by_napcs", {})
-        bi24 = d24.get("by_industry", {})
-        bi25 = d25.get("by_industry", {})
+        t24 = e24 + i24
+        t25 = e25 + i25
+        actual_delta = t25 - t24
 
-        print(f"\n  {cfg['region_names'][p]}")
-        print(f"  {'-'*65}")
-        print(f"  {'NAPCS':<28} {'Exp24':>7} {'Exp25':>7} {'Imp24':>7} {'Imp25':>7} {'NetChg':>8}")
+        # Model: export side + import side
+        tau_exp = NAPCS_TAU_EXP.get(napcs, 0.05)
+        tau_imp = NAPCS_TAU_IMP.get(napcs, 0.05)
+        eps_exp = NAPCS_ELAST_EXP.get(napcs, -0.5)
+        eps_imp = NAPCS_ELAST_IMP.get(napcs, -0.5)
 
-        for napcs_key in sorted(bn24.keys()):
-            e24 = bn24.get(napcs_key, {}).get("exports", 0)
-            e25 = bn25.get(napcs_key, {}).get("exports", 0)
-            i24 = bn24.get(napcs_key, {}).get("imports", 0)
-            i25 = bn25.get(napcs_key, {}).get("imports", 0)
-            chg = (e25 + i25) - (e24 + i24)
-            name = NAPCS_NAMES.get(napcs_key, napcs_key)
-            if (e24 + i24) > 1e6:
-                print(f"  {name:<28} {e24/1e6:>6.0f}M {e25/1e6:>6.0f}M {i24/1e6:>6.0f}M {i25/1e6:>6.0f}M {chg/1e6:>+7.0f}M")
+        model_exp = e24 * eps_exp * tau_exp if e24 > 0 else 0
+        model_imp = i24 * eps_imp * tau_imp if i24 > 0 else 0
+        model_delta = model_exp + model_imp
 
-        # Build donut chart: industry-level losses with NAPCS breakdown
-        ind_chart_data = {}
+        by_napcs[napcs] = {
+            "name": NAPCS_NAMES[napcs],
+            "industry": NAPCS_TO_INDUSTRY.get(napcs, "other"),
+            "exp_2024": round(e24),
+            "imp_2024": round(i24),
+            "trade_2024": round(t24),
+            "exp_2025": round(e25),
+            "imp_2025": round(i25),
+            "trade_2025": round(t25),
+            "actual_delta": round(actual_delta),
+            "actual_pct": round(actual_delta / t24 * 100, 1) if t24 > 0 else 0,
+            "model_delta": round(model_delta),
+            "model_pct": round(model_delta / t24 * 100, 1) if t24 > 0 else 0,
+            "tariff_exp": tau_exp,
+            "tariff_imp": tau_imp,
+            "elast_exp": eps_exp,
+            "elast_imp": eps_imp,
+        }
 
-        for ind in INDUSTRIES:
-            if ind == "other":
-                continue
-            e24 = bi24.get(ind, {}).get("exports", 0)
-            e25 = bi25.get(ind, {}).get("exports", 0)
-            i24 = bi24.get(ind, {}).get("imports", 0)
-            i25 = bi25.get(ind, {}).get("imports", 0)
-            ind_net = (e25 + i25) - (e24 + i24)
-            ind_loss = max(0, -ind_net)
+    # Print
+    print("\n" + "=" * 95)
+    print("  PNWER CA PROVINCES — PRODUCT-LEVEL IMPACT (NAPCS, CAD)")
+    print(f"  Provinces: {', '.join(provinces)} | Partner: United States")
+    print("=" * 95)
+    print(f"\n  {'Product':<24} {'2024':>10} {'2025':>10} {'Actual Δ':>10} {'Δ%':>7} {'Model Δ':>10} {'Acc%':>6}")
+    print(f"  {'-'*80}")
 
-            if ind_loss < 1e6:
-                continue
+    total_t24 = total_t25 = total_actual = total_model = 0
+    for napcs in sorted(by_napcs, key=lambda k: abs(by_napcs[k]["actual_delta"]), reverse=True):
+        d = by_napcs[napcs]
+        acc = d["model_delta"] / d["actual_delta"] * 100 if d["actual_delta"] != 0 else 0
+        print(f"  {d['name']:<24} ${d['trade_2024']/1e6:>8,.0f}M ${d['trade_2025']/1e6:>8,.0f}M"
+              f" ${d['actual_delta']/1e6:>+8,.0f}M {d['actual_pct']:>+6.1f}%"
+              f" ${d['model_delta']/1e6:>+8,.0f}M {acc:>+5.0f}%")
+        total_t24 += d["trade_2024"]
+        total_t25 += d["trade_2025"]
+        total_actual += d["actual_delta"]
+        total_model += d["model_delta"]
 
-            # Find NAPCS sub-categories in this industry
-            napcs_losses = {}
-            for napcs_key, mapped_ind in NAPCS_TO_INDUSTRY.items():
-                if mapped_ind != ind:
-                    continue
-                ne24 = bn24.get(napcs_key, {}).get("exports", 0)
-                ne25 = bn25.get(napcs_key, {}).get("exports", 0)
-                ni24 = bn24.get(napcs_key, {}).get("imports", 0)
-                ni25 = bn25.get(napcs_key, {}).get("imports", 0)
-                napcs_net = (ne25 + ni25) - (ne24 + ni24)
-                if napcs_net < 0:
-                    napcs_losses[napcs_key] = abs(napcs_net)
+    pct = total_actual / total_t24 * 100 if total_t24 > 0 else 0
+    acc = total_model / total_actual * 100 if total_actual != 0 else 0
+    print(f"  {'TOTAL':<24} ${total_t24/1e6:>8,.0f}M ${total_t25/1e6:>8,.0f}M"
+          f" ${total_actual/1e6:>+8,.0f}M {pct:>+6.1f}% ${total_model/1e6:>+8,.0f}M {acc:>+5.0f}%")
+    print("=" * 95)
 
-            sum_napcs = sum(napcs_losses.values())
-            others = max(0, ind_loss - sum_napcs)
+    # By province breakdown
+    print(f"\n  BY PROVINCE — Top products by impact")
+    for p in provinces:
+        prov_products = {}
+        for napcs in NAPCS_NAMES:
+            e24 = pt.get(p, {}).get("2024", {}).get("by_napcs", {}).get(napcs, {}).get("exports", 0)
+            i24 = pt.get(p, {}).get("2024", {}).get("by_napcs", {}).get(napcs, {}).get("imports", 0)
+            e25 = pt.get(p, {}).get("2025", {}).get("by_napcs", {}).get(napcs, {}).get("exports", 0)
+            i25 = pt.get(p, {}).get("2025", {}).get("by_napcs", {}).get(napcs, {}).get("imports", 0)
+            delta = (e25 + i25) - (e24 + i24)
+            if abs(delta) > 1e6:
+                prov_products[napcs] = delta
 
-            ind_chart_data[ind] = {
-                "products": napcs_losses,
-                "others": others,
-                "total": ind_loss,
-            }
+        if prov_products:
+            top = sorted(prov_products.items(), key=lambda x: abs(x[1]), reverse=True)[:3]
+            top_str = ", ".join(f"{NAPCS_NAMES[k]} ({v/1e6:+,.0f}M)" for k, v in top)
+            print(f"  {cfg['region_names'][p]:<20} {top_str}")
 
-        # Generate donut charts
-        n_charts = len(ind_chart_data)
-        if n_charts == 0:
-            continue
+    # JSON output
+    os.makedirs(JSON_OUT, exist_ok=True)
 
-        cols = min(n_charts, 3)
-        rows = (n_charts + cols - 1) // cols
-        fig, axes = plt.subplots(rows, cols, figsize=(6 * cols, 5.5 * rows))
-        if n_charts == 1:
-            axes = [axes]
-        elif rows == 1:
-            axes = list(axes)
-        else:
-            axes = [ax for row in axes for ax in row]
+    output = {
+        "side": "CA",
+        "currency": "CAD",
+        "cad_usd": cad_usd,
+        "provinces": provinces,
+        "by_product": by_napcs,
+        "totals": {
+            "trade_2024": round(total_t24),
+            "trade_2025": round(total_t25),
+            "actual_delta": round(total_actual),
+            "model_delta": round(total_model),
+        },
+    }
 
-        chart_idx = 0
-        for ind, cd in ind_chart_data.items():
-            if chart_idx >= len(axes):
-                break
-            ax = axes[chart_idx]
-            chart_idx += 1
+    out_path = os.path.join(JSON_OUT, "ca_product_results.json")
+    with open(out_path, 'w') as f:
+        json.dump(output, f, indent=2)
+    print(f"\n  → JSON saved: {out_path}")
 
-            vals = []
-            labels = []
-            colors = []
-            ind_colors = COLORS.get(ind, ["#999", "#666", "#333"])
-
-            sorted_prods = sorted(cd["products"].items(), key=lambda x: -x[1])
-            for i, (nk, loss) in enumerate(sorted_prods):
-                vals.append(loss)
-                name = NAPCS_NAMES.get(nk, nk)
-                pct = loss / cd["total"] * 100 if cd["total"] > 0 else 0
-                labels.append(f"{name} ${loss/1e6:.0f}M ({pct:.0f}%)")
-                colors.append(ind_colors[min(i, len(ind_colors) - 1)])
-
-            if cd["others"] > 1e6:
-                vals.append(cd["others"])
-                pct = cd["others"] / cd["total"] * 100
-                labels.append(f"Others ${cd['others']/1e6:.0f}M ({pct:.0f}%)")
-                colors.append(OTHERS_COLOR)
-
-            wedges, _ = ax.pie(vals, colors=colors, startangle=90,
-                               wedgeprops=dict(width=0.38, edgecolor="white", linewidth=1.5))
-
-            total_m = round(cd["total"] / 1e6)
-            ax.text(0, 0, f"-${total_m:,}M", ha="center", va="center",
-                    fontsize=14, fontweight="bold", color="#c0392b")
-            ax.set_title(f"{ind.title()}", fontsize=12, fontweight="bold", pad=12)
-            ax.legend(wedges, labels, loc="center left", bbox_to_anchor=(1.0, 0.5),
-                      fontsize=8, frameon=False)
-
-        for i in range(chart_idx, len(axes)):
-            axes[i].axis("off")
-
-        fig.suptitle(f"{cfg['region_names'][p]} — NAPCS Breakdown by Industry (CAD)",
-                     fontsize=14, fontweight="bold", y=1.02)
-        plt.tight_layout()
-
-        out_path = os.path.join(out_dir, f"products_{p.lower()}.png")
-        plt.savefig(out_path, dpi=150, bbox_inches="tight", facecolor="white")
-        plt.close()
-        print(f"  → Saved: {out_path}")
-
-    print(f"\n{'='*80}")
-    print(f"  CA product-level analysis complete.")
-    print(f"{'='*80}")
 
 if __name__ == "__main__":
     run()

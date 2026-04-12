@@ -1,6 +1,8 @@
 """
 PNWER Tariff Impact — Canadian Province Industry-Level Analysis
+All 5 PNWER provinces: BC, AB, SK, YT, NT
 Oil adjustment: residual-based (energy actual - energy tariff model)
+Outputs: ca_industry_results.json → dashboard data dir
 """
 
 import json
@@ -13,7 +15,7 @@ def run():
     pt = ca_data["province_trade"]
     cfg = CA_CONFIG
     cad_usd = cfg["cad_usd"]
-    provinces = ["BC", "AB", "SK"]
+    provinces = cfg["regions"]  # All 5: BC, AB, SK, YT, NT
 
     totals = {"t24": 0, "t25": 0, "model": 0, "oil": 0, "gdp": 0, "jobs": 0}
     by_prov = {}
@@ -48,60 +50,54 @@ def run():
             by_ind[ind]["imp_act"] += (i25 - i24)
 
         # Oil: residual-based (energy actual - energy tariff model)
-        e24_en = get_ca_val(pt, p, "2024", "exports", "energy")
-        e25_en = get_ca_val(pt, p, "2025", "exports", "energy")
-        i24_en = get_ca_val(pt, p, "2024", "imports", "energy")
-        i25_en = get_ca_val(pt, p, "2025", "imports", "energy")
-        energy_tariff = (industry_export_change(e24_en, "US", "energy", cfg=cfg) +
-                         industry_import_change(i24_en, "US", "energy", cfg=cfg))
-        energy_actual = (e25_en + i25_en) - (e24_en + i24_en)
-        pd["oil"] = energy_actual - energy_tariff
+        e_act_exp = get_ca_val(pt, p, "2025", "exports", "energy") - get_ca_val(pt, p, "2024", "exports", "energy")
+        e_act_imp = get_ca_val(pt, p, "2025", "imports", "energy") - get_ca_val(pt, p, "2024", "imports", "energy")
+        e_model = 0
+        e24_exp = get_ca_val(pt, p, "2024", "exports", "energy")
+        e24_imp = get_ca_val(pt, p, "2024", "imports", "energy")
+        if e24_exp > 0: e_model += industry_export_change(e24_exp, "US", "energy", cfg=cfg)
+        if e24_imp > 0: e_model += industry_import_change(e24_imp, "US", "energy", cfg=cfg)
+        pd["oil"] = (e_act_exp + e_act_imp) - e_model
 
         by_prov[p] = pd
         for k in totals:
             totals[k] += pd.get(k, 0)
 
-    tariff = totals["model"] / 1e9
-    oil = totals["oil"] / 1e9
-    actual = (totals["t25"] - totals["t24"]) / 1e9
-    residual = actual - tariff - oil
-
     # Print
     print("\n" + "=" * 80)
-    print("  PNWER CANADIAN PROVINCES — BILATERAL TARIFF IMPACT (CAD)")
-    print("  Provinces: BC, AB, SK | Partner: United States")
+    print("  PNWER CA PROVINCE TARIFF IMPACT — INDUSTRY LEVEL (CAD)")
+    print(f"  Provinces: {', '.join(provinces)}")
     print("=" * 80)
-    print(f"\n  Bilateral trade: ${totals['t24']/1e9:.1f}B → ${totals['t25']/1e9:.1f}B"
-          f" ({actual/totals['t24']*1e9*100:.1f}%)")
-    print(f"  GDP at risk: ${totals['gdp']/1e6:,.0f}M CAD (${totals['gdp']*cad_usd/1e6:,.0f}M USD)")
-    print(f"  Jobs at risk: {totals['jobs']:,.0f}")
+    t24_b = totals["t24"]/1e9; t25_b = totals["t25"]/1e9
+    chg = t25_b - t24_b
+    print(f"\n  Total trade: ${t24_b:.1f}B → ${t25_b:.1f}B ({chg/t24_b*100:+.1f}%)")
+    print(f"  GDP at risk (CAD): ${totals['gdp']/1e6:,.0f}M | Jobs: {totals['jobs']:,.0f}")
+
+    tariff = totals["model"]/1e9
+    oil = totals["oil"]/1e9
+    actual = chg
+    residual = actual - tariff - oil
 
     print(f"\n  DECOMPOSITION (CAD)")
-    print(f"  ┌─────────────────────────────────────────────────┐")
-    print(f"  │ Tariff effect      ${tariff:>+6.1f}B   ({abs(tariff/actual)*100:.0f}%)       │")
-    print(f"  │ Oil/energy price   ${oil:>+6.1f}B   ({abs(oil/actual)*100:.0f}%)       │")
-    print(f"  │ Residual            ${residual:>+6.1f}B   ({abs(residual/actual)*100:.0f}%)       │")
-    print(f"  │─────────────────────────────────────────────────│")
-    print(f"  │ Actual total        ${actual:>+6.1f}B   (100%)      │")
-    print(f"  └─────────────────────────────────────────────────┘")
+    print(f"  Tariff:   ${tariff:>+.1f}B")
+    print(f"  Oil:      ${oil:>+.1f}B")
+    print(f"  Residual: ${residual:>+.1f}B")
+    print(f"  Actual:   ${actual:>+.1f}B")
 
     print(f"\n  BY INDUSTRY (CAD)")
-    print(f"  {'':15} {'Exp Base':>8} {'Exp Mdl':>8} {'Exp Act':>8} {'Imp Base':>8} {'Imp Mdl':>8} {'Imp Act':>8}")
+    print(f"  {'':15} {'Exp Base':>10} {'Exp Mdl':>8} {'Exp Act':>8} {'Imp Base':>10} {'Imp Mdl':>8} {'Imp Act':>8}")
     for ind in INDUSTRIES:
         d = by_ind[ind]
-        print(f"  {ind:<15} ${d['exp_base']/1e6:>6,.0f}M {d['exp_m']/1e6:>+7,.0f}M {d['exp_act']/1e6:>+7,.0f}M"
-              f" ${d['imp_base']/1e6:>6,.0f}M {d['imp_m']/1e6:>+7,.0f}M {d['imp_act']/1e6:>+7,.0f}M")
+        print(f"  {ind:<15} ${d['exp_base']/1e6:>8,.0f}M {d['exp_m']/1e6:>+7,.0f}M {d['exp_act']/1e6:>+7,.0f}M"
+              f" ${d['imp_base']/1e6:>8,.0f}M {d['imp_m']/1e6:>+7,.0f}M {d['imp_act']/1e6:>+7,.0f}M")
 
     print(f"\n  BY PROVINCE")
-    print(f"  {'':15} {'Trade24':>10} {'Tariff':>8} {'Oil':>8} {'Actual':>8} {'Resid':>8} {'Res%':>6} {'GDP':>8} {'Jobs':>7}")
+    print(f"  {'':15} {'Trade24':>12} {'Trade25':>12} {'Model':>8} {'Oil':>8} {'Actual':>8} {'GDP':>8} {'Jobs':>6}")
     for p in provinces:
         d = by_prov[p]
         act = d["t25"] - d["t24"]
-        combined = d["model"] + d["oil"]
-        res = act - combined
-        pct = abs(res/act)*100 if act != 0 else 0
-        print(f"  {cfg['region_names'][p]:<15} ${d['t24']/1e6:>8,.0f}M {d['model']/1e6:>+7,.0f}M"
-              f" {d['oil']/1e6:>+7,.0f}M {act/1e6:>+7,.0f}M {res/1e6:>+7,.0f}M {pct:>5.0f}%"
+        print(f"  {cfg['region_names'][p]:<15} ${d['t24']/1e9:>10.1f}B ${d['t25']/1e9:>10.1f}B"
+              f" {d['model']/1e6:>+7,.0f}M {d['oil']/1e6:>+7,.0f}M {act/1e6:>+7,.0f}M"
               f" ${d['gdp']/1e6:>6,.0f}M {d['jobs']:>6,.0f}")
 
     print(f"\n  USD EQUIVALENT (×{cad_usd})")
@@ -109,10 +105,13 @@ def run():
     print(f"  Trade loss (tariff): ${totals['model']*cad_usd/1e6:+,.0f}M USD")
     print("=" * 80)
 
-    # JSON output
+    # ══════ JSON OUTPUT ══════
+    os.makedirs(JSON_OUT, exist_ok=True)
+
     results = {
         "side": "CA", "currency": "CAD", "cad_usd": cad_usd,
         "oil_method": "residual-based (energy_actual - energy_tariff_model)",
+        "provinces": provinces,
         "summary": {
             "trade_2024": round(totals["t24"]),
             "trade_2025": round(totals["t25"]),
@@ -146,10 +145,12 @@ def run():
             "import_base": round(d["imp_base"]), "import_model": round(d["imp_m"]),
             "import_actual": round(d["imp_act"]),
         }
-    out_path = os.path.join(SCRIPT_DIR, "ca_industry_results.json")
+
+    out_path = os.path.join(JSON_OUT, "ca_industry_results.json")
     with open(out_path, 'w') as f:
         json.dump(results, f, indent=2)
     print(f"\n  → JSON saved: {out_path}")
+
 
 if __name__ == "__main__":
     run()

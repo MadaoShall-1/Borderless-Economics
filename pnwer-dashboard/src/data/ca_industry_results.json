@@ -3,16 +3,23 @@
   "currency": "CAD",
   "cad_usd": 0.73,
   "oil_method": "residual-based (energy_actual - energy_tariff_model)",
+  "provinces": [
+    "BC",
+    "AB",
+    "SK",
+    "YT",
+    "NT"
+  ],
   "summary": {
-    "trade_2024": 282104007000,
-    "trade_2025": 263173383000,
-    "tariff_effect": -8860444102,
-    "oil_effect": -10476134371,
-    "actual_change": -18930624000,
-    "residual": 405954474,
-    "gdp_at_risk_cad": 12750541413,
-    "gdp_at_risk_usd": 9307895231,
-    "jobs_at_risk": 69067
+    "trade_2024": 282390476000,
+    "trade_2025": 263467299000,
+    "tariff_effect": -8873916767,
+    "oil_effect": -10505534622,
+    "actual_change": -18923177000,
+    "residual": 456274389,
+    "gdp_at_risk_cad": 12770034625,
+    "gdp_at_risk_usd": 9322125276,
+    "jobs_at_risk": 69139
   },
   "by_province": {
     "BC": {
@@ -47,56 +54,78 @@
       "residual": -83985440,
       "gdp_at_risk": 2656139563,
       "jobs_at_risk": 15782
+    },
+    "YT": {
+      "name": "Yukon",
+      "trade_2024": 206271000,
+      "trade_2025": 246772000,
+      "tariff_effect": -7853757,
+      "oil_effect": -287113,
+      "actual_change": 40501000,
+      "residual": 48641870,
+      "gdp_at_risk": 11625023,
+      "jobs_at_risk": 53
+    },
+    "NT": {
+      "name": "Northwest Territories",
+      "trade_2024": 80198000,
+      "trade_2025": 47144000,
+      "tariff_effect": -5618908,
+      "oil_effect": -29113138,
+      "actual_change": -33054000,
+      "residual": 1678045,
+      "gdp_at_risk": 7868190,
+      "jobs_at_risk": 20
     }
   },
   "by_industry": {
     "agriculture": {
-      "export_base": 12720862000,
-      "export_model": -1513782578,
-      "export_actual": -1512036000,
-      "import_base": 5344896000,
-      "import_model": -21379584,
-      "import_actual": 58784000
+      "export_base": 12721043000,
+      "export_model": -1513804117,
+      "export_actual": -1512140000,
+      "import_base": 5381502000,
+      "import_model": -21526008,
+      "import_actual": 64580000
     },
     "energy": {
-      "export_base": 153004808000,
-      "export_model": -153004808,
-      "export_actual": -9810266000,
-      "import_base": 5207327000,
-      "import_model": -366595821,
-      "import_actual": -1185469000
+      "export_base": 153005007000,
+      "export_model": -153005007,
+      "export_actual": -9810465000,
+      "import_base": 5286653000,
+      "import_model": -372180371,
+      "import_actual": -1220255000
     },
     "forestry": {
-      "export_base": 11538084000,
-      "export_model": -1442260500,
-      "export_actual": -1429795000,
-      "import_base": 4414455000,
-      "import_model": -335498580,
-      "import_actual": -334179000
+      "export_base": 11539589000,
+      "export_model": -1442448625,
+      "export_actual": -1430013000,
+      "import_base": 4414486000,
+      "import_model": -335500936,
+      "import_actual": -334197000
     },
     "minerals": {
-      "export_base": 9410348000,
-      "export_model": -415937382,
-      "export_actual": -424383000,
-      "import_base": 3919641000,
-      "import_model": -323370382,
-      "import_actual": -324179000
+      "export_base": 9546715000,
+      "export_model": -421964803,
+      "export_actual": -376736000,
+      "import_base": 3920176000,
+      "import_model": -323414520,
+      "import_actual": -324522000
     },
     "manufacturing": {
-      "export_base": 11597519000,
-      "export_model": -86981392,
-      "export_actual": 223139000,
-      "import_base": 22336385000,
-      "import_model": -1116819250,
-      "import_actual": -1114052000
+      "export_base": 11601638000,
+      "export_model": -87012285,
+      "export_actual": 219864000,
+      "import_base": 22359631000,
+      "import_model": -1117981550,
+      "import_actual": -1122124000
     },
     "other": {
-      "export_base": 19232245000,
-      "export_model": -980844495,
-      "export_actual": -980303000,
-      "import_base": 23377437000,
-      "import_model": -2103969330,
-      "import_actual": -2097885000
+      "export_base": 19235505000,
+      "export_model": -981010755,
+      "export_actual": -981313000,
+      "import_base": 23378531000,
+      "import_model": -2104067790,
+      "import_actual": -2095856000
     }
   }
 }

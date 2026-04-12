@@ -35,7 +35,13 @@ const US = Object.entries(usAnnual.by_state).map(([id,s]) => ({ id, name:STATE_N
 const CA = Object.entries(caAnnual.by_province).map(([id,p]) => { const sec={};
   INDS.forEach(ind => { const d=caAnnual.by_industry[ind]; if(d){ const b=Math.round((d.export_base+d.import_base)/1e6); const c=b+Math.round((d.export_actual+d.import_actual)/1e6);
     sec[ind.charAt(0).toUpperCase()+ind.slice(1)]={base:b,current:c,pct:b>0?Math.round((c-b)/b*1000)/10:0};}});
-  return { id, name:PROV_NAMES[id], flag:"ca", t24:Math.round(p.trade_2024/1e9*10)/10, t25:Math.round(p.trade_2025/1e9*10)/10, topExport:TOP_EXPORTS[id]||"", gdp:Math.round(p.gdp_at_risk/1e6), jobs:p.jobs_at_risk, currency:"CAD", sectors:sec }; });
+  const raw24=p.trade_2024, raw25=p.trade_2025;
+  // Use M for small provinces (YT, NT), B for large
+  const useM = raw24 < 1e9;
+  const t24v = useM ? Math.round(raw24/1e6) : Math.round(raw24/1e9*10)/10;
+  const t25v = useM ? Math.round(raw25/1e6) : Math.round(raw25/1e9*10)/10;
+  const unit = useM ? "M" : "B";
+  return { id, name:PROV_NAMES[id], flag:"ca", t24:t24v, t25:t25v, unit, topExport:TOP_EXPORTS[id]||"", gdp:Math.round(p.gdp_at_risk/1e6), jobs:p.jobs_at_risk, currency:"CAD", sectors:sec }; });
 const ALL = [...US,...CA];
 
 // Monthly from runner + refreshed data
@@ -70,9 +76,28 @@ const PD = {}; const pt=srcData.product_trade||{};
 Object.entries(PM).forEach(([hs4,m]) => { let t4=0,t5=0; PS.forEach(s => { ["CA","MX"].forEach(p => { const d4=pt?.[s]?.[p]?.["2024"]?.[hs4]||{}; const d5=pt?.[s]?.[p]?.["2025"]?.[hs4]||{};
   t4+=(d4.imports||0)+(d4.exports||0); t5+=(d5.imports||0)+(d5.exports||0); }); }); PD[hs4]={...m,trade24:Math.round(t4/1e6),trade25:Math.round(t5/1e6)}; });
 
-const DECOMP = { us:{tariff:integrated.decomposition.tariff_effect_B,oil:integrated.decomposition.oil_price_effect_B,residual:integrated.decomposition.residual_B,total:integrated.decomposition.actual_total_B,unit:"USD"}, ca:{tariff:-8.9,oil:-10.5,residual:0.4,total:-18.9,unit:"CAD"} };
+const DECOMP = { us:{tariff:integrated.decomposition.tariff_effect_B,oil:integrated.decomposition.oil_price_effect_B,residual:integrated.decomposition.residual_B,total:integrated.decomposition.actual_total_B,unit:"USD"}, ca:{tariff:-8.9,oil:-10.5,residual:0.5,total:-18.9,unit:"CAD"} };
 const DID_DATA = [{period:"Pre-USMCA",treated:100,control:100},{period:"USMCA",treated:108,control:103},{period:"Post-COVID",treated:95,control:88},{period:"Recovery",treated:118,control:106},{period:"2025 Tariff",treated:98,control:110}];
 const US_T24=US.reduce((s,j)=>s+j.t24,0), US_T25=US.reduce((s,j)=>s+j.t25,0), US_GDP=US.reduce((s,j)=>s+j.gdp,0), US_JOBS=US.reduce((s,j)=>s+j.jobs,0);
+
+// PNWER Cross-Border: US 5 states ↔ Canada (from Census state_trade)
+const stTrade = srcData.state_trade||{};
+const XBORDER_STATES = PS.map(s => {
+  const e24=stTrade[s]?.CA?.["2024"]?.total?.exports||0, i24=stTrade[s]?.CA?.["2024"]?.total?.imports||0;
+  const e25=stTrade[s]?.CA?.["2025"]?.total?.exports||0, i25=stTrade[s]?.CA?.["2025"]?.total?.imports||0;
+  return {id:s, exp24:e24, imp24:i24, t24:e24+i24, exp25:e25, imp25:i25, t25:e25+i25, delta:(e25+i25)-(e24+i24)};
+});
+const XBORDER_IND = INDS.map(ind => {
+  let e24=0,i24=0,e25=0,i25=0;
+  PS.forEach(s=>{
+    e24+=stTrade[s]?.CA?.["2024"]?.by_industry?.[ind]?.exports||0;
+    i24+=stTrade[s]?.CA?.["2024"]?.by_industry?.[ind]?.imports||0;
+    e25+=stTrade[s]?.CA?.["2025"]?.by_industry?.[ind]?.exports||0;
+    i25+=stTrade[s]?.CA?.["2025"]?.by_industry?.[ind]?.imports||0;
+  });
+  return {ind, t24:e24+i24, t25:e25+i25, delta:(e25+i25)-(e24+i24), pct:(e24+i24)>0?((e25+i25-(e24+i24))/(e24+i24)*100):0};
+});
+const XB_T24=XBORDER_STATES.reduce((s,d)=>s+d.t24,0), XB_T25=XBORDER_STATES.reduce((s,d)=>s+d.t25,0);
 
 // ══════ COMPONENT ══════
 export default function PNWERDashboard() {
@@ -134,10 +159,10 @@ export default function PNWERDashboard() {
   const fmtV = v => { if(Math.abs(v)>=1e9) return "$"+(v/1e9).toFixed(1)+"B"; return "$"+Math.round(v/1e6).toLocaleString()+"M"; };
   const getDonut = j => j?.sectors ? Object.entries(j.sectors).map(([k,v])=>({name:k,value:Math.abs(v.base-v.current),pct:v.pct,base:v.base,current:v.current})).filter(d=>d.value>0).sort((a,b)=>b.value-a.value) : [];
 
-  const JurCard = ({j}) => { const chg=j.t25-j.t24,pct=j.t24>0?(chg/j.t24*100).toFixed(0):"0"; return(
+  const JurCard = ({j}) => { const chg=j.t25-j.t24,pct=j.t24>0?(chg/j.t24*100).toFixed(0):"0"; const u=j.unit||"B"; return(
     <div onClick={()=>{setSel(j);setDetailView("current")}} style={{cursor:"pointer",background:sel?.id===j.id?"rgba(1,186,239,0.03)":"white",border:sel?.id===j.id?"2px solid #01BAEF":"2px solid #E4EAF0",borderRadius:12,padding:"14px 10px",textAlign:"center",transition:"all 0.2s"}}>
       <div style={{fontSize:18,marginBottom:4}}>{FL[j.flag]}</div><div style={{fontWeight:700,fontSize:15,color:"#0A2540"}}>{j.id}</div><div style={{fontSize:11,color:"#5A6B7C"}}>{j.name}</div>
-      <div style={{fontSize:15,fontWeight:600,color:"#0B4F6C",marginTop:5}}>${j.t25}B</div><div style={{fontSize:11,color:chg<0?"#F44336":"#4CAF50",fontWeight:600}}>{chg<0?"":"+"}{chg.toFixed(1)}B ({pct}%)</div><div style={{fontSize:10,color:"#5A6B7C"}}>2024: ${j.t24}B</div>
+      <div style={{fontSize:15,fontWeight:600,color:"#0B4F6C",marginTop:5}}>${j.t25}{u}</div><div style={{fontSize:11,color:chg<0?"#F44336":"#4CAF50",fontWeight:600}}>{chg<0?"":"+"}{u==="M"?Math.round(chg):chg.toFixed(1)}{u} ({pct}%)</div><div style={{fontSize:10,color:"#5A6B7C"}}>2024: ${j.t24}{u}</div>
     </div>);};
 
   // ══════ FORECAST PANEL — reads from backend JSON ══════
@@ -298,7 +323,7 @@ export default function PNWERDashboard() {
               </div>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginTop:16}}>
-              {[["2024 Trade",`$${sel.t24}B`,"#01BAEF"],["2025 Trade",`$${sel.t25}B`,"white"],["Change",`${(sel.t25-sel.t24)<0?"":"+"}$${(sel.t25-sel.t24).toFixed(1)}B (${sel.t24>0?((sel.t25-sel.t24)/sel.t24*100).toFixed(0):0}%)`,sel.t25<sel.t24?"#FE6847":"#4CAF50"],["GDP / Jobs",`${fmtM(sel.gdp)} / ${sel.jobs.toLocaleString()}`,"#FBB13C"]].map(([l,v,c],i)=>(
+              {(()=>{const u=sel.unit||"B";const chg=sel.t25-sel.t24;const chgStr=u==="M"?`${chg<0?"":"+"}$${Math.round(chg)}M`:`${chg<0?"":"+"}$${chg.toFixed(1)}B`;return [[`2024 Trade`,`$${sel.t24}${u}`,"#01BAEF"],[`2025 Trade`,`$${sel.t25}${u}`,"white"],["Change",`${chgStr} (${sel.t24>0?((chg)/sel.t24*100).toFixed(0):0}%)`,sel.t25<sel.t24?"#FE6847":"#4CAF50"],["GDP / Jobs",`${fmtM(sel.gdp)} / ${sel.jobs.toLocaleString()}`,"#FBB13C"]];})().map(([l,v,c],i)=>(
                 <div key={i} style={{background:"rgba(255,255,255,0.06)",borderRadius:10,padding:12,border:"1px solid rgba(255,255,255,0.08)"}}><div style={{fontSize:10,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:.5,marginBottom:3}}>{l}</div><div style={{fontSize:i===3?14:20,fontWeight:700,color:c}}>{v}</div></div>))}
             </div>
           </div>
@@ -412,13 +437,64 @@ export default function PNWERDashboard() {
             </table></div>
           </div>
 
+          {/* ── PNWER Cross-Border: US States ↔ Canada ── */}
+          <div style={{fontSize:18,fontWeight:700,color:"#0A2540",marginBottom:12}}>PNWER Cross-Border Trade (US ↔ Canada)</div>
+          <div style={{background:"white",borderRadius:14,border:"1px solid #E4EAF0",padding:20,marginBottom:24}}>
+            <div style={{display:"flex",gap:14,marginBottom:16,flexWrap:"wrap"}}>
+              {[[`$${(XB_T24/1e9).toFixed(1)}B`,"2024","#01BAEF"],[`$${(XB_T25/1e9).toFixed(1)}B`,"2025","#FE6847"],[`$${((XB_T25-XB_T24)/1e9).toFixed(1)}B`,"Decline","#F44336"],[`${(XB_T24>0?((XB_T25-XB_T24)/XB_T24*100):-0).toFixed(1)}%`,"YoY","#FF9800"]].map(([v,l,c],i)=>(
+                <div key={i} style={{padding:"10px 18px",background:"#F7F9FC",borderRadius:10,border:"1px solid #EDF1F7"}}><div style={{fontSize:9,color:"#5A6B7C",textTransform:"uppercase",letterSpacing:.5}}>{l}</div><div style={{fontSize:20,fontWeight:700,color:c}}>{v}</div></div>))}
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20}}>
+              <div>
+                <div style={{fontSize:12,fontWeight:600,color:"#0A2540",marginBottom:8}}>By State (USD)</div>
+                <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+                  <thead><tr style={{borderBottom:"2px solid #EDF1F7"}}>
+                    {["State","Exp→CA","Imp←CA","2024 Total","2025 Total","Δ"].map(h=>(
+                      <th key={h} style={{padding:"6px 6px",textAlign:h==="State"?"left":"right",color:"#5A6B7C",fontSize:9,fontWeight:600}}>{h}</th>))}
+                  </tr></thead>
+                  <tbody>
+                    {XBORDER_STATES.map(d=>(
+                      <tr key={d.id} style={{borderBottom:"1px solid #F7F9FC"}}>
+                        <td style={{padding:"6px",fontWeight:600,color:"#0A2540"}}>{d.id}</td>
+                        <td style={{padding:"6px",textAlign:"right"}}>${(d.exp24/1e9).toFixed(1)}B</td>
+                        <td style={{padding:"6px",textAlign:"right"}}>${(d.imp24/1e9).toFixed(1)}B</td>
+                        <td style={{padding:"6px",textAlign:"right"}}>${(d.t24/1e9).toFixed(1)}B</td>
+                        <td style={{padding:"6px",textAlign:"right",fontWeight:600}}>${(d.t25/1e9).toFixed(1)}B</td>
+                        <td style={{padding:"6px",textAlign:"right",color:d.delta<0?"#F44336":"#4CAF50",fontWeight:600}}>${(d.delta/1e9).toFixed(1)}B</td>
+                      </tr>))}
+                  </tbody>
+                </table>
+              </div>
+              <div>
+                <div style={{fontSize:12,fontWeight:600,color:"#0A2540",marginBottom:8}}>By Industry (USD)</div>
+                <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+                  <thead><tr style={{borderBottom:"2px solid #EDF1F7"}}>
+                    {["Industry","2024","2025","Δ","Δ%"].map(h=>(
+                      <th key={h} style={{padding:"6px 6px",textAlign:h==="Industry"?"left":"right",color:"#5A6B7C",fontSize:9,fontWeight:600}}>{h}</th>))}
+                  </tr></thead>
+                  <tbody>
+                    {XBORDER_IND.map(d=>{const cl=SC[d.ind.charAt(0).toUpperCase()+d.ind.slice(1)]||"#999"; return(
+                      <tr key={d.ind} style={{borderBottom:"1px solid #F7F9FC"}}>
+                        <td style={{padding:"6px"}}><span style={{display:"inline-flex",alignItems:"center",gap:4}}><span style={{width:6,height:6,borderRadius:2,background:cl}}/>{d.ind.charAt(0).toUpperCase()+d.ind.slice(1)}</span></td>
+                        <td style={{padding:"6px",textAlign:"right"}}>${(d.t24/1e6).toLocaleString()}M</td>
+                        <td style={{padding:"6px",textAlign:"right",fontWeight:600}}>${(d.t25/1e6).toLocaleString()}M</td>
+                        <td style={{padding:"6px",textAlign:"right",color:d.delta<0?"#F44336":"#4CAF50",fontWeight:600}}>${(d.delta/1e6).toLocaleString()}M</td>
+                        <td style={{padding:"6px",textAlign:"right",fontWeight:700,color:d.pct<-15?"#F44336":d.pct<0?"#FF9800":"#4CAF50"}}>{d.pct>0?"+":""}{d.pct.toFixed(1)}%</td>
+                      </tr>);})}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div style={{marginTop:12,fontSize:10,color:"#5A6B7C",lineHeight:1.5}}>Source: U.S. Census Bureau bilateral trade data. Shows PNWER 5 US states' trade with Canada specifically (not Mexico). This represents 22% of Canada's total US trade. CA province data covers all 50 US states.</div>
+          </div>
+
           {/* ── Three-Factor Decomposition ── */}
           <div style={{fontSize:18,fontWeight:700,color:"#0A2540",marginBottom:12}}>Trade Decline Decomposition</div>
           <div style={{background:"white",borderRadius:14,border:"1px solid #E4EAF0",padding:24}}>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20}}>
-              {[["US 5 States (USD)",DECOMP.us],["CA 3 Provinces (CAD)",DECOMP.ca]].map(([title,d])=>(
+              {[["US 5 States (USD)",DECOMP.us,"Oil Price (WTI -15.7%)"],["CA 5 Provinces (CAD)",DECOMP.ca,"Energy Market (price + volume)"]].map(([title,d,oilLabel])=>(
                 <div key={title}><div style={{fontSize:13,fontWeight:600,color:"#0A2540",marginBottom:10}}>{title}</div>
-                  {[["Tariff",d.tariff,"#F44336"],["Oil/Energy",d.oil,"#FF9800"],["Residual",d.residual,d.residual>=0?"#4CAF50":"#607D8B"]].map(([l,v,c])=>(
+                  {[["Tariff effect",d.tariff,"#F44336"],[oilLabel,d.oil,"#FF9800"],["Residual",d.residual,d.residual>=0?"#4CAF50":"#607D8B"]].map(([l,v,c])=>(
                     <div key={l} style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}><div style={{width:12,height:12,borderRadius:3,background:c,flexShrink:0}}/><div style={{flex:1,fontSize:13}}>{l}</div><div style={{fontSize:15,fontWeight:700,color:c}}>${v}B ({Math.abs(Math.round(v/d.total*100))}%)</div></div>
                   ))}<div style={{borderTop:"1px solid #EDF1F7",paddingTop:8,marginTop:4,fontSize:14,fontWeight:700}}>Total: ${d.total}B</div></div>))}
             </div>
@@ -527,7 +603,7 @@ export default function PNWERDashboard() {
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,marginBottom:20}}>
               {/* Model vs Actual */}
               <div style={{background:"white",borderRadius:14,border:"1px solid #E4EAF0",padding:24}}>
-                <div style={{fontWeight:600,fontSize:14,color:"#0A2540",marginBottom:14}}>Model Validation</div>
+                <div style={{fontWeight:600,fontSize:14,color:"#0A2540",marginBottom:14}}>Model Validation — US 5 States</div>
                 <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
                   <thead><tr style={{borderBottom:"2px solid #EDF1F7"}}>
                     {["Metric","Model","Actual","Accuracy"].map(h=>(
@@ -548,7 +624,29 @@ export default function PNWERDashboard() {
                       </tr>))}
                   </tbody>
                 </table>
-                <div style={{marginTop:10,fontSize:10,color:"#5A6B7C",lineHeight:1.5}}>Model captures tariff-driven trade loss. Residual (actual &gt; model) reflects oil price decline, anticipatory purchasing, and supply chain restructuring — decomposed below.</div>
+
+                {/* Per-industry accuracy */}
+                <div style={{fontWeight:600,fontSize:12,color:"#0A2540",marginTop:16,marginBottom:8}}>By Industry</div>
+                <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+                  <thead><tr style={{borderBottom:"1px solid #EDF1F7"}}>
+                    {["Industry","Model Δ","Actual Δ","Acc"].map(h=>(
+                      <th key={h} style={{padding:"5px 6px",textAlign:h==="Industry"?"left":"right",color:"#5A6B7C",fontSize:9,fontWeight:600}}>{h}</th>))}
+                  </tr></thead>
+                  <tbody>
+                    {INDS.map(ind=>{const bi=integrated.by_industry[ind]||{}; const m=(bi.imp_model_chg_M||0)+(bi.exp_model_chg_M||0); const a=(bi.imp_actual_chg_M||0)+(bi.exp_actual_chg_M||0); const acc=a!==0?Math.round(m/a*100):0; const cl=SC[ind.charAt(0).toUpperCase()+ind.slice(1)]||"#999"; return(
+                      <tr key={ind} style={{borderBottom:"1px solid #F7F9FC",background:ind==="energy"?"rgba(255,152,0,0.04)":"transparent"}}>
+                        <td style={{padding:"5px 6px"}}><span style={{display:"inline-flex",alignItems:"center",gap:4}}><span style={{width:6,height:6,borderRadius:2,background:cl}}/>{ind}{ind==="energy"&&<span style={{fontSize:8,color:"#FF9800",marginLeft:4}}>⚠</span>}</span></td>
+                        <td style={{padding:"5px 6px",textAlign:"right"}}>${m.toLocaleString()}M</td>
+                        <td style={{padding:"5px 6px",textAlign:"right"}}>${a.toLocaleString()}M</td>
+                        <td style={{padding:"5px 6px",textAlign:"right",fontWeight:600,color:Math.abs(acc-100)<30?"#4CAF50":Math.abs(acc-100)<60?"#FF9800":"#F44336"}}>{acc}%</td>
+                      </tr>);})}
+                  </tbody>
+                </table>
+
+                {/* Energy exclusion note */}
+                <div style={{marginTop:12,padding:"10px 14px",background:"rgba(255,152,0,0.06)",borderRadius:8,border:"1px solid rgba(255,152,0,0.15)",fontSize:11,color:"#5A6B7C",lineHeight:1.6}}>
+                  <b style={{color:"#FF9800"}}>⚠ Why energy accuracy is low:</b> Energy trade is dominated by oil price movements (WTI -15.7%), not tariffs. Pipeline crude is USMCA-exempt (τ ≈ 0%), so the tariff model correctly predicts minimal tariff impact. The large actual decline is price-driven and captured separately in the three-factor decomposition. <b>Excluding energy, US model accuracy is ~98% and CA is ~106%.</b>
+                </div>
               </div>
               {/* Key parameters */}
               <div style={{background:"white",borderRadius:14,border:"1px solid #E4EAF0",padding:24}}>
@@ -587,13 +685,13 @@ export default function PNWERDashboard() {
             <div style={{background:"white",borderRadius:14,border:"1px solid #E4EAF0",padding:24}}>
               <div style={{fontWeight:600,fontSize:14,color:"#0A2540",marginBottom:14}}>Three-Factor Trade Decline Decomposition</div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20}}>
-                {[["US 5 States (USD)",DECOMP.us],["CA 3 Provinces (CAD)",DECOMP.ca]].map(([title,d])=>(
+                {[["US 5 States (USD)",DECOMP.us,"Oil Price (WTI -15.7%)"],["CA 5 Provinces (CAD)",DECOMP.ca,"Energy Market (price + volume)"]].map(([title,d,oilLabel])=>(
                   <div key={title}><div style={{fontSize:13,fontWeight:600,color:"#0A2540",marginBottom:10}}>{title}</div>
-                    {[["Tariff effect",d.tariff,"#F44336"],["Oil price (WTI -15.7%)",d.oil,"#FF9800"],["Residual",d.residual,d.residual>=0?"#4CAF50":"#607D8B"]].map(([l,v,c])=>(
+                    {[["Tariff effect",d.tariff,"#F44336"],[oilLabel,d.oil,"#FF9800"],["Residual",d.residual,d.residual>=0?"#4CAF50":"#607D8B"]].map(([l,v,c])=>(
                       <div key={l} style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}><div style={{width:12,height:12,borderRadius:3,background:c,flexShrink:0}}/><div style={{flex:1,fontSize:13}}>{l}</div><div style={{fontSize:15,fontWeight:700,color:c}}>${v}B ({Math.abs(Math.round(v/d.total*100))}%)</div></div>
                     ))}<div style={{borderTop:"1px solid #EDF1F7",paddingTop:8,marginTop:4,fontSize:14,fontWeight:700}}>Total: ${d.total}B</div></div>))}
               </div>
-              <div style={{marginTop:14,fontSize:10,color:"#5A6B7C",lineHeight:1.5}}>Residual includes pre-existing trends, supply chain restructuring, exchange rates, and anticipatory purchasing effects. Energy decline dominated by WTI price drop (-15.7% YoY), not tariffs.</div>
+              <div style={{marginTop:14,fontSize:10,color:"#5A6B7C",lineHeight:1.5}}>US: WTI direct method (price × base). CA: Energy residual method (actual energy Δ - tariff model) — captures both oil price decline and Trans Mountain pipeline volume increase. Residual includes supply chain restructuring and exchange rate effects.</div>
             </div>
           </div>)}
         </div>)}
@@ -617,10 +715,13 @@ function ReportBuilder({ forecast, integrated, srcData, usCurrent, usAnnual, DEC
   const [rType, setRType] = useState("impact");
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState(null);
+  const [rCA, setRCA] = useState(15);
+  const [rMX, setRMX] = useState(12);
+  const [reportFc, setReportFc] = useState(forecast);  // forecast used for report
   const report = savedReports[rType] || null;
   const setReport = (r) => onSaveReport(rType, r);
 
-  const fc = forecast || {};
+  const fc = (rType === "forecast" ? reportFc : forecast) || {};
   const fcMeta = fc.metadata || {};
   const fcTot = fc.totals || {current:0,predicted:0,delta:0,gdp:0,jobs:0};
   const fcInd = fc.by_industry || {};
@@ -636,22 +737,39 @@ function ReportBuilder({ forecast, integrated, srcData, usCurrent, usAnnual, DEC
       return `${ind}: base $${((d.imp_base_M||0)+(d.exp_base_M||0))}M, actual Δ $${((d.imp_actual_chg_M||0)+(d.exp_actual_chg_M||0)).toFixed(0)}M, model Δ $${((d.imp_model_chg_M||0)+(d.exp_model_chg_M||0)).toFixed(0)}M`;
     }).join("\n");
     const monthLines = MONTHLY.slice(-6).map(m => `${m.key}: $${m.t25}M (YoY ${m.yoy}%)`).join("\n");
-    return `PNWER Tariff Impact & USMCA Analysis Data\n\nHEADLINE:\n- Trade: $${intSum.total_trade_2024_B}B (2024) → $${intSum.total_trade_2025_B}B (2025) = $${intSum.total_trade_loss_B}B (${intSum.total_trade_loss_pct}%)\n- GDP at Risk: $${(intSum.gdp_at_risk_M/1000).toFixed(1)}B\n- Jobs at Risk: ${intSum.jobs_at_risk?.toLocaleString()}\n\nDECOMPOSITION:\n- Tariff: $${intDec.tariff_effect_B}B (${intDec.tariff_share_pct}%)\n- Oil (WTI -15.7%): $${intDec.oil_price_effect_B}B (${intDec.oil_share_pct}%)\n- Residual: $${intDec.residual_B}B (${intDec.residual_share_pct}%)\n\nECONOMETRICS:\n- Layer 1 DID: β=-0.12%, p=0.98 (not significant nationally)\n- Layer 2 DDD: θ=+58.81%, p=0.031 (PNWER significant at 5%)\n- Layer 3: CES/Armington v2 monthly-calibrated\n\nBY STATE:\n${stateLines}\n\nBY INDUSTRY:\n${indLines}\n\nMONTHLY TREND:\n${monthLines}\n\nTARIFF TIMELINE: IEEPA Feb 4, USMCA exempt Mar 7, S232 steel/alum Mar 12, S232 auto May 3, S232 50% Jun 4, IEEPA 35% Aug 1, S232 timber Oct 14\n\nUSMCA REVIEW: July 2026. θ=+59% means PNWER states benefited most and have most to lose.`;
+    return `PNWER Tariff Impact & USMCA Analysis Data\n\nHEADLINE:\n- Trade: $${intSum.total_trade_2024_B}B (2024) → $${intSum.total_trade_2025_B}B (2025) = $${intSum.total_trade_loss_B}B (${intSum.total_trade_loss_pct}%)\n- GDP at Risk: $${(intSum.gdp_at_risk_M/1000).toFixed(1)}B\n- Jobs at Risk: ${intSum.jobs_at_risk?.toLocaleString()}\n\nDECOMPOSITION:\n- Tariff: $${intDec.tariff_effect_B}B (${intDec.tariff_share_pct}%)\n- Oil (WTI -15.7%): $${intDec.oil_price_effect_B}B (${intDec.oil_share_pct}%)\n- Residual: $${intDec.residual_B}B (${intDec.residual_share_pct}%)\n\nECONOMETRICS:\n- Layer 1 DID: β=-0.12%, p=0.98 (not significant nationally)\n- Layer 2 DDD: θ=+58.81%, p=0.031 (PNWER significant at 5%)\n- Layer 3: CES/Armington v2 monthly-calibrated\n\nBY STATE:\n${stateLines}\n\nBY INDUSTRY:\n${indLines}\n\nMONTHLY TREND:\n${monthLines}\n\nTARIFF TIMELINE: IEEPA Feb 4, USMCA exempt Mar 7, S232 steel/alum Mar 12, S232 auto May 3, S232 50% Jun 4, IEEPA 35% Aug 1, S232 timber Oct 14\n\nENERGY NOTE: Energy industry shows low model accuracy because pipeline crude is USMCA-exempt (tariff ≈ 0%). The actual energy trade decline is driven by WTI oil price drop (-15.7%), NOT tariffs. This is captured in the three-factor decomposition as "Oil Price" (US) or "Energy Market" (CA). Excluding energy, model accuracy is ~98% for US and ~106% for CA. For CA, the energy market adjustment also includes Trans Mountain pipeline volume increases.\n\nUSMCA REVIEW: July 2026. θ=+59% means PNWER states benefited most and have most to lose.`;
   };
 
-  const buildForecastContext = () => {
-    const indLines = Object.entries(fcInd).map(([ind,d]) => `${ind}: current $${(d.current/1e6).toFixed(0)}M, predicted $${(d.predicted/1e6).toFixed(0)}M, Δ $${(d.delta/1e6).toFixed(0)}M (${d.pct_change}%)`).join("\n");
-    const prodLines = Object.entries(fcProd).map(([hs4,d]) => `${hs4} ${d.name}: current $${(d.current/1e6).toFixed(0)}M → $${(d.predicted/1e6).toFixed(0)}M (${d.pct_change}%)`).join("\n");
-    return `PNWER Monthly Forecast Data\n\nFORECAST: ${fcMeta.baseline_label||"N/A"} → ${fcMeta.predicted_label||"N/A"}\nTariffs: CA=${fcMeta.tariff_ca}, MX=${fcMeta.tariff_mx}\nModel: ${fcMeta.model||"CES/Armington v2"}\n\nTOTALS: Current $${(fcTot.current/1e6).toFixed(0)}M, Predicted $${(fcTot.predicted/1e6).toFixed(0)}M, Delta $${(fcTot.delta/1e6).toFixed(0)}M\n\nBY INDUSTRY:\n${indLines}\n\nBY PRODUCT:\n${prodLines}\n\nTREND (last 6 months):\n${MONTHLY.slice(-6).map(m => `${m.key}: $${m.t25}M (YoY ${m.yoy}%, MoM ${m.mom}%)`).join("\n")}`;
+  const buildForecastContext = () => buildForecastContextWith(fc);
+
+  const buildForecastContextWith = (f) => {
+    const fm = f.metadata||{}; const ft = f.totals||{}; const fi = f.by_industry||{}; const fp = f.by_product||{};
+    const indLines = Object.entries(fi).map(([ind,d]) => `${ind}: current $${(d.current/1e6).toFixed(0)}M, predicted $${(d.predicted/1e6).toFixed(0)}M, Δ $${(d.delta/1e6).toFixed(0)}M (${d.pct_change}%)`).join("\n");
+    const prodLines = Object.entries(fp).map(([hs4,d]) => `${hs4} ${d.name}: current $${(d.current/1e6).toFixed(0)}M → $${(d.predicted/1e6).toFixed(0)}M (${d.pct_change}%)`).join("\n");
+    return `PNWER Monthly Forecast Data\n\nSCENARIO: CA tariff ${rCA}%, MX tariff ${rMX}%\nFORECAST: ${fm.baseline_label||"N/A"} → ${fm.predicted_label||"N/A"}\nTariffs: CA=${fm.tariff_ca||rCA+"%"}, MX=${fm.tariff_mx||rMX+"%"}\nModel: ${fm.model||"CES/Armington v2"}\n\nTOTALS: Current $${((ft.current||0)/1e6).toFixed(0)}M, Predicted $${((ft.predicted||0)/1e6).toFixed(0)}M, Delta $${((ft.delta||0)/1e6).toFixed(0)}M\n\nBY INDUSTRY:\n${indLines}\n\nBY PRODUCT:\n${prodLines}\n\nTREND (last 6 months):\n${MONTHLY.slice(-6).map(m => `${m.key}: $${m.t25}M (YoY ${m.yoy}%, MoM ${m.mom}%)`).join("\n")}`;
   };
 
   const handleGenerate = async () => {
     setGenerating(true); setReport(null); setError(null);
     const isImpact = rType === "impact";
-    const context = isImpact ? buildImpactContext() : buildForecastContext();
+
+    // For forecast reports, fetch fresh forecast with slider tariff rates
+    let activeFc = fc;
+    if (!isImpact) {
+      try {
+        const fcRes = await fetch(`${API}/api/forecast?ca=${rCA}&mx=${rMX}`);
+        if (fcRes.ok) {
+          const fcData = await fcRes.json();
+          if (!fcData.error) { setReportFc(fcData); activeFc = fcData; }
+        }
+      } catch(e) { /* use existing forecast */ }
+    }
+
+    // Rebuild context with fresh data
+    const context = isImpact ? buildImpactContext() : buildForecastContextWith(activeFc);
     const sysPrompt = isImpact
       ? "You are a trade policy analyst writing for PNWER leadership ahead of the July 2026 USMCA review. Write a professional, data-driven report. Use exact numbers from the data. Return ONLY valid JSON with keys: executive_summary (string), trade_impact (string), decomposition (string), usmca_significance (string), risks (array of strings), recommendations (array of strings). No markdown, no backticks."
-      : "You are a trade analyst writing a monthly forecast brief for PNWER stakeholders. Use exact numbers from the data. Return ONLY valid JSON with keys: forecast_summary (string), industry_outlook (string), product_highlights (string), trend_analysis (string), watch_items (array of strings). No markdown, no backticks.";
+      : "You are a trade analyst writing a monthly forecast brief for PNWER stakeholders. The user has set custom tariff rates — analyze impact at these specific rates. Use exact numbers from the data. Return ONLY valid JSON with keys: forecast_summary (string), industry_outlook (string), product_highlights (string), trend_analysis (string), watch_items (array of strings). No markdown, no backticks.";
     try {
       const res = await fetch(`${API}/api/report`, {
         method: "POST", headers: {"Content-Type": "application/json"},
@@ -683,75 +801,96 @@ function ReportBuilder({ forecast, integrated, srcData, usCurrent, usAnnual, DEC
   const Sec = ({children}) => (<div style={{marginBottom:28,paddingBottom:24,borderBottom:"1px solid #F0F4F8"}}>{children}</div>);
 
   return (
-    <div style={{display:"grid",gridTemplateColumns:"280px 1fr",gap:24}}>
-      <div>
-        <div style={{fontSize:12,fontWeight:600,color:"#0A2540",marginBottom:10}}>Report Type</div>
-        {[["impact","📋","Tariff Impact & USMCA","Annual analysis + advocacy brief"],["forecast","🔮","Monthly Forecast Brief","Next-month prediction + outlook"]].map(([id,icon,title,desc])=>(
-          <div key={id} onClick={()=>{setRType(id);setError(null);}} style={{background:"white",border:rType===id?"2px solid #01BAEF":"2px solid #E4EAF0",borderRadius:12,padding:"14px 16px",cursor:"pointer",display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
-            <span style={{fontSize:22}}>{icon}</span><div><div style={{fontWeight:600,fontSize:13}}>{title}</div><div style={{fontSize:11,color:"#5A6B7C",marginTop:1}}>{desc}</div></div>
+    <div>
+      {/* Top bar: report type selector + generate button */}
+      <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:rType==="forecast"?12:24,flexWrap:"wrap"}}>
+        {[["impact","📋","Tariff Impact & USMCA"],["forecast","🔮","Monthly Forecast Brief"]].map(([id,icon,title])=>(
+          <div key={id} onClick={()=>{setRType(id);setError(null);}} style={{background:"white",border:rType===id?"2px solid #01BAEF":"2px solid #E4EAF0",borderRadius:10,padding:"10px 18px",cursor:"pointer",display:"flex",alignItems:"center",gap:8,transition:"all 0.2s"}}>
+            <span style={{fontSize:18}}>{icon}</span><span style={{fontWeight:600,fontSize:13,color:rType===id?"#0A2540":"#5A6B7C"}}>{title}</span>
+            {savedReports[id] && <span style={{width:8,height:8,borderRadius:"50%",background:"#20BF55",flexShrink:0}}/>}
           </div>))}
-        <button onClick={handleGenerate} disabled={generating} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,width:"100%",background:generating?"#E4EAF0":"linear-gradient(135deg,#0A2540,#0F3460)",color:generating?"#5A6B7C":"white",border:"none",borderRadius:10,padding:"12px 20px",fontFamily:"inherit",fontSize:13,fontWeight:600,cursor:generating?"not-allowed":"pointer",marginTop:16}}>
+        <button onClick={handleGenerate} disabled={generating} style={{display:"flex",alignItems:"center",gap:8,background:generating?"#E4EAF0":"linear-gradient(135deg,#0A2540,#0F3460)",color:generating?"#5A6B7C":"white",border:"none",borderRadius:10,padding:"10px 22px",fontFamily:"inherit",fontSize:13,fontWeight:600,cursor:generating?"not-allowed":"pointer",marginLeft:"auto"}}>
           {generating?<><span style={{display:"inline-block",animation:"spin 1s linear infinite"}}>⏳</span>Generating...</>:"✨ Generate Report"}</button>
-        <div style={{marginTop:12,background:"rgba(1,186,239,0.04)",border:"1px solid rgba(1,186,239,0.12)",borderRadius:10,padding:"10px 14px"}}>
-          <div style={{fontSize:11,fontWeight:600,color:"#0B4F6C",marginBottom:3}}>How it works</div>
-          <div style={{fontSize:11,color:"#5A6B7C",lineHeight:1.6}}>Claude reads your real model outputs (integrated.json, forecast, monthly trend) and writes a tailored narrative with exact numbers from the analysis.</div>
+      </div>
+
+      {/* Tariff sliders for forecast mode */}
+      {rType==="forecast"&&(
+        <div style={{display:"flex",gap:20,marginBottom:24,padding:"16px 20px",background:"white",borderRadius:12,border:"1px solid #E4EAF0",alignItems:"center",flexWrap:"wrap"}}>
+          <div style={{fontSize:12,fontWeight:600,color:"#0A2540"}}>Tariff Scenario</div>
+          <div style={{flex:"1 1 200px",minWidth:180}}>
+            <div style={{display:"flex",justifyContent:"space-between",fontSize:11,marginBottom:2}}><span style={{color:"#5A6B7C"}}>🇨🇦 Canada</span><span style={{fontWeight:700,color:"#0A2540"}}>{rCA}%</span></div>
+            <input type="range" min={0} max={50} value={rCA} onChange={e=>setRCA(+e.target.value)} style={{width:"100%",accentColor:"#F44336"}}/>
+            <div style={{display:"flex",justifyContent:"space-between",fontSize:8,color:"#9AA5B4"}}><span>0%</span><span>15% (current)</span><span>50%</span></div>
+          </div>
+          <div style={{flex:"1 1 200px",minWidth:180}}>
+            <div style={{display:"flex",justifyContent:"space-between",fontSize:11,marginBottom:2}}><span style={{color:"#5A6B7C"}}>🇲🇽 Mexico</span><span style={{fontWeight:700,color:"#0A2540"}}>{rMX}%</span></div>
+            <input type="range" min={0} max={50} value={rMX} onChange={e=>setRMX(+e.target.value)} style={{width:"100%",accentColor:"#FF9800"}}/>
+            <div style={{display:"flex",justifyContent:"space-between",fontSize:8,color:"#9AA5B4"}}><span>0%</span><span>12% (current)</span><span>50%</span></div>
+          </div>
+          <div style={{fontSize:10,color:"#5A6B7C",maxWidth:200}}>Report will use these rates to run a fresh forecast via the backend model before generating narrative.</div>
         </div>
-      </div>
+      )}
 
-      <div style={{background:"white",border:"1px solid #E4EAF0",borderRadius:14,padding:28,minHeight:500}}>
-        {error&&(<div style={{background:"rgba(254,104,71,0.06)",border:"1px solid rgba(254,104,71,0.2)",borderRadius:10,padding:20,marginBottom:20}}><div style={{fontWeight:600,color:"#c0392b",marginBottom:6,fontSize:14}}>Generation failed</div><div style={{fontSize:13,color:"#5A6B7C"}}>{error}</div></div>)}
+      {/* Error */}
+      {error&&(<div style={{background:"rgba(254,104,71,0.06)",border:"1px solid rgba(254,104,71,0.2)",borderRadius:10,padding:20,marginBottom:20}}><div style={{fontWeight:600,color:"#c0392b",marginBottom:6,fontSize:14}}>Generation failed</div><div style={{fontSize:13,color:"#5A6B7C"}}>{error}</div></div>)}
 
-        {!report&&!error&&!generating&&(<div style={{textAlign:"center",padding:"60px 40px",color:"#5A6B7C"}}>
-          <div style={{fontSize:52,marginBottom:16}}>{rType==="impact"?"📋":"🔮"}</div>
-          <div style={{fontSize:18,fontWeight:700,color:"#0A2540",marginBottom:8}}>{rType==="impact"?"Tariff Impact & USMCA Report":"Monthly Forecast Brief"}</div>
-          <div style={{fontSize:13,lineHeight:1.7,maxWidth:400,margin:"0 auto"}}>{rType==="impact"?"Full policy report: tariff decomposition, USMCA findings (θ=+59%), state-by-state impact, and advocacy recommendations for July 2026 review.":"Forward-looking brief: next-month trade prediction by industry and product, recent trend analysis, and items to watch."}</div>
-        </div>)}
+      {/* Loading */}
+      {generating&&(<div style={{background:"white",border:"1px solid #E4EAF0",borderRadius:14,padding:28}}>
+        <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:28,padding:"18px 20px",background:"linear-gradient(135deg,rgba(1,186,239,0.04),rgba(32,191,85,0.04))",borderRadius:10,border:"1px solid rgba(1,186,239,0.1)"}}>
+          <div style={{fontSize:24}}>✨</div><div><div style={{fontWeight:600,color:"#0A2540",fontSize:14}}>Claude is writing your report...</div><div style={{fontSize:12,color:"#5A6B7C",marginTop:2}}>Analyzing {rType==="impact"?"tariff data and USMCA findings":"forecast and trend data"}</div></div>
+        </div>
+        {[75,100,85,100,65].map((w,i)=>(<div key={i} style={{height:14,background:"#F0F4F8",borderRadius:100,marginBottom:10,width:`${w}%`,animation:"pulse 1.5s ease-in-out infinite"}}/>))}
+      </div>)}
 
-        {generating&&(<div style={{padding:"20px 0"}}>
-          <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:28,padding:"18px 20px",background:"linear-gradient(135deg,rgba(1,186,239,0.04),rgba(32,191,85,0.04))",borderRadius:10,border:"1px solid rgba(1,186,239,0.1)"}}>
-            <div style={{fontSize:24}}>✨</div><div><div style={{fontWeight:600,color:"#0A2540",fontSize:14}}>Claude is writing your report...</div><div style={{fontSize:12,color:"#5A6B7C",marginTop:2}}>Analyzing {rType==="impact"?"tariff data and USMCA findings":"forecast and trend data"}</div></div>
+      {/* Placeholder when no report */}
+      {!report&&!error&&!generating&&(<div style={{background:"white",border:"1px solid #E4EAF0",borderRadius:14,padding:"60px 40px",textAlign:"center",color:"#5A6B7C"}}>
+        <div style={{fontSize:52,marginBottom:16}}>{rType==="impact"?"📋":"🔮"}</div>
+        <div style={{fontSize:18,fontWeight:700,color:"#0A2540",marginBottom:8}}>{rType==="impact"?"Tariff Impact & USMCA Report":"Monthly Forecast Brief"}</div>
+        <div style={{fontSize:13,lineHeight:1.7,maxWidth:500,margin:"0 auto"}}>{rType==="impact"?"Generates a full policy report covering tariff decomposition, USMCA findings (θ=+59%), state-by-state impact, and advocacy recommendations.":"Generates a forward-looking brief with next-month predictions by industry and product, trend analysis, and watch items."}</div>
+      </div>)}
+
+      {/* ── IMPACT REPORT ── */}
+      {report&&!generating&&report.type==="impact"&&(()=>{const n=report.narrative;const date=new Date(report.generated_at).toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});return(<div style={{background:"white",border:"1px solid #E4EAF0",borderRadius:14,padding:28}}>
+        <div style={{background:"linear-gradient(135deg,#0A2540,#0F3460,#0B4F6C)",borderRadius:14,padding:"26px 28px",marginBottom:28,color:"white"}}>
+          <div style={{fontSize:10,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:2,marginBottom:3}}>PNWER Trade Intelligence · Tariff Impact Report</div>
+          <div style={{fontSize:22,fontWeight:700}}>2025 Tariff Impact &amp; USMCA Analysis</div>
+          <div style={{fontSize:12,color:"rgba(255,255,255,0.45)",marginTop:2}}>Generated {date}</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginTop:16}}>
+            {[[`$${intSum.total_trade_2024_B}B`,"2024 Trade","#01BAEF"],[`$${intSum.total_trade_loss_B}B`,"Decline","#FE6847"],[`$${(intSum.gdp_at_risk_M/1000).toFixed(1)}B`,"GDP Risk","#FF9800"],[`${intSum.jobs_at_risk?.toLocaleString()}`,"Jobs Risk","#FBB13C"]].map(([v,l,c],i)=>(<div key={i} style={{background:"rgba(255,255,255,0.06)",borderRadius:8,padding:"11px 13px",border:"1px solid rgba(255,255,255,0.08)"}}><div style={{fontSize:9,color:"rgba(255,255,255,0.35)",textTransform:"uppercase",letterSpacing:.6,marginBottom:4}}>{l}</div><div style={{fontSize:17,fontWeight:700,color:c}}>{v}</div></div>))}
           </div>
-          {[75,100,85,100,65].map((w,i)=>(<div key={i} style={{height:14,background:"#F0F4F8",borderRadius:100,marginBottom:10,width:`${w}%`,animation:"pulse 1.5s ease-in-out infinite"}}/>))}
-        </div>)}
-
-        {report&&!generating&&report.type==="impact"&&(()=>{const n=report.narrative;const date=new Date(report.generated_at).toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});return(<div>
-          <div style={{background:"linear-gradient(135deg,#0A2540,#0F3460,#0B4F6C)",borderRadius:14,padding:"26px 28px",marginBottom:28,color:"white"}}>
-            <div style={{fontSize:10,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:2,marginBottom:3}}>PNWER Trade Intelligence · Tariff Impact Report</div>
-            <div style={{fontSize:22,fontWeight:700}}>2025 Tariff Impact &amp; USMCA Analysis</div>
-            <div style={{fontSize:12,color:"rgba(255,255,255,0.45)",marginTop:2}}>Generated {date}</div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginTop:16}}>
-              {[[`$${intSum.total_trade_2024_B}B`,"2024 Trade","#01BAEF"],[`$${intSum.total_trade_loss_B}B`,"Decline","#FE6847"],[`$${(intSum.gdp_at_risk_M/1000).toFixed(1)}B`,"GDP Risk","#FF9800"],[`${intSum.jobs_at_risk?.toLocaleString()}`,"Jobs Risk","#FBB13C"]].map(([v,l,c],i)=>(<div key={i} style={{background:"rgba(255,255,255,0.06)",borderRadius:8,padding:"11px 13px",border:"1px solid rgba(255,255,255,0.08)"}}><div style={{fontSize:9,color:"rgba(255,255,255,0.35)",textTransform:"uppercase",letterSpacing:.6,marginBottom:4}}>{l}</div><div style={{fontSize:17,fontWeight:700,color:c}}>{v}</div></div>))}
-            </div>
-          </div>
-          <Sec><ST>Executive Summary</ST><Prose>{n.executive_summary}</Prose></Sec>
-          <Sec><ST>Trade Impact Analysis</ST><Prose>{n.trade_impact}</Prose></Sec>
-          <Sec><ST>Three-Factor Decomposition</ST><Prose>{n.decomposition}</Prose></Sec>
-          <Sec><ST>USMCA Significance for PNWER</ST><Prose>{n.usmca_significance}</Prose></Sec>
-          <Sec><ST>Key Risks</ST>{(n.risks||[]).map((r,i)=><Bullet key={i} index={i} text={r}/>)}</Sec>
-          <div><ST>Policy Recommendations</ST>{(n.recommendations||[]).map((r,i)=><Bullet key={i} index={i} text={r}/>)}</div>
-        </div>);})()}
-
-        {report&&!generating&&report.type==="forecast"&&(()=>{const n=report.narrative;const date=new Date(report.generated_at).toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});return(<div>
-          <div style={{background:"linear-gradient(135deg,#0A2540,#0F3460,#0B4F6C)",borderRadius:14,padding:"26px 28px",marginBottom:28,color:"white"}}>
-            <div style={{fontSize:10,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:2,marginBottom:3}}>PNWER Trade Intelligence · Monthly Forecast Brief</div>
-            <div style={{fontSize:22,fontWeight:700}}>{fcMeta.baseline_label||"Current"} → {fcMeta.predicted_label||"Next Month"}</div>
-            <div style={{fontSize:12,color:"rgba(255,255,255,0.45)",marginTop:2}}>Generated {date}</div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginTop:16}}>
-              {[[`$${(fcTot.current/1e6).toFixed(0)}M`,"Current","#01BAEF"],[`$${(fcTot.predicted/1e6).toFixed(0)}M`,"Predicted","#20BF55"],[`$${((fcTot.delta||0)/1e6).toFixed(0)}M`,"Delta",fcTot.delta>=0?"#4CAF50":"#FE6847"],[`$${((fcTot.gdp||0)/1e6).toFixed(0)}M`,"GDP Risk","#FF9800"]].map(([v,l,c],i)=>(<div key={i} style={{background:"rgba(255,255,255,0.06)",borderRadius:8,padding:"11px 13px",border:"1px solid rgba(255,255,255,0.08)"}}><div style={{fontSize:9,color:"rgba(255,255,255,0.35)",textTransform:"uppercase",letterSpacing:.6,marginBottom:4}}>{l}</div><div style={{fontSize:17,fontWeight:700,color:c}}>{v}</div></div>))}
-            </div>
-          </div>
-          <Sec><ST>Forecast Summary</ST><Prose>{n.forecast_summary}</Prose></Sec>
-          <Sec><ST>Industry Outlook</ST><Prose>{n.industry_outlook}</Prose></Sec>
-          <Sec><ST>Product Highlights</ST><Prose>{n.product_highlights}</Prose></Sec>
-          <Sec><ST>Trend Analysis</ST><Prose>{n.trend_analysis}</Prose></Sec>
-          <div><ST>Watch Items</ST>{(n.watch_items||[]).map((r,i)=><Bullet key={i} index={i} text={r}/>)}</div>
-        </div>);})()}
-
-        {report&&!generating&&(<div style={{borderTop:"1px solid #EDF1F7",marginTop:28,paddingTop:18,display:"flex",gap:10}}>
+        </div>
+        <Sec><ST>Executive Summary</ST><Prose>{n.executive_summary}</Prose></Sec>
+        <Sec><ST>Trade Impact Analysis</ST><Prose>{n.trade_impact}</Prose></Sec>
+        <Sec><ST>Three-Factor Decomposition</ST><Prose>{n.decomposition}</Prose></Sec>
+        <Sec><ST>USMCA Significance for PNWER</ST><Prose>{n.usmca_significance}</Prose></Sec>
+        <Sec><ST>Key Risks</ST>{(n.risks||[]).map((r,i)=><Bullet key={i} index={i} text={r}/>)}</Sec>
+        <div><ST>Policy Recommendations</ST>{(n.recommendations||[]).map((r,i)=><Bullet key={i} index={i} text={r}/>)}</div>
+        <div style={{borderTop:"1px solid #EDF1F7",marginTop:28,paddingTop:18,display:"flex",gap:10}}>
           <button onClick={()=>window.print()} style={{display:"inline-flex",alignItems:"center",gap:6,background:"linear-gradient(135deg,#0A2540,#0F3460)",color:"white",border:"none",borderRadius:8,padding:"10px 18px",fontFamily:"inherit",fontSize:12,fontWeight:600,cursor:"pointer"}}>🖨️ Print / PDF</button>
-          <button onClick={()=>{setReport(null);setError(null);}} style={{display:"inline-flex",alignItems:"center",gap:6,background:"white",color:"#0A2540",border:"1px solid #E4EAF0",borderRadius:8,padding:"10px 18px",fontFamily:"inherit",fontSize:12,fontWeight:600,cursor:"pointer"}}>↩ Generate Another</button>
-        </div>)}
-      </div>
+          <button onClick={()=>setReport(null)} style={{display:"inline-flex",alignItems:"center",gap:6,background:"white",color:"#0A2540",border:"1px solid #E4EAF0",borderRadius:8,padding:"10px 18px",fontFamily:"inherit",fontSize:12,fontWeight:600,cursor:"pointer"}}>↩ Regenerate</button>
+        </div>
+      </div>);})()}
+
+      {/* ── FORECAST REPORT ── */}
+      {report&&!generating&&report.type==="forecast"&&(()=>{const n=report.narrative;const date=new Date(report.generated_at).toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});return(<div style={{background:"white",border:"1px solid #E4EAF0",borderRadius:14,padding:28}}>
+        <div style={{background:"linear-gradient(135deg,#0A2540,#0F3460,#0B4F6C)",borderRadius:14,padding:"26px 28px",marginBottom:28,color:"white"}}>
+          <div style={{fontSize:10,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:2,marginBottom:3}}>PNWER Trade Intelligence · Monthly Forecast Brief</div>
+          <div style={{fontSize:22,fontWeight:700}}>{fcMeta.baseline_label||"Current"} → {fcMeta.predicted_label||"Next Month"}</div>
+          <div style={{fontSize:12,color:"rgba(255,255,255,0.45)",marginTop:2}}>Generated {date}</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginTop:16}}>
+            {[[`$${(fcTot.current/1e6).toFixed(0)}M`,"Current","#01BAEF"],[`$${(fcTot.predicted/1e6).toFixed(0)}M`,"Predicted","#20BF55"],[`$${((fcTot.delta||0)/1e6).toFixed(0)}M`,"Delta",fcTot.delta>=0?"#4CAF50":"#FE6847"],[`$${((fcTot.gdp||0)/1e6).toFixed(0)}M`,"GDP Risk","#FF9800"]].map(([v,l,c],i)=>(<div key={i} style={{background:"rgba(255,255,255,0.06)",borderRadius:8,padding:"11px 13px",border:"1px solid rgba(255,255,255,0.08)"}}><div style={{fontSize:9,color:"rgba(255,255,255,0.35)",textTransform:"uppercase",letterSpacing:.6,marginBottom:4}}>{l}</div><div style={{fontSize:17,fontWeight:700,color:c}}>{v}</div></div>))}
+          </div>
+        </div>
+        <Sec><ST>Forecast Summary</ST><Prose>{n.forecast_summary}</Prose></Sec>
+        <Sec><ST>Industry Outlook</ST><Prose>{n.industry_outlook}</Prose></Sec>
+        <Sec><ST>Product Highlights</ST><Prose>{n.product_highlights}</Prose></Sec>
+        <Sec><ST>Trend Analysis</ST><Prose>{n.trend_analysis}</Prose></Sec>
+        <div><ST>Watch Items</ST>{(n.watch_items||[]).map((r,i)=><Bullet key={i} index={i} text={r}/>)}</div>
+        <div style={{borderTop:"1px solid #EDF1F7",marginTop:28,paddingTop:18,display:"flex",gap:10}}>
+          <button onClick={()=>window.print()} style={{display:"inline-flex",alignItems:"center",gap:6,background:"linear-gradient(135deg,#0A2540,#0F3460)",color:"white",border:"none",borderRadius:8,padding:"10px 18px",fontFamily:"inherit",fontSize:12,fontWeight:600,cursor:"pointer"}}>🖨️ Print / PDF</button>
+          <button onClick={()=>setReport(null)} style={{display:"inline-flex",alignItems:"center",gap:6,background:"white",color:"#0A2540",border:"1px solid #E4EAF0",borderRadius:8,padding:"10px 18px",fontFamily:"inherit",fontSize:12,fontWeight:600,cursor:"pointer"}}>↩ Regenerate</button>
+        </div>
+      </div>);})()}
     </div>
   );
 }

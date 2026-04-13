@@ -1,0 +1,15 @@
+.git
+.gitignore
+.venv
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+data/
+charts/
+
+node_modules/
+pnwer-dashboard/node_modules/
+pnwer-dashboard/dist/

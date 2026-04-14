@@ -18,6 +18,108 @@ Included config files:
 - [`pnwer-dashboard/vercel.json`](/D:/Tariff/pnwer-dashboard/vercel.json)
 - [`.env.example`](/D:/Tariff/.env.example)
 
+## Fastest Option: Run with Docker
+
+If the support team receives the source code through Google Drive, this is the easiest way to open the project locally.
+
+### What to Download First
+
+1. Download the project folder from Google Drive.
+2. Extract the ZIP file if Google Drive gave you a ZIP.
+3. Open the project folder on the computer.
+4. Make sure Docker Desktop is installed and running.
+
+You do not need GitHub, Python, or Node.js for this method.
+
+### Docker Step-by-Step
+
+1. Open the project folder.
+2. Open a terminal inside that folder.
+3. Run:
+
+```bash
+docker compose up --build
+```
+
+4. Wait for Docker to finish building and starting the containers.
+5. Open the website in a browser:
+
+- Frontend: `http://localhost:3000`
+- Backend: `http://localhost:8001`
+
+### How to Know Docker Worked
+
+When Docker starts correctly, you should see messages similar to:
+
+```text
+backend-1   | Application startup complete.
+backend-1   | Uvicorn running on http://0.0.0.0:8000
+frontend-1  | Configuration complete; ready for start up
+```
+
+At that point, open:
+
+- `http://localhost:3000`
+
+### If the Browser Page Does Not Open
+
+Check these things:
+
+1. Make sure Docker Desktop is running.
+2. Make sure the terminal is still open.
+3. Make sure the project folder was fully extracted from Google Drive.
+4. Try `http://localhost:3000` again.
+
+### If Port 8001 Is Already In Use
+
+Create a file named `.env` in the project folder with this line:
+
+```env
+BACKEND_PORT=8010
+```
+
+Then run again:
+
+```bash
+docker compose up --build
+```
+
+After that, the backend will be available at:
+
+- `http://localhost:8010`
+
+The frontend will still open at:
+
+- `http://localhost:3000`
+
+### If AI Reports Are Needed in Docker
+
+Create a file named `.env` in the project folder and add one or both of these:
+
+```env
+GROQ_API_KEY=gsk_your_key_here
+ANTHROPIC_API_KEY=sk-ant-your_key_here
+```
+
+Then run:
+
+```bash
+docker compose up --build
+```
+
+### How to Stop Docker
+
+In the terminal window where Docker is running:
+
+1. Click the terminal
+2. Press `Ctrl + C`
+
+If needed, you can also run:
+
+```bash
+docker compose down
+```
+
 ## Before You Start
 
 If the person following this guide is not technical, the easiest path is:

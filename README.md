@@ -22,6 +22,31 @@ Included config files:
 
 If the support team receives the source code through Google Drive, this is the easiest way to open the project locally.
 
+### How to Install Docker Desktop
+
+If Docker is not installed yet, follow these steps first.
+
+1. Open the Docker Desktop website:
+
+- [Docker Desktop Download](https://www.docker.com/products/docker-desktop/)
+
+2. Click the download button for Windows.
+3. Wait for the installer file to finish downloading.
+4. Open the installer file.
+5. Keep the default options unless your IT team tells you otherwise.
+6. Click through the install steps.
+7. Restart the computer if Docker asks you to restart.
+8. After restart, open `Docker Desktop`.
+9. Wait until Docker Desktop finishes loading.
+
+How to know Docker is ready:
+
+- Docker Desktop opens normally
+- the whale icon appears
+- the app shows that Docker is running
+
+If Windows shows a message about WSL or virtualization, ask IT to enable the required Windows features and then open Docker Desktop again.
+
 ### What to Download First
 
 1. Download the project folder from Google Drive.

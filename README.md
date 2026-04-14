@@ -18,6 +18,121 @@ Included config files:
 - [`pnwer-dashboard/vercel.json`](/D:/Tariff/pnwer-dashboard/vercel.json)
 - [`.env.example`](/D:/Tariff/.env.example)
 
+## Recommended: Use VS Code
+
+If the support team is opening the source code on a local computer, VS Code is the easiest tool to use.
+
+VS Code helps with:
+
+- opening the project folder
+- seeing all files in one place
+- opening a built-in terminal
+- editing `.env` files safely
+
+Important note:
+
+- Windows computers: supported
+- macOS computers: supported
+- iPhone or iPad using iOS: not supported for local setup
+
+If someone only has an iPhone or iPad, they should not try to run the project locally. They should use a Windows or Mac computer instead.
+
+### How to Install VS Code on Windows
+
+1. Open the VS Code website:
+
+- [Visual Studio Code Download](https://code.visualstudio.com/)
+
+2. Click the Windows download button.
+3. Wait for the installer to finish downloading.
+4. Open the installer.
+5. Click through the install steps.
+6. Keep the default settings unless your IT team says otherwise.
+7. Finish the installation.
+8. Open `Visual Studio Code`.
+
+Recommended Windows install options if shown:
+
+- `Add "Open with Code" action`
+- `Add to PATH`
+
+These are helpful, but the project can still work without them.
+
+### How to Install VS Code on macOS
+
+1. Open the VS Code website:
+
+- [Visual Studio Code Download](https://code.visualstudio.com/)
+
+2. Click the Mac download button.
+3. Wait for the download to finish.
+4. Open the downloaded file.
+5. Drag `Visual Studio Code` into the `Applications` folder if macOS asks.
+6. Open `Visual Studio Code`.
+7. If macOS shows a security prompt, click to allow opening the app.
+
+### What Else Needs to Be Installed
+
+If the user only wants the easiest local method, install:
+
+- Docker Desktop
+- VS Code
+
+That is enough for the Docker method.
+
+If the user wants to run the project without Docker, they may also need:
+
+- Python 3.11 or newer
+- Node.js 20 or newer
+
+For most support staff, Docker is the simpler option.
+
+### How to Open the Project in VS Code
+
+After downloading the source code from Google Drive:
+
+1. Extract the ZIP file if needed.
+2. Open `Visual Studio Code`.
+3. Click `File`.
+4. Click `Open Folder...`
+5. Select the project folder.
+6. Wait for VS Code to load the files.
+
+After that, the left side of VS Code should show the project files and folders.
+
+### How to Open the Terminal in VS Code
+
+Once the project folder is open in VS Code:
+
+1. Click `Terminal` in the top menu.
+2. Click `New Terminal`.
+
+VS Code will open a terminal at the bottom of the window.
+
+That is where the commands in this README should be typed.
+
+### How to Open a Terminal Without VS Code
+
+If the user does not want to use VS Code, they can still use the computer's normal terminal.
+
+Windows:
+
+1. Open the project folder in File Explorer.
+2. Click the folder path bar.
+3. Type `powershell`
+4. Press `Enter`
+
+This opens PowerShell in the correct folder.
+
+macOS:
+
+1. Open `Terminal`
+2. Type `cd `
+3. Drag the project folder into the Terminal window
+4. Press `Enter`
+
+This moves Terminal into the correct folder.
+
 ## Fastest Option: Run with Docker
 
 If the support team receives the source code through Google Drive, this is the easiest way to open the project locally.
@@ -30,14 +145,26 @@ If Docker is not installed yet, follow these steps first.
 
 - [Docker Desktop Download](https://www.docker.com/products/docker-desktop/)
 
-2. Click the download button for Windows.
-3. Wait for the installer file to finish downloading.
-4. Open the installer file.
-5. Keep the default options unless your IT team tells you otherwise.
-6. Click through the install steps.
-7. Restart the computer if Docker asks you to restart.
-8. After restart, open `Docker Desktop`.
-9. Wait until Docker Desktop finishes loading.
+Windows:
+
+1. Click the download button for Windows.
+2. Wait for the installer file to finish downloading.
+3. Open the installer file.
+4. Keep the default options unless your IT team tells you otherwise.
+5. Click through the install steps.
+6. Restart the computer if Docker asks you to restart.
+7. After restart, open `Docker Desktop`.
+8. Wait until Docker Desktop finishes loading.
+
+macOS:
+
+1. Click the download button for Mac.
+2. Wait for the file to finish downloading.
+3. Open the downloaded file.
+4. Drag Docker into the `Applications` folder if macOS asks.
+5. Open `Docker Desktop`.
+6. Allow any permissions macOS asks for.
+7. Wait until Docker Desktop finishes loading.
 
 How to know Docker is ready:
 
@@ -60,14 +187,16 @@ You do not need GitHub, Python, or Node.js for this method.
 
 1. Open the project folder.
 2. Open a terminal inside that folder.
-3. Run:
+3. Make sure you are inside the project folder.
+4. Copy and paste this command:
 
 ```bash
 docker compose up --build
 ```
 
-4. Wait for Docker to finish building and starting the containers.
-5. Open the website in a browser:
+5. Press `Enter`.
+6. Wait for Docker to finish building and starting the containers.
+7. Open the website in a browser:
 
 - Frontend: `http://localhost:3000`
 - Backend: `http://localhost:8001`
@@ -436,6 +565,8 @@ Most non-technical users do not need this section.
 
 This is only for local testing on a computer.
 
+If the user is not technical, the Docker method above is strongly recommended instead of the manual local setup below.
+
 ### Local Backend
 
 Requirements:
@@ -453,6 +584,27 @@ pip install -r requirements.txt
 uvicorn server:app --reload --port 8000
 ```
 
+What these commands do:
+
+1. `python -m venv .venv`
+Creates a local Python environment for the project.
+
+2. `.venv\Scripts\Activate.ps1`
+Turns on that environment in PowerShell.
+
+3. `pip install -r requirements.txt`
+Installs the Python packages the backend needs.
+
+4. `uvicorn server:app --reload --port 8000`
+Starts the backend server.
+
+If PowerShell blocks the activate command, the user can still try:
+
+```powershell
+python -m pip install -r requirements.txt
+python -m uvicorn server:app --reload --port 8000
+```
+
 ### Local Frontend
 
 Requirements:
@@ -466,6 +618,17 @@ cd pnwer-dashboard
 npm install
 npm run dev
 ```
+
+What these commands do:
+
+1. `cd pnwer-dashboard`
+Moves into the frontend folder.
+
+2. `npm install`
+Installs the frontend packages.
+
+3. `npm run dev`
+Starts the frontend development server.
 
 Local addresses:
 

@@ -133,6 +133,213 @@ macOS:
 
 This moves Terminal into the correct folder.
 
+## How to Push Local Code to GitHub
+
+Use this section when the support team has edited files on the local computer and needs to send those changes back to GitHub.
+
+This process should be done on a Windows or Mac computer, not on iPhone or iPad.
+
+Why this matters:
+
+- pushing to GitHub keeps the latest version of the project in one safe place
+- it makes future updates easier for the team
+- Vercel usually deploys the frontend from GitHub
+- Railway usually deploys the backend from GitHub
+
+If local changes are never pushed to GitHub, Vercel and Railway may keep using older code instead of the latest version.
+
+### What Needs to Be Ready First
+
+Before pushing code to GitHub, make sure:
+
+- the project folder is already open on the computer
+- GitHub account access is available
+- Git is installed on the computer
+- the project was originally downloaded as a Git repository, not only as a ZIP
+
+Important note:
+
+- If the project was downloaded from Google Drive as a ZIP file, `git push` will usually not work right away.
+- In that case, the user should either get a real GitHub clone of the repository, or ask a technical teammate to reconnect the folder to GitHub.
+
+### Easiest Way to Check Whether Git Is Ready
+
+Open a terminal in the project folder and run:
+
+```bash
+git status
+```
+
+If Git is working, you should see a response that mentions the current branch or changed files.
+
+If you see an error like `git is not recognized`, Git is not installed yet.
+
+### How to Install Git on Windows
+
+1. Open the Git website:
+
+- [Git Download](https://git-scm.com/downloads)
+
+2. Download Git for Windows.
+3. Open the installer.
+4. Keep the default options unless IT tells you otherwise.
+5. Finish the installation.
+6. Close and reopen VS Code or PowerShell after installation.
+
+### How to Install Git on macOS
+
+1. Open the Git website:
+
+- [Git Download](https://git-scm.com/downloads)
+
+2. Download Git for macOS, or install the Apple command line tools if macOS prompts for them.
+3. Finish the installation.
+4. Close and reopen Terminal or VS Code after installation.
+
+### First-Time Git Setup
+
+If this is the first time Git is being used on the computer, run these two commands once:
+
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "your-email@example.com"
+```
+
+Replace:
+
+- `Your Name` with the person's real name
+- `your-email@example.com` with the email connected to GitHub
+
+### How to See What Changed
+
+In the terminal, run:
+
+```bash
+git status
+```
+
+This shows which files were changed.
+
+If the user wants a simpler view, they can also look in the VS Code `Source Control` panel on the left side.
+
+### How to Save Changes to GitHub
+
+Run these commands one by one in the project folder.
+
+Step 1:
+
+```bash
+git status
+```
+
+This lets the user confirm that the changed files are visible.
+
+Step 2:
+
+```bash
+git add .
+```
+
+This tells Git to prepare all changed files for saving.
+
+Step 3:
+
+```bash
+git commit -m "Update project files"
+```
+
+This creates a local save point with a short message.
+
+The message can be changed to something more specific, for example:
+
+```bash
+git commit -m "Update README instructions"
+```
+
+Step 4:
+
+```bash
+git push
+```
+
+This uploads the local commit to GitHub.
+
+### What to Expect During Git Push
+
+When `git push` works:
+
+- Git may ask the user to sign in to GitHub
+- a browser window may open for login
+- after login, the push should continue
+
+If Git says everything is up to date, there may not be any new changes to push.
+
+### If Git Push Says There Is No Remote Repository
+
+Run:
+
+```bash
+git remote -v
+```
+
+If no GitHub address appears, the folder may not be connected to the GitHub repository.
+
+This often happens when the project came from Google Drive instead of a real Git clone.
+
+### Best Practice When Using Google Drive Source Code
+
+If the support team needs to both:
+
+- run the project locally from Google Drive
+- and push code back to GitHub
+
+the safer workflow is:
+
+1. Clone the GitHub repository to the computer.
+2. Copy only the changed files from the Google Drive version into the GitHub clone.
+3. Run `git status`.
+4. Run `git add .`
+5. Run `git commit -m "Describe the changes"`
+6. Run `git push`
+
+This avoids many Git problems caused by ZIP downloads.
+
+### If Git Push Fails Because GitHub Asks for Login
+
+Usually the easiest fix is:
+
+1. Let the browser sign-in page open.
+2. Sign in to GitHub.
+3. Approve access if Git asks.
+4. Return to the terminal and wait for the push to finish.
+
+### If Git Push Fails Because Someone Else Updated GitHub First
+
+Run:
+
+```bash
+git pull --rebase
+```
+
+Then run:
+
+```bash
+git push
+```
+
+If this shows merge or conflict errors, stop and ask a technical teammate for help before continuing.
+
+### Simple Git Push Version
+
+If the repository is already connected and Git is already installed, the short version is:
+
+```bash
+git status
+git add .
+git commit -m "Update project files"
+git push
+```
+
 ## Fastest Option: Run with Docker
 
 If the support team receives the source code through Google Drive, this is the easiest way to open the project locally.

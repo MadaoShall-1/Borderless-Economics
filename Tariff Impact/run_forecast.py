@@ -62,17 +62,33 @@ FOCUS_HS4 = {
 }
 
 
-def detect_latest_month_key(data):
-    """Find the most recent month key in monthly_trade data."""
-    mt = data.get("monthly_trade", {})
+def collect_month_keys(data, section="monthly_trade"):
+    """Collect all available YYYY-MM keys from monthly trade/product data."""
+    dataset = data.get(section, {})
     all_months = set()
     for state in PNWER_STATES:
         for _, partner in PARTNERS:
-            months = mt.get(state, {}).get(partner, {})
+            months = dataset.get(state, {}).get(partner, {})
             all_months.update(months.keys())
+    return all_months
+
+
+def detect_latest_month_key(data, section="monthly_trade"):
+    """Find the most recent month key in a monthly data section."""
+    all_months = collect_month_keys(data, section=section)
     if not all_months:
         return None
     return sorted(all_months)[-1]
+
+
+def detect_latest_common_month_key(data):
+    """Find the latest month present in both monthly_trade and monthly_products."""
+    trade_months = collect_month_keys(data, section="monthly_trade")
+    product_months = collect_month_keys(data, section="monthly_products")
+    common_months = trade_months & product_months
+    if common_months:
+        return sorted(common_months)[-1]
+    return detect_latest_month_key(data, section="monthly_trade")
 
 
 def get_prev_month_key(month_key):
@@ -113,7 +129,7 @@ def forecast_next_month(tariff_ca=None, tariff_mx=None, data=None):
     mp = data.get("monthly_products", {})
 
     # Detect latest month
-    latest_mk = detect_latest_month_key(data)
+    latest_mk = detect_latest_common_month_key(data)
     if not latest_mk:
         return {"error": "No monthly data available. Run refresh first."}
 
@@ -303,6 +319,8 @@ def forecast_next_month(tariff_ca=None, tariff_mx=None, data=None):
             "baseline_label": f"{MONTH_NAMES[latest_month - 1]} {latest_year}",
             "predicted_month": next_mk,
             "predicted_label": f"{MONTH_NAMES[next_month_num - 1]} {next_year}",
+            "trade_latest_month": detect_latest_month_key(data, section="monthly_trade"),
+            "product_latest_month": detect_latest_month_key(data, section="monthly_products"),
             "tariff_ca": tariff_ca if tariff_ca is not None else "current H2 rates",
             "tariff_mx": tariff_mx if tariff_mx is not None else "current H2 rates",
             "model": "CES/Armington with H2 2025 calibrated elasticities",

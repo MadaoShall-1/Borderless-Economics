@@ -112,7 +112,17 @@ export default function PNWERDashboard() {
   const [fView,setFView] = useState("industry");
   const [forecast,setForecast] = useState(null);
   const [fcLoading,setFcLoading] = useState(false);
-  const [savedReports,setSavedReports] = useState({});  // {impact: ..., forecast: ...}
+  // Persist generated reports across page reloads (e.g. after Refresh Data)
+  // so the user doesn't have to regenerate and risk hitting flaky LLM output.
+  const [savedReports,setSavedReports] = useState(() => {
+    try {
+      const raw = typeof window !== "undefined" ? window.localStorage?.getItem("pnwer.savedReports") : null;
+      return raw ? JSON.parse(raw) : {};
+    } catch { return {}; }
+  });
+  useEffect(() => {
+    try { window.localStorage?.setItem("pnwer.savedReports", JSON.stringify(savedReports)); } catch {}
+  }, [savedReports]);
   const debounceRef = useRef(null);
 
   // Load initial forecast from backend on mount
@@ -149,11 +159,22 @@ export default function PNWERDashboard() {
       const r = await fetch(`${API}/api/refresh`,{method:"POST"});
       if(!r.ok) throw new Error(`HTTP ${r.status}`);
       const d = await r.json();
-      setRefreshMsg(d.status==="success" ? `✅ Refreshed ${d.records_updated} records (${d.month_refreshed}). Reloading...` : `⚠️ Partial: ${d.errors?.length||0} errors`);
-      if(d.status==="success"||d.status==="partial") setTimeout(()=>window.location.reload(),2000);
+      const ok = d.status === "success" || d.status === "partial";
+      // Refresh only mutates backend state; pull the updated forecast back into
+      // React state instead of reloading the page (which would wipe saved
+      // reports and cached forecast UI state).
+      if (ok) {
+        try {
+          const fr = await fetch(`${API}/api/forecast?ca=${tCA}&mx=${tMX}`);
+          if (fr.ok) { const fd = await fr.json(); if (!fd.error) setForecast(fd); }
+        } catch {}
+      }
+      setRefreshMsg(d.status === "success"
+        ? `✅ Refreshed ${d.records_updated} records (${d.month_refreshed}).`
+        : `⚠️ Partial: ${d.errors?.length || 0} errors`);
     } catch(e) { setRefreshMsg(`❌ ${e.message}`); }
     finally { setRefreshing(false); }
-  },[]);
+  },[tCA, tMX]);
 
   const fmtM = v => "$"+Math.abs(v).toLocaleString(undefined,{maximumFractionDigits:0})+"M";
   const fmtV = v => { if(Math.abs(v)>=1e9) return "$"+(v/1e9).toFixed(1)+"B"; return "$"+Math.round(v/1e6).toLocaleString()+"M"; };
@@ -794,11 +815,38 @@ function ReportBuilder({ forecast, integrated, srcData, usCurrent, usAnnual, DEC
       if (data.type === "error") throw new Error(data.error?.message || JSON.stringify(data));
       const text = (data.content||[]).map(b=>b.text||"").join("");
       if (!text) throw new Error("Empty response from AI. Check API key and model access.");
-      const clean = text.replace(/```json|```/g,"").trim();
-      try {
-        setReport({ type: rType, narrative: JSON.parse(clean), generated_at: new Date().toISOString() });
-      } catch(parseErr) {
-        throw new Error("Failed to parse report JSON. Raw response: " + clean.slice(0, 200));
+      // Robust JSON extraction: LLMs occasionally wrap the object in prose or
+      // markdown fences. Try a plain parse first, then fall back to slicing
+      // the first balanced {...} block out of the raw text.
+      const stripped = text.replace(/```json|```/g, "").trim();
+      const extractJsonBlock = (s) => {
+        const start = s.indexOf("{");
+        if (start < 0) return null;
+        let depth = 0, inStr = false, esc = false;
+        for (let i = start; i < s.length; i++) {
+          const c = s[i];
+          if (inStr) {
+            if (esc) esc = false;
+            else if (c === "\\") esc = true;
+            else if (c === '"') inStr = false;
+          } else {
+            if (c === '"') inStr = true;
+            else if (c === "{") depth++;
+            else if (c === "}") { depth--; if (depth === 0) return s.slice(start, i + 1); }
+          }
+        }
+        return null;
+      };
+      let narrative = null;
+      try { narrative = JSON.parse(stripped); }
+      catch {
+        const block = extractJsonBlock(stripped);
+        if (block) { try { narrative = JSON.parse(block); } catch {} }
+      }
+      if (narrative) {
+        setReport({ type: rType, narrative, generated_at: new Date().toISOString() });
+      } else {
+        throw new Error("Failed to parse report JSON. Raw response: " + stripped.slice(0, 200));
       }
     } catch(e) { setError(e.message); }
     finally { setGenerating(false); }

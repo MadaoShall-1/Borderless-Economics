@@ -198,6 +198,9 @@ async def generate_report(request: Request):
                         "messages": messages,
                         "max_tokens": body.get("max_tokens", 4000),
                         "temperature": 0.3,
+                        # Force strict JSON output so the frontend parser never
+                        # has to strip prose/markdown around the object.
+                        "response_format": {"type": "json_object"},
                     },
                 )
                 data = resp.json()

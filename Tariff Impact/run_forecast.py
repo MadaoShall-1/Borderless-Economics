@@ -107,46 +107,17 @@ def get_next_month_key(month_key):
     return f"{year}-{month + 1:02d}"
 
 
-def forecast_next_month(tariff_ca=None, tariff_mx=None, data=None):
+def _forecast_industry_block(mt, states, latest_mk, prev_mk, tariff_ca, tariff_mx, cfg):
+    """Run the industry-level forecast over an arbitrary set of states.
+
+    Returns (ind_results, totals). Caller aggregates/stores as needed.
     """
-    Core forecast function.
-
-    Args:
-        tariff_ca: Effective CA tariff rate (0-50%). None = use current H2 rates.
-        tariff_mx: Effective MX tariff rate (0-50%). None = use current H2 rates.
-        data: Pre-loaded data dict. If None, loads from disk.
-
-    Returns dict with:
-        - metadata (baseline month, predicted month, tariff rates)
-        - by_industry: { ind: { current_imp, current_exp, predicted, delta, gdp, jobs, ... } }
-        - by_product: { hs4: { current_imp, current_exp, predicted, delta, ... } }
-        - totals: { current, predicted, delta, gdp, jobs }
-    """
-    if data is None:
-        data = load_data()
-
-    mt = data.get("monthly_trade", {})
-    mp = data.get("monthly_products", {})
-
-    # Detect latest month
-    latest_mk = detect_latest_common_month_key(data)
-    if not latest_mk:
-        return {"error": "No monthly data available. Run refresh first."}
-
-    prev_mk = get_prev_month_key(latest_mk)
-    next_mk = get_next_month_key(latest_mk)
-    cfg = US_CONFIG
-
-    # ══════════════════════════════════════════════════════════════
-    # INDUSTRY FORECAST
-    # ══════════════════════════════════════════════════════════════
     ind_results = {}
     totals = {"current": 0, "predicted": 0, "delta": 0, "gdp": 0, "jobs": 0}
 
     for ind in INDUSTRIES:
-        # Aggregate current month across states × partners
         cur_imp = cur_exp = prev_imp = prev_exp = 0
-        for state in PNWER_STATES:
+        for state in states:
             for _, partner in PARTNERS:
                 cur_imp += get_monthly_val(mt, state, partner, latest_mk, "imports", ind)
                 cur_exp += get_monthly_val(mt, state, partner, latest_mk, "exports", ind)
@@ -155,23 +126,12 @@ def forecast_next_month(tariff_ca=None, tariff_mx=None, data=None):
 
         current = cur_imp + cur_exp
         previous = prev_imp + prev_exp
+        mom_delta = (current - previous) * 0.3 if previous > 0 else 0
 
-        # MoM momentum (damped 30%)
-        mom_delta = 0
-        if previous > 0:
-            mom_delta = (current - previous) * 0.3
-
-        # Tariff effect delta
-        imp_delta = 0
-        exp_delta = 0
+        imp_delta = exp_delta = 0
         for _, partner in PARTNERS:
-            # Current tariff effect (already embedded in the data)
             cur_tau_imp = H2_TAU_IMP.get(partner, {}).get(ind, 0.10)
             cur_tau_exp = H2_TAU_EXP.get(partner, {}).get(ind, 0.05)
-
-            # Partner share of this industry (approximate from current data)
-            p_share_imp = cur_imp / max(cur_imp, 1)  # simplified; actual split would need per-partner data
-            p_share_exp = cur_exp / max(cur_exp, 1)
 
             if tariff_ca is not None and partner == "CA":
                 new_tau_imp = tariff_ca / 100
@@ -187,15 +147,11 @@ def forecast_next_month(tariff_ca=None, tariff_mx=None, data=None):
             e_exp = EXP_ELAST.get(ind, -1.0)
             agg = AGG_SCALE.get(ind, 0.5)
 
-            # Per-partner monthly import/export base (from current month)
-            p_imp = get_monthly_val(mt, PNWER_STATES[0], partner, latest_mk, "imports", ind)
-            p_exp = get_monthly_val(mt, PNWER_STATES[0], partner, latest_mk, "exports", ind)
-            # Sum across all states for this partner
-            for state in PNWER_STATES[1:]:
+            p_imp = p_exp = 0
+            for state in states:
                 p_imp += get_monthly_val(mt, state, partner, latest_mk, "imports", ind)
                 p_exp += get_monthly_val(mt, state, partner, latest_mk, "exports", ind)
 
-            # Delta = new_effect - current_effect
             imp_delta += p_imp * e_imp * agg * (new_tau_imp - cur_tau_imp)
             exp_delta += p_exp * e_exp * (new_tau_exp - cur_tau_exp)
 
@@ -203,11 +159,9 @@ def forecast_next_month(tariff_ca=None, tariff_mx=None, data=None):
         predicted = max(0, current + mom_delta + tariff_delta)
         delta = predicted - current
 
-        # GDP and jobs
         total_gdp = 0
         total_jobs_ind = 0
         if delta < 0:
-            # Split loss into import/export components for proper multiplier
             imp_loss = delta * (cur_imp / max(current, 1))
             exp_loss = delta * (cur_exp / max(current, 1))
             g_imp = gdp_impact(imp_loss, ind, is_export=False, cfg=cfg)
@@ -232,17 +186,18 @@ def forecast_next_month(tariff_ca=None, tariff_mx=None, data=None):
         totals["gdp"] += total_gdp
         totals["jobs"] += total_jobs_ind
 
-    # ══════════════════════════════════════════════════════════════
-    # PRODUCT FORECAST
-    # ══════════════════════════════════════════════════════════════
+    return ind_results, {k: round(v) for k, v in totals.items()}
+
+
+def _forecast_product_block(mp, states, latest_mk, prev_mk, tariff_ca, tariff_mx):
+    """Run the HS4 product forecast over an arbitrary set of states."""
     prod_results = {}
 
     for hs4, meta in FOCUS_HS4.items():
         ind = meta["ind"]
 
-        # Real monthly product data from monthly_products
         cur_imp = cur_exp = prev_imp_p = prev_exp_p = 0
-        for state in PNWER_STATES:
+        for state in states:
             for _, partner in PARTNERS:
                 pd_cur = mp.get(state, {}).get(partner, {}).get(latest_mk, {}).get(hs4, {})
                 pd_prev = mp.get(state, {}).get(partner, {}).get(prev_mk, {}).get(hs4, {})
@@ -253,27 +208,22 @@ def forecast_next_month(tariff_ca=None, tariff_mx=None, data=None):
 
         current = cur_imp + cur_exp
         previous = prev_imp_p + prev_exp_p
-
-        # MoM momentum
         mom_delta = (current - previous) * 0.3 if previous > 0 else 0
 
-        # Per-partner tariff delta using HS4-specific rates
         tariff_delta = 0
         for _, partner in PARTNERS:
             p_imp = p_exp = 0
-            for state in PNWER_STATES:
+            for state in states:
                 pd_cur = mp.get(state, {}).get(partner, {}).get(latest_mk, {}).get(hs4, {})
                 p_imp += pd_cur.get("imports", 0)
                 p_exp += pd_cur.get("exports", 0)
 
-            # Current HS4 tariff rates
             cur_tau_imp = HS4_TARIFFS.get(hs4, {}).get("imp", {}).get(partner, 0.10)
             cur_tau_exp = HS4_TARIFFS.get(hs4, {}).get("exp", {}).get(partner, 0.05)
 
-            # New rates (if custom tariff provided)
             if partner == "CA" and tariff_ca is not None:
-                # Scale HS4 rate proportionally: new = current × (user_rate / current_avg)
-                cur_avg = 0.15  # current H2 avg for CA
+                # Scale HS4 rate proportionally vs current H2 CA average
+                cur_avg = 0.15
                 scale = tariff_ca / 100 / max(cur_avg, 0.01)
                 new_tau_imp = cur_tau_imp * scale
                 new_tau_exp = cur_tau_exp * scale
@@ -302,11 +252,63 @@ def forecast_next_month(tariff_ca=None, tariff_mx=None, data=None):
             "delta": round(predicted - current),
             "pct_change": round((predicted - current) / current * 100, 1) if current > 0 else 0,
         }
+    return prod_results
 
-    # Round totals
-    totals = {k: round(v) for k, v in totals.items()}
 
-    # Parse month info
+def forecast_next_month(tariff_ca=None, tariff_mx=None, data=None):
+    """
+    Core forecast function.
+
+    Args:
+        tariff_ca: Effective CA tariff rate (0-50%). None = use current H2 rates.
+        tariff_mx: Effective MX tariff rate (0-50%). None = use current H2 rates.
+        data: Pre-loaded data dict. If None, loads from disk.
+
+    Returns dict with:
+        - metadata (baseline month, predicted month, tariff rates)
+        - by_industry: aggregated across all PNWER_STATES × CA+MX
+        - by_product:  aggregated across all PNWER_STATES × CA+MX
+        - totals:      aggregated totals
+        - by_state:    { state: { by_industry, by_product, totals } } — same shape but
+                       filtered to a single state's trade with CA+MX
+    """
+    if data is None:
+        data = load_data()
+
+    mt = data.get("monthly_trade", {})
+    mp = data.get("monthly_products", {})
+
+    latest_mk = detect_latest_common_month_key(data)
+    if not latest_mk:
+        return {"error": "No monthly data available. Run refresh first."}
+
+    prev_mk = get_prev_month_key(latest_mk)
+    next_mk = get_next_month_key(latest_mk)
+    cfg = US_CONFIG
+
+    # Aggregate (all 5 states)
+    ind_results, totals = _forecast_industry_block(
+        mt, PNWER_STATES, latest_mk, prev_mk, tariff_ca, tariff_mx, cfg
+    )
+    prod_results = _forecast_product_block(
+        mp, PNWER_STATES, latest_mk, prev_mk, tariff_ca, tariff_mx
+    )
+
+    # Per-state breakdown
+    by_state = {}
+    for state in PNWER_STATES:
+        s_ind, s_tot = _forecast_industry_block(
+            mt, [state], latest_mk, prev_mk, tariff_ca, tariff_mx, cfg
+        )
+        s_prod = _forecast_product_block(
+            mp, [state], latest_mk, prev_mk, tariff_ca, tariff_mx
+        )
+        by_state[state] = {
+            "by_industry": s_ind,
+            "by_product": s_prod,
+            "totals": s_tot,
+        }
+
     latest_year = int(latest_mk.split("-")[0])
     latest_month = int(latest_mk.split("-")[1])
     next_year = int(next_mk.split("-")[0])
@@ -329,6 +331,7 @@ def forecast_next_month(tariff_ca=None, tariff_mx=None, data=None):
         "totals": totals,
         "by_industry": ind_results,
         "by_product": prod_results,
+        "by_state": by_state,
     }
 
     return output

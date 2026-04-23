@@ -166,7 +166,15 @@ export default function PNWERDashboard() {
     </div>);};
 
   // ══════ FORECAST PANEL — reads from backend JSON ══════
-  const FP = () => (<div>
+  const FP = () => {
+    // If a US state is selected and backend returned per-state slice, use that.
+    // Otherwise fall back to the aggregate (5 states × CA+MX).
+    const stateSlice = (sel && sel.flag === "us" && fc.by_state) ? fc.by_state[sel.id] : null;
+    const pInd  = stateSlice ? (stateSlice.by_industry || {}) : fcInd;
+    const pProd = stateSlice ? (stateSlice.by_product  || {}) : fcProd;
+    const pTot  = stateSlice ? (stateSlice.totals || {current:0,predicted:0,delta:0,gdp:0,jobs:0}) : fcTot;
+    const scopeLbl = stateSlice ? `${sel.name} ↔ CA+MX` : "5 States ↔ CA+MX";
+    return (<div>
     <div style={{display:"flex",gap:16,marginBottom:20,flexWrap:"wrap"}}>
       {/* Tariff sliders */}
       <div style={{flex:"1 1 320px",background:"white",borderRadius:14,border:"1px solid #E4EAF0",padding:20}}>
@@ -188,11 +196,11 @@ export default function PNWERDashboard() {
       <div style={{flex:"1 1 400px"}}>
         <div style={{background:"linear-gradient(135deg,#0A2540,#0F3460)",borderRadius:14,padding:20,color:"white",marginBottom:12}}>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
-            <div><div style={{fontSize:11,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:1}}>Monthly Forecast</div><div style={{fontSize:20,fontWeight:700}}>{baseLbl} → {predLbl}</div></div>
+            <div><div style={{fontSize:11,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:1}}>Monthly Forecast · {scopeLbl}</div><div style={{fontSize:20,fontWeight:700}}>{baseLbl} → {predLbl}</div></div>
             <div style={{fontSize:10,padding:"4px 10px",borderRadius:6,background:"rgba(1,186,239,0.15)",color:"#01BAEF"}}>CA {tCA}% / MX {tMX}%</div>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
-            {[[baseLbl,fmtV(fcTot.current),"#01BAEF"],[`${predLbl}`,fmtV(fcTot.predicted),"#20BF55"],["Δ Trade",`${fcTot.delta>=0?"+":""}${fmtV(fcTot.delta)}`,fcTot.delta>=0?"#4CAF50":"#FE6847"],["GDP Risk",fmtV(fcTot.gdp),"#FF9800"]].map(([l,v,c],i)=>(
+            {[[baseLbl,fmtV(pTot.current),"#01BAEF"],[`${predLbl}`,fmtV(pTot.predicted),"#20BF55"],["Δ Trade",`${pTot.delta>=0?"+":""}${fmtV(pTot.delta)}`,pTot.delta>=0?"#4CAF50":"#FE6847"],["GDP Risk",fmtV(pTot.gdp),"#FF9800"]].map(([l,v,c],i)=>(
               <div key={i} style={{background:"rgba(255,255,255,0.06)",borderRadius:8,padding:"10px 12px",border:"1px solid rgba(255,255,255,0.08)"}}>
                 <div style={{fontSize:9,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:.5,marginBottom:2}}>{l}</div>
                 <div style={{fontSize:17,fontWeight:700,color:c,fontVariantNumeric:"tabular-nums"}}>{v}</div>
@@ -213,14 +221,14 @@ export default function PNWERDashboard() {
 
     {/* INDUSTRY TABLE */}
     {fView==="industry" && (<div style={{background:"white",borderRadius:14,border:"1px solid #E4EAF0",padding:20}}>
-      <div style={{fontWeight:600,fontSize:14,color:"#0A2540",marginBottom:16}}>{baseLbl} vs {predLbl} — By Industry</div>
+      <div style={{fontWeight:600,fontSize:14,color:"#0A2540",marginBottom:16}}>{baseLbl} vs {predLbl} — By Industry · {scopeLbl}</div>
       <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
         <thead><tr style={{borderBottom:"2px solid #EDF1F7"}}>
           {["Industry","Imports","Exports","Current","Predicted","Δ","Δ%","GDP Risk","Jobs"].map(h=>(
             <th key={h} style={{padding:"10px 10px",textAlign:h==="Industry"?"left":"right",color:"#5A6B7C",fontWeight:600,fontSize:10,textTransform:"uppercase",letterSpacing:.5}}>{h}</th>))}
         </tr></thead>
         <tbody>
-          {Object.entries(fcInd).sort((a,b)=>Math.abs(b[1].delta||0)-Math.abs(a[1].delta||0)).map(([ind,f])=>{
+          {Object.entries(pInd).sort((a,b)=>Math.abs(b[1].delta||0)-Math.abs(a[1].delta||0)).map(([ind,f])=>{
             const lb=ind.charAt(0).toUpperCase()+ind.slice(1); const cl=SC[lb]||"#999"; return(
             <tr key={ind} style={{borderBottom:"1px solid #F3F5F9"}}>
               <td style={{padding:"10px 10px"}}><span style={{display:"inline-flex",alignItems:"center",gap:6}}><span style={{width:8,height:8,borderRadius:2,background:cl,display:"inline-block"}}/><span style={{fontWeight:600,color:"#0A2540"}}>{lb}</span></span></td>
@@ -235,12 +243,12 @@ export default function PNWERDashboard() {
             </tr>);})}
           <tr style={{borderTop:"2px solid #0A2540",fontWeight:700}}>
             <td style={{padding:"10px 10px",color:"#0A2540"}}>Total</td><td/><td/>
-            <td style={{padding:"10px 10px",textAlign:"right"}}>{fmtV(fcTot.current)}</td>
-            <td style={{padding:"10px 10px",textAlign:"right"}}>{fmtV(fcTot.predicted)}</td>
-            <td style={{padding:"10px 10px",textAlign:"right",color:fcTot.delta<0?"#F44336":"#4CAF50"}}>{fcTot.delta>=0?"+":""}{fmtV(fcTot.delta)}</td>
-            <td style={{padding:"10px 10px",textAlign:"right"}}>{fcTot.current>0?(fcTot.delta/fcTot.current*100).toFixed(1):"0.0"}%</td>
-            <td style={{padding:"10px 10px",textAlign:"right",color:"#FF9800"}}>{fmtV(fcTot.gdp)}</td>
-            <td style={{padding:"10px 10px",textAlign:"right"}}>{(fcTot.jobs||0).toLocaleString()}</td>
+            <td style={{padding:"10px 10px",textAlign:"right"}}>{fmtV(pTot.current)}</td>
+            <td style={{padding:"10px 10px",textAlign:"right"}}>{fmtV(pTot.predicted)}</td>
+            <td style={{padding:"10px 10px",textAlign:"right",color:pTot.delta<0?"#F44336":"#4CAF50"}}>{pTot.delta>=0?"+":""}{fmtV(pTot.delta)}</td>
+            <td style={{padding:"10px 10px",textAlign:"right"}}>{pTot.current>0?(pTot.delta/pTot.current*100).toFixed(1):"0.0"}%</td>
+            <td style={{padding:"10px 10px",textAlign:"right",color:"#FF9800"}}>{fmtV(pTot.gdp)}</td>
+            <td style={{padding:"10px 10px",textAlign:"right"}}>{(pTot.jobs||0).toLocaleString()}</td>
           </tr>
         </tbody>
       </table>
@@ -248,14 +256,14 @@ export default function PNWERDashboard() {
 
     {/* PRODUCT TABLE */}
     {fView==="product" && (<div style={{background:"white",borderRadius:14,border:"1px solid #E4EAF0",padding:20}}>
-      <div style={{fontWeight:600,fontSize:14,color:"#0A2540",marginBottom:16}}>{baseLbl} vs {predLbl} — By Product (HS4)</div>
+      <div style={{fontWeight:600,fontSize:14,color:"#0A2540",marginBottom:16}}>{baseLbl} vs {predLbl} — By Product (HS4) · {scopeLbl}</div>
       <div style={{overflowX:"auto"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
         <thead><tr style={{borderBottom:"2px solid #EDF1F7"}}>
           {["HS4","Product","Industry","Imports","Exports","Current","Predicted","Δ","Δ%"].map(h=>(
             <th key={h} style={{padding:"8px 10px",textAlign:["HS4","Product","Industry"].includes(h)?"left":"right",color:"#5A6B7C",fontWeight:600,fontSize:10,textTransform:"uppercase",letterSpacing:.5}}>{h}</th>))}
         </tr></thead>
         <tbody>
-          {Object.entries(fcProd).sort((a,b)=>Math.abs(b[1].delta||0)-Math.abs(a[1].delta||0)).map(([hs4,f])=>{
+          {Object.entries(pProd).sort((a,b)=>Math.abs(b[1].delta||0)-Math.abs(a[1].delta||0)).map(([hs4,f])=>{
             const ind=f.industry||""; const cl=SC[ind.charAt(0).toUpperCase()+ind.slice(1)]||"#999"; return(
             <tr key={hs4} style={{borderBottom:"1px solid #F3F5F9"}}>
               <td style={{padding:"8px 10px",fontWeight:600,color:"#0A2540"}}>{hs4}</td>
@@ -272,6 +280,7 @@ export default function PNWERDashboard() {
       </table></div>
     </div>)}
   </div>);
+  };
 
   // ══════ RENDER ══════
   return (
